@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+# SCRIPT: flags.sh
+# DESCRIPTION: Local command mapping definition metadata configurations.
+#              Command Target: $TARGET_CMD
+# ==============================================================================
+
+# Import global enterprise flags configuration definitions before local overrides
+if [ -f "../../globals/flags.sh" ]; then
+  . "../../globals/flags.sh"
+fi
+
+#
+# Register meta orchestration metadata definitions
+declare -gA CMD_${TARGET_PKG}_ORES_${TARGET_CMD}
+CMD_${TARGET_PKG}_ORES_${TARGET_CMD}["cmd"]="${TARGET_CMD}"
+CMD_${TARGET_PKG}_ORES_${TARGET_CMD}["summary"]="${TARGET_SUM}"
+CMD_${TARGET_PKG}_ORES_${TARGET_CMD}["description"]="${TARGET_DESC}"
+
+#
+# Enforce strict sequentially prioritized validation flow for runtime flags
+declare -ga CMD_${TARGET_PKG}_ORES_${TARGET_CMD}_FLAG_ORDER

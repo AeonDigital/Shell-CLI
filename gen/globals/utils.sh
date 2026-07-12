@@ -1,0 +1,176 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+# SCRIPT: utils.sh
+# DESCRIPTION: Global shared utility functions and validation transformers.
+#              Package Context: GEN
+# ==============================================================================
+
+# shell_cli_load_core_engine intercepts, secures and boots the core package engine.
+#
+# Arguments:
+#   - None: Resolves paths based on modern XDG layouts.
+#
+# Returns:
+#   - None: Directly sources the core engine framework into active runtime context.
+shell_cli_load_core_engine() {
+  if [ "${SHELL_CLI_LOCAL_LOAD_MAIN_PKG_SRC}" == "1" ]; then
+    local pathtoMainPkgSRC="$(cd "$(dirname "${BASH_SOURCE}")/../../src" && pwd)"
+    local arrMainPkgSRCFiles=($(find "${pathtoMainPkgSRC}" -type f -name "*.sh" | sort))
+
+    for file in "${arrMainPkgSRCFiles[@]}"; do
+      . "$file"
+    done
+
+    return 0
+  fi
+
+
+
+  local xdg_data_home="${XDG_DATA_HOME:-$HOME/.local/share}"
+  local central_dir="$xdg_data_home/shell-cli"
+  local engine_path="$central_dir/package.sh"
+  local download_url="https://raw.githubusercontent.com/AeonDigital/Shell-CLI/refs/heads/main/package.sh"
+
+
+
+  # Intercept the reserved update parameter to force runtime maintenance
+  for arg in "$@"; do
+    case "$arg" in
+      "--mgmtpkg-update-package")
+        echo "================================================================================"
+        echo "[RUN] Executing forced framework infrastructure update operation..."
+        echo "================================================================================"
+        echo "[ . ] Removing local cached runtime engine dependency..."
+        
+        if rm -f "$engine_path" 2>/dev/null; then
+          echo "[ v ] Local engine cache purged successfully."
+          echo "================================================================================"
+          echo "[!] IMPORTANT: Active terminal session memory still holds the old version."
+          echo "[!] To apply updates completely, you MUST restart your terminal session."
+          echo "[!] Run: exec bash"
+          echo "================================================================================"
+          echo "[OKK] Infrastructure reset completed. Run your command again to re-download."
+          echo "================================================================================"
+          exit 0
+        else
+          echo "[ x ] Critical storage fault: Failed to purge local engine file!"
+          echo "================================================================================"
+          echo "[ERR] Target infrastructure update process aborted with errors."
+          echo "================================================================================"
+          exit 1
+        fi
+        ;;
+    esac
+  done
+
+
+
+  if [ ! -f "$engine_path" ]; then
+    echo "================================================================================"
+    echo "[RUN] Central execution framework core runtime engine not detected."
+    echo "================================================================================"
+    echo "[ . ] Provisioning isolated shell-cli workspace environment..."
+    mkdir -p "$central_dir"
+    
+    if command -v curl &>/dev/null; then
+      curl -sSL "$download_url" -o "$engine_path"
+    elif command -v wget &>/dev/null; then
+      wget -qO "$engine_path" "$download_url"
+    fi
+
+    if [ ! -f "$engine_path" ]; then
+      echo "[ x ] Critical architecture download connection fault encountered!"
+      echo "================================================================================"
+      echo "[ERR] Target operations runtime framework cannot start."
+      echo "================================================================================"
+      exit 1
+    fi
+    echo "[ v ] Central execution engine successfully installed locally."
+    echo "================================================================================"
+    echo "[OKK] Central execution engine is loaded and active."
+    echo "================================================================================"
+    echo ""
+  fi
+
+  # Boot up internal execution systems directly from the verified central path
+  . "$engine_path"
+}
+
+# shell_cli_load_active_command automatically scans and sources project and command runtime files.
+#
+# Arguments:
+#   - target_command: The raw string token representing the sub-command requested.
+#   - root_path: The filesystem directory location acting as the project entrypoint root.
+#
+# Returns:
+#   - 0: If all global components and command design architecture matrices are successfully sourced.
+#   - 1: If the targeted sub-command directory or required operational structures are missing.
+shell_cli_load_active_command() {
+  local target_command="$1"
+  local root_path="$2"
+
+  # 1. Broadly source all core corporate ecosystem components inside the globals folder
+  if [ -d "${root_path}/globals" ]; then
+    for global_file in "${root_path}/globals"/*.sh; do
+      # Avoid errors if the directory happens to be entirely empty of match extensions
+      [ -e "$global_file" ] || continue
+      . "$global_file"
+    done
+  fi
+
+  # 2. Block execution early if the user failed to type a target action command string
+  if [ -z "$target_command" ]; then
+    echo "[ERR] Missing operational command name context."
+    return 1
+  fi
+
+  # 3. Apply CoC directory resolution enforcement over the targeted subdirectory structure
+  local cmd_dir="${root_path}/src/${target_command}"
+  if [ ! -d "$cmd_dir" ]; then
+    echo "[ERR] Target command tree '${target_command}' is unrecognized or unregistered in this CLI."
+    return 1
+  fi
+
+  # 4. Atomically discover and inject operational logic layouts, skipping test files
+  for script_file in "${cmd_dir}"/*.sh; do
+    [ -e "$script_file" ] || continue
+    
+    # Exclude development unit testing suites files from production scope pipeline
+    if [[ "$script_file" == *_test.sh ]]; then
+      continue
+    fi
+    
+    . "$script_file"
+  done
+
+
+  SHELL_CLI_ACTIVE_PKG="$target_command"
+  SHELL_CLI_ACTIVE_ROOT_PATH="$root_path"
+  SHELL_CLI_ACTIVE_COMMAND_TREE=""
+
+  return 0
+}
+
+
+# shell_cli_transform_uppercase converts an input string variable to uppercase.
+#
+# Arguments:
+#   - None: Reads and modifies the global target validation variable.
+#
+# Returns:
+#   - None: Mutation is applied directly to the shell reference.
+shell_cli_transform_uppercase() {
+  SHELL_CLI_VALIDATED_VALUE="${SHELL_CLI_VALIDATED_VALUE^^}"
+}
+
+# shell_cli_transform_lowercase converts an input string variable to lowercase.
+#
+# Arguments:
+#   - None: Reads and modifies the global target validation variable.
+#
+# Returns:
+#   - None: Mutation is applied directly to the shell reference.
+shell_cli_transform_lowercase() {
+  SHELL_CLI_VALIDATED_VALUE="${SHELL_CLI_VALIDATED_VALUE,,}"
+}

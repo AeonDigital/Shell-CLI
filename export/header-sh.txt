@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+#        ORIGIN : https://github.com/AeonDigital/Shell-CLI
+#   DESCRIPTION : Single-file distribution bundle of the Shell-CLI framework,
+#                 generated from the source tree for standalone use.
+#        README : https://github.com/AeonDigital/Shell-CLI/blob/main/README.md
+# ==============================================================================
