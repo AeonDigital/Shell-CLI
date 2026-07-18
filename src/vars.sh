@@ -27,45 +27,14 @@ declare -g SHELL_CLI_TRIGGER_INTERACTIVE="0"
 declare -g SHELL_CLI_VALIDATED_VALUE=""
 
 # Global indexed array storing the fully parsed and clean elements of an evaluated list.
-declare -ga SHELL_CLI_VALIDATED_ARRAY=()
+declare -ga SHELL_CLI_NORMALIZATED_ARRAY=()
 
 # Global associative array mapping the clean key-value pairs of an evaluated dictionary.
-declare -gA SHELL_CLI_VALIDATED_ASSOC=()
+declare -gA SHELL_CLI_NORMALIZATED_ASSOC=()
 
 # Global variable applied across execution pipelines to store the specific failure
 # or violation reasons reported by internal validation loops.
 declare -g VALIDATION_ERROR_MSG=""
-
-# Global associative array mapping all mandatory and optional metadata schema keys
-# to their framework-specified fallback default compilation values.
-declare -gA CORE_METAFLAG_DEFAULTS=(
-  ["short"]=""
-  ["long"]=""
-  ["type"]="string"
-  ["array"]="0"
-  ["assoc"]="0"
-  ["required"]="0"
-  ["default"]=""
-  ["enum"]=""
-  ["assoc_keys"]=""
-  ["min"]=""
-  ["max"]=""
-  ["min_array"]=""
-  ["max_array"]=""
-  ["regex"]=""
-  ["description"]=""
-  ["tipinput"]=""
-  ["validate"]=""
-  ["transform"]=""
-)
-
-# Global indexed array defining the strict execution sequence order for evaluating
-# metadata schema configuration rules during framework pre-flight compilation loops.
-declare -ga CORE_METAFLAG_DEFAULTS_ORDER=(
-  "short" "long" "type" "array" "assoc" "required" "default"
-  "enum" "assoc_keys" "min" "max" "min_array" "max_array"
-  "regex" "description" "tipinput" "validate" "transform"
-)
 
 
 
@@ -145,8 +114,8 @@ shell_cli_runtime_reset() {
   declare -gA SHELL_CLI_RUNTIME_FLAG_LONGNAME=()
   declare -gA SHELL_CLI_RUNTIME_FLAG_SHORTNAME=()
   declare -gA SHELL_CLI_RUNTIME_RAW_INPUTS=()
-  declare -ga SHELL_CLI_VALIDATED_ARRAY=()
-  declare -gA SHELL_CLI_VALIDATED_ASSOC=()
+  declare -ga SHELL_CLI_NORMALIZATED_ARRAY=()
+  declare -gA SHELL_CLI_NORMALIZATED_ASSOC=()
 
   # 4. Flush fixed runtime sandbox parameters
   SHELL_CLI_RUNTIME_PKG=""

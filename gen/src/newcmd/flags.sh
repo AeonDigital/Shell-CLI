@@ -8,7 +8,7 @@
 
 # Import global enterprise flags configuration definitions before local overrides
 if [ -f "../../globals/flags.sh" ]; then
-    . "../../globals/flags.sh"
+  . "../../globals/flags.sh"
 fi
 
 #

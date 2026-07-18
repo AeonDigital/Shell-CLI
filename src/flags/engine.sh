@@ -6,53 +6,6 @@
 #              validation engines processing structural user argument matrices.
 # ==============================================================================
 
-# _shell_cli_meta_normalize_bool converts metadata boolean strings into binary digits.
-#
-# Arguments:
-#   - meta_value: The raw string configuration value extracted from a flag map.
-#
-# Returns:
-#   - Outputs "1" for true/1, "0" for false/0, or the original string otherwise.
-_shell_cli_meta_normalize_bool() {
-  local meta_value="${1,,}"
-  if [ "$meta_value" = "1" ] || [ "$meta_value" = "true" ]; then
-    echo "1"
-  elif [ "$meta_value" = "0" ] || [ "$meta_value" = "false" ]; then
-    echo "0"
-  else
-    echo "$1"
-  fi
-}
-
-# shell_cli_flag_fill normalizes and populates uninitialized schema metadata keys.
-#
-# Arguments:
-#   - flag_array_name: The string name of the target global associative array.
-#
-# Returns:
-#   - 0: Always terminates with success state after dynamically filling missing keys.
-shell_cli_flag_fill() {
-  local flag_name="$1"
-  local -n flag_ref="$flag_name"
-
-  # NORMALIZE: Converts developer "true/false" metadata strings into strict "1/0" engine bytes
-  local bool_keys=("required" "array" "assoc")
-  for b_key in "${bool_keys[@]}"; do
-    if [ -n "${flag_ref["$b_key"]+exists}" ]; then
-      flag_ref["$b_key"]=$(_shell_cli_meta_normalize_bool "${flag_ref["$b_key"]}")
-    fi
-  done
-
-  # Iteratively evaluate and apply official system fallbacks using data-driven keys
-  for key in "${!CORE_METAFLAG_DEFAULTS[@]}"; do
-    if [ -z "${flag_ref["$key"]}" ]; then
-      flag_ref["$key"]="${CORE_METAFLAG_DEFAULTS["$key"]}"
-    fi
-  done
-
-  return 0
-}
-
 # shell_cli_flag_validate_single_value checks a scalar string against core rules.
 #
 # Arguments:
@@ -212,10 +165,10 @@ shell_cli_flag_apply_transformations() {
     return 1
   fi
 
-  shell_cli_flag_extract_array "$transform_list"
+  shell_cli_flag_normalize_array "$transform_list"
 
   local transformed_value="$value"
-  for custom_fn in "${SHELL_CLI_VALIDATED_ARRAY[@]}"; do
+  for custom_fn in "${SHELL_CLI_NORMALIZATED_ARRAY[@]}"; do
     if ! transformed_value="$("$custom_fn" "$transformed_value")"; then
       VALIDATION_ERROR_MSG="[ x ] [ --${_tval_rules["long"]} ] :: transform function '${custom_fn}' failed."
       return 1
@@ -247,8 +200,8 @@ shell_cli_flag_validate_value() {
   # 1. Evaluate primitive presence constraints (Required checking)
   if [ -z "$value" ] && [ "${_vval_rules["required"]}" = "0" ]; then
     SHELL_CLI_VALIDATED_VALUE="${_vval_rules["default"]}"
-    SHELL_CLI_VALIDATED_ARRAY=()
-    SHELL_CLI_VALIDATED_ASSOC=()
+    SHELL_CLI_NORMALIZATED_ARRAY=()
+    SHELL_CLI_NORMALIZATED_ASSOC=()
     if ! shell_cli_flag_apply_transformations "$SHELL_CLI_VALIDATED_VALUE" "$flag_name"; then
       return 1
     fi
@@ -267,11 +220,11 @@ shell_cli_flag_validate_value() {
       return 1
     fi
 
-    shell_cli_flag_extract_array "$value"
+    shell_cli_flag_normalize_array "$value"
 
     local -a transformed_items=()
     local count=0
-    for current_token in "${SHELL_CLI_VALIDATED_ARRAY[@]}"; do
+    for current_token in "${SHELL_CLI_NORMALIZATED_ARRAY[@]}"; do
       if ! shell_cli_flag_validate_single_value "$current_token" "$flag_name" "" "$count"; then
         return 1
       fi
@@ -282,10 +235,10 @@ shell_cli_flag_validate_value() {
       count=$((count + 1))
     done
 
-    SHELL_CLI_VALIDATED_ARRAY=("${transformed_items[@]}")
+    SHELL_CLI_NORMALIZATED_ARRAY=("${transformed_items[@]}")
 
     # Validate overall collection sizing array length restrictions
-    local total_elements="${#SHELL_CLI_VALIDATED_ARRAY[@]}"
+    local total_elements="${#SHELL_CLI_NORMALIZATED_ARRAY[@]}"
     if [ -n "${_vval_rules["min_array"]}" ] && [ "$total_elements" -lt "${_vval_rules["min_array"]}" ]; then
       VALIDATION_ERROR_MSG="[ x ] [ ${l_name} ] :: collection violates minimum item count (min_array: ${_vval_rules["min_array"]})."
       return 1
@@ -297,7 +250,7 @@ shell_cli_flag_validate_value() {
 
     local serialized_array="["
     local first=1
-    for current_token in "${SHELL_CLI_VALIDATED_ARRAY[@]}"; do
+    for current_token in "${SHELL_CLI_NORMALIZATED_ARRAY[@]}"; do
       if [ "$first" -eq 0 ]; then
         serialized_array+=","
       fi
@@ -314,7 +267,7 @@ shell_cli_flag_validate_value() {
       return 1
     fi
 
-    shell_cli_flag_extract_assoc "$value"
+    shell_cli_flag_normalize_assoc "$value"
 
     # Enforce strict sorted predictability over mandatory structural key checks
     if [ -n "${_vval_rules["assoc_keys"]}" ]; then
@@ -325,7 +278,7 @@ shell_cli_flag_validate_value() {
 
       while IFS= read -r expected || [ -n "$expected" ]; do
         [ -z "$expected" ] && continue
-        if [ -z "${SHELL_CLI_VALIDATED_ASSOC["$expected"]+exists}" ]; then
+        if [ -z "${SHELL_CLI_NORMALIZATED_ASSOC["$expected"]+exists}" ]; then
           VALIDATION_ERROR_MSG="[ x ] [ ${l_name} ] :: required key '${expected}' is missing."
           return 1
         fi
@@ -334,12 +287,12 @@ shell_cli_flag_validate_value() {
 
     # Sort dictionary keys to provide deterministic sequential evaluation outputs
     local sorted_assoc_keys
-    sorted_assoc_keys=$(echo "${!SHELL_CLI_VALIDATED_ASSOC[@]}" | tr ' ' '\n' | sort)
+    sorted_assoc_keys=$(echo "${!SHELL_CLI_NORMALIZATED_ASSOC[@]}" | tr ' ' '\n' | sort)
 
     local -A transformed_assoc=()
     while IFS= read -r key || [ -n "$key" ]; do
       [ -z "$key" ] && continue
-      local current_val="${SHELL_CLI_VALIDATED_ASSOC["$key"]}"
+      local current_val="${SHELL_CLI_NORMALIZATED_ASSOC["$key"]}"
       if ! shell_cli_flag_validate_single_value "$current_val" "$flag_name" "$key" ""; then
         return 1
       fi
@@ -349,10 +302,10 @@ shell_cli_flag_validate_value() {
       transformed_assoc["$key"]="$SHELL_CLI_VALIDATED_VALUE"
     done <<< "$sorted_assoc_keys"
 
-    SHELL_CLI_VALIDATED_ASSOC=()
+    SHELL_CLI_NORMALIZATED_ASSOC=()
     while IFS= read -r key || [ -n "$key" ]; do
       [ -z "$key" ] && continue
-      SHELL_CLI_VALIDATED_ASSOC["$key"]="${transformed_assoc["$key"]}"
+      SHELL_CLI_NORMALIZATED_ASSOC["$key"]="${transformed_assoc["$key"]}"
     done <<< "$sorted_assoc_keys"
 
     local serialized_assoc="{"
@@ -362,7 +315,7 @@ shell_cli_flag_validate_value() {
       if [ "$first" -eq 0 ]; then
         serialized_assoc+=","
       fi
-      serialized_assoc+="\"${key}\":\"${SHELL_CLI_VALIDATED_ASSOC["$key"]}\""
+      serialized_assoc+="\"${key}\":\"${SHELL_CLI_NORMALIZATED_ASSOC["$key"]}\""
       first=0
     done <<< "$sorted_assoc_keys"
     serialized_assoc+="}"
@@ -381,151 +334,6 @@ shell_cli_flag_validate_value() {
   return 0
 }
 
-# shell_cli_flag_validate_rules compiles and asserts a developer flag specification.
-#
-# Arguments:
-#   - flag_array_name: The string name of the developer target associative array.
-#
-# Returns:
-#   - 0: If the configuration schema is structurally intact and logically sound.
-#   - 1: If any metadata constraint fails or a logical architectural rule breaks.
-shell_cli_flag_validate_rules() {
-  local target_flag_name="$1"
-  
-  # Protect against native circular name reference bugs via strict local prefixing
-  local -n _comp_flag="$target_flag_name"
-
-  # First, ensure all uninitialized metadata keys are filled with system defaults
-  shell_cli_flag_fill "$target_flag_name"
-
-  local f_label="[ flag_meta: ${target_flag_name} ]"
-
-  # ------------------------------------------------------------------------------
-  # PHASE 1: ATOMIC METADATA VALIDATION (FOLLOWING STRICT SPECIFIED ORDER)
-  # ------------------------------------------------------------------------------
-  for meta_key in "${CORE_METAFLAG_DEFAULTS_ORDER[@]}"; do
-    local current_meta_val="${_comp_flag["$meta_key"]}"
-    local meta_spec_array="METAFLAG_${meta_key}"
-
-    # Verify if the framework schema matrix for the target meta-key exists
-    if ! declare -p "$meta_spec_array" &>/dev/null; then
-      VALIDATION_ERROR_MSG="[ERR] ${f_label} :: internal engine layout error. Schema array '${meta_spec_array}' is missing."
-      return 1
-    fi
-
-    # Invoke the central engine validator to check the developer's assignment
-    if ! shell_cli_flag_validate_value "$current_meta_val" "$meta_spec_array"; then
-      VALIDATION_ERROR_MSG="${VALIDATION_ERROR_MSG} \n[ERR] ${f_label}[ key: ${meta_key} ] :: invalid design property."
-      return 1
-    fi
-  done
-
-
-
-  # ------------------------------------------------------------------------------
-  # PHASE 2: CROSS-PROPERTY LOGICAL CONSTRAINTS VERIFICATION
-  # ------------------------------------------------------------------------------
-
-  # Rule A: Exclusive Collection Layout Bounds (Array vs Assoc exclusivity)
-  if [ "${_comp_flag["array"]}" = "1" ] && [ "${_comp_flag["assoc"]}" = "1" ]; then
-    VALIDATION_ERROR_MSG="[ERR] ${f_label} :: structural conflict. A parameter cannot be declared as 'array' and 'assoc' simultaneously."
-    return 1
-  fi
-
-  # Rule B: Conflicting Required Default Mappings (Required vs Default exclusivity)
-  if [ "${_comp_flag["required"]}" = "1" ] && [ -n "${_comp_flag["default"]}" ]; then
-    VALIDATION_ERROR_MSG="[ERR] ${f_label} :: logical breakdown. A mandatory 'required=1' flag cannot provision a fallback 'default' assignment."
-    return 1
-  fi
-
-  # Rule C: Orphaned Structural Collection Size Constraints (min_array / max_array)
-  if [ "${_comp_flag["array"]}" = "0" ]; then
-    if [ -n "${_comp_flag["min_array"]}" ] || [ -n "${_comp_flag["max_array"]}" ]; then
-      VALIDATION_ERROR_MSG="[ERR] ${f_label} :: design orphan. Properties 'min_array' or 'max_array' mandate 'array=1' activation."
-      return 1
-    fi
-  fi
-
-  # Rule D: Orphaned Map Dictionary Validation Properties (assoc_keys)
-  if [ "${_comp_flag["assoc"]}" = "0" ] && [ -n "${_comp_flag["assoc_keys"]}" ]; then
-    VALIDATION_ERROR_MSG="[ERR] ${f_label} :: design orphan. The property 'assoc_keys' mandates 'assoc=1' activation."
-    return 1
-  fi
-
-  # Rule E: Mandatory Enum Pointer Verification (Enum type check)
-  if [ "${_comp_flag["type"]}" = "enum" ] && [ -z "${_comp_flag["enum"]}" ]; then
-    VALIDATION_ERROR_MSG="[ERR] ${f_label} :: configuration breakdown. Flags classifying as 'type=enum' must declare a target dynamic 'enum' pointer array name."
-    return 1
-  fi
-
-  # Rule F: Collection Size Range Inversion (min_array vs max_array boundaries)
-  if [ -n "${_comp_flag["min_array"]}" ] && [ -n "${_comp_flag["max_array"]}" ]; then
-    if (( ${_comp_flag["min_array"]} > ${_comp_flag["max_array"]} )); then
-      VALIDATION_ERROR_MSG="[ERR] ${f_label} :: logical inversion. The 'min_array' property cannot be higher than 'max_array'."
-      return 1
-    fi
-  fi
-
-  # Rule G: Scalar Limits Range Inversion (min vs max chronological/numerical limits)
-  if [ -n "${_comp_flag["min"]}" ] && [ -n "${_comp_flag["max"]}" ]; then
-    local target_type="${_comp_flag["type"]}"
-    
-    if [ "$target_type" = "int" ]; then
-      if (( ${_comp_flag["min"]} > ${_comp_flag["max"]} )); then
-        VALIDATION_ERROR_MSG="[ERR] ${f_label} :: range inversion. The 'min' mathematical limit cannot exceed 'max'."
-        return 1
-      fi
-    elif [ "$target_type" = "float" ]; then
-      if ! shell_cli_math_is_less_or_equal "${_comp_flag["min"]}" "${_comp_flag["max"]}" "0"; then
-        VALIDATION_ERROR_MSG="[ERR] ${f_label} :: range inversion. The 'min' decimal limit cannot exceed 'max'."
-        return 1
-      fi
-    elif [[ "$target_type" =~ ^(date|time|datetime)$ ]]; then
-      local min_sec=$(date -d "${_comp_flag["min"]}" +%s 2>/dev/null || date -j -f "%Y-%m-%d" "${_comp_flag["min"]}" +%s 2>/dev/null)
-      local max_sec=$(date -d "${_comp_flag["max"]}" +%s 2>/dev/null || date -j -f "%Y-%m-%d" "${_comp_flag["max"]}" +%s 2>/dev/null)
-      if [ -n "$min_sec" ] && [ -n "$max_sec" ] && [ "$min_sec" -gt "$max_sec" ]; then
-        VALIDATION_ERROR_MSG="[ERR] ${f_label} :: range inversion. The 'min' chronological limit cannot exceed 'max'."
-        return 1
-      fi
-    else
-      # Standard character length bounds
-      if (( ${_comp_flag["min"]} > ${_comp_flag["max"]} )); then
-        VALIDATION_ERROR_MSG="[ERR] ${f_label} :: sizing inversion. The 'min' character length threshold cannot exceed 'max'."
-        return 1
-      fi
-    fi
-  fi
-
-  # Rule H: Structural Integrity Validation over custom Regular Expression Masks
-  if [ -n "${_comp_flag["regex"]}" ]; then
-    # Test if the expression complies with the native Bash regex parser in a sandboxed command
-    if ! [[ "" =~ ${_comp_flag["regex"]} ]] 2>/dev/null; then
-      VALIDATION_ERROR_MSG="[ERR] ${f_label}[ key: regex ] :: syntax corruption. The regular expression pattern is malformed or invalid."
-      return 1
-    fi
-  fi
-
-  # Rule I: Dynamic Function Presence Checks over registered downstream validators
-  if [ -n "${_comp_flag["validate"]}" ]; then
-    for custom_fn in ${_comp_flag["validate"]}; do
-      if ! declare -f "$custom_fn" >/dev/null; then
-        VALIDATION_ERROR_MSG="[ERR] ${f_label}[ key: validate ] :: implementation gap. Custom validation investigator function '${custom_fn}' does not exist."
-        return 1
-      fi
-    done
-  fi
-
-  # Rule J: System Reserved Keyword Collision Protection
-  local check_long="${_comp_flag["long"]}"
-  local check_short="${_comp_flag["short"]}"
-  
-  if [[ "$check_long" =~ ^(h|help|itr|interactive)$ ]] || [[ "$check_short" =~ ^(h|help|itr|interactive)$ ]]; then
-    VALIDATION_ERROR_MSG="[ERR] ${f_label} :: nomenclature collision. The names 'help', 'h', 'interactive', and 'itr' are strictly reserved for framework core orchestration."
-    return 1
-  fi
-
-  return 0
-}
 
 # shell_cli_flag_validate orchestrates the sequential validation of all parsed CLI flags.
 #

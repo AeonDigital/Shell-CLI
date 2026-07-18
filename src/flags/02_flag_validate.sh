@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: shell_cli/flags/validate.sh
+# SCRIPT: shell_cli/flags/02_flag_validate.sh
 # DESCRIPTION: Core verification primitives and structural validation library 
 #              processing native command-line data type compliance checks.
 # ==============================================================================
@@ -31,6 +31,10 @@ shell_cli_flag_validate_string() {
 
   return 0
 }
+
+
+
+
 
 # shell_cli_flag_validate_int verifies whole numeric data layout compliance.
 #
@@ -143,15 +147,18 @@ shell_cli_flag_validate_date() {
 
   # Infer based on input length boundaries
   case "${#value}" in
-    4)  # YYYY -> YYYY-01-01
+    4)
+      # YYYY -> YYYY-01-01
       [[ "$value" =~ ^[0-9]{4}$ ]] || return 1
       inferred="${value}-01-01"
       ;;
-    7)  # YYYY-MM -> YYYY-MM-01
+    7)
+      # YYYY-MM -> YYYY-MM-01
       [[ "$value" =~ ^[0-9]{4}-[0-9]{2}$ ]] || return 1
       inferred="${value}-01"
       ;;
-    10) # YYYY-MM-DD -> Fully formed
+    10)
+      # YYYY-MM-DD -> Fully formed
       [[ "$value" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || return 1
       ;;
     *)
@@ -192,15 +199,18 @@ shell_cli_flag_validate_time() {
   local inferred="$value"
 
   case "${#value}" in
-    2)  # HH -> HH:00:00
+    2)
+      # HH -> HH:00:00
       [[ "$value" =~ ^[0-9]{2}$ ]] || return 1
       inferred="${value}:00:00"
       ;;
-    5)  # HH:MM -> HH:MM:00
+    5)
+      # HH:MM -> HH:MM:00
       [[ "$value" =~ ^[0-9]{2}:[0-9]{2}$ ]] || return 1
       inferred="${value}:00"
       ;;
-    8)  # HH:MM:SS -> Fully formed
+    8)
+      # HH:MM:SS -> Fully formed
       [[ "$value" =~ ^[0-9]{2}:[0-9]{2}:[0-9]{2}$ ]] || return 1
       ;;
     *)
@@ -339,14 +349,8 @@ shell_cli_flag_validate_enum() {
     return 1
   fi
 
-  # Re-assert if the pointer array exists inside the active configuration runtime
-  local array_name="$aux"
-  if [ -z "$array_name" ] || ! declare -p "$array_name" &> /dev/null; then
-    return 1
-  fi
-
   # Establish a native reference alias linking directly to the global dictionary array
-  local -n target_array="$array_name"
+  local -n target_array="$aux"
 
   # Check if the input exists as a value or an aliased group literal string
   for item in "${target_array[@]}"; do
@@ -700,6 +704,10 @@ shell_cli_flag_validate_relativepath() {
   return 0
 }
 
+
+
+
+
 # shell_cli_flag_validate_filename asserts safe naming schemas for individual files.
 #
 # Arguments:
@@ -821,6 +829,10 @@ shell_cli_flag_validate_dirpath() {
 
   return 0
 }
+
+
+
+
 
 # shell_cli_flag_validate_url checks flexible protocol or relative web address formatting.
 #

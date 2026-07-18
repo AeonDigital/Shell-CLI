@@ -403,11 +403,11 @@ schema properties interact with different types:
     testing string length.
 *   **Collection Array Extraction:** Activating `array="1"` forces the 
     framework to bypass simple scalar evaluations. It parses the target string 
-    into the native Bash indexed array `SHELL_CLI_VALIDATED_ARRAY`, loops 
+    into the native Bash indexed array `SHELL_CLI_NORMALIZATED_ARRAY`, loops 
     through it, and validates every single element against the rules of the 
     selected `type`.
 *   **Object Map Extraction:** Activating `assoc="1"` triggers the flat JSON 
     state machine parser, loading key-value pairs into 
-    `SHELL_CLI_VALIDATED_ASSOC`. Every individual value inside the dictionary is 
+    `SHELL_CLI_NORMALIZATED_ASSOC`. Every individual value inside the dictionary is 
     then evaluated against the `type` limits, while `assoc_keys` checks for 
     mandatory fields.

@@ -1,41 +1,21 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: shell_cli/flags/meta.sh
-# DESCRIPTION: Centralized registry for all validated core and system data types.
+# SCRIPT: shell_cli/flags/metaflags.sh
+# DESCRIPTION: 
 # ==============================================================================
 
-# Global array indexing all primitive, structured, and system types supported by the core engine.
-declare -gA CORE_SUPPORTED_TYPES=(
-  # Primitives
-  ["string"]="string" 
-  ["int"]="int" 
-  ["float"]="float" 
-  ["bool"]="bool"
-  
-  # Structured
-  ["date"]="date" 
-  ["time"]="time" 
-  ["datetime"]="datetime" 
-  ["email"]="email" 
-  ["enum"]="enum"
-  ["json"]="json" 
-  ["function"]="function"
-  
-  # System
-  ["path"]="path" 
-  ["relativepath"]="relativepath" 
+# Global associative array mapping all mandatory and optional metadata schema keys
+# to their framework-specified fallback default compilation values.
+declare -gA CORE_METAFLAG_DEFAULTS=()
 
-  ["filename"]="filename" 
-  ["filepath"]="filepath" 
+# Global indexed array defining the strict execution sequence order for evaluating
+# metadata schema configuration rules during framework pre-flight compilation loops.
+declare -ga CORE_METAFLAG_DEFAULTS_ORDER=()
 
-  ["dirname"]="dirname" 
-  ["dirpath"]="dirpath"
 
-  ["url"]="url" 
-  ["fullurl"]="fullurl" 
-  ["relativeurl"]="relativeurl"
-)
+
+
 
 # METAFLAG_short defines the short alphanumeric alias for a command-line flag.
 # It acts as a single-dash alternative (e.g., -s) and must not exceed 3 characters.
@@ -59,6 +39,11 @@ METAFLAG_short["tipinput"]=""
 METAFLAG_short["validate"]=""
 METAFLAG_short["transform"]=""
 
+CORE_METAFLAG_DEFAULTS["short"]=""
+CORE_METAFLAG_DEFAULTS_ORDER+=("short")
+
+
+
 # METAFLAG_long defines the canonical long name identifier for a command-line flag.
 # It acts as a double-dash option (e.g., --scope) and maps directly to parsed storage keys.
 declare -gA METAFLAG_long=()
@@ -71,7 +56,7 @@ METAFLAG_long["required"]="1"
 METAFLAG_long["default"]=""
 METAFLAG_long["enum"]=""
 METAFLAG_long["assoc_keys"]=""
-METAFLAG_long["min"]="1"
+METAFLAG_long["min"]="4"
 METAFLAG_long["max"]="32"
 METAFLAG_long["min_array"]=""
 METAFLAG_long["max_array"]=""
@@ -80,6 +65,11 @@ METAFLAG_long["description"]="Long canonical name identifier for the flag execut
 METAFLAG_long["tipinput"]=""
 METAFLAG_long["validate"]=""
 METAFLAG_long["transform"]=""
+
+CORE_METAFLAG_DEFAULTS["long"]=""
+CORE_METAFLAG_DEFAULTS_ORDER+=("long")
+
+
 
 # METAFLAG_type defines the primitive, structured, or system classification of the flag data.
 # It instructs the core engine which specialized native validation routine to trigger.
@@ -90,8 +80,8 @@ METAFLAG_type["type"]="enum"
 METAFLAG_type["array"]="0"
 METAFLAG_type["assoc"]="0"
 METAFLAG_type["required"]="1"
-METAFLAG_type["default"]="string"
-METAFLAG_type["enum"]="CORE_SUPPORTED_TYPES"
+METAFLAG_type["default"]=""
+METAFLAG_type["enum"]="CORE_METAFLAG_TYPES"
 METAFLAG_type["assoc_keys"]=""
 METAFLAG_type["min"]=""
 METAFLAG_type["max"]=""
@@ -102,6 +92,11 @@ METAFLAG_type["description"]="Data type classification enforcing specific core p
 METAFLAG_type["tipinput"]=""
 METAFLAG_type["validate"]=""
 METAFLAG_type["transform"]=""
+
+CORE_METAFLAG_DEFAULTS["type"]=""
+CORE_METAFLAG_DEFAULTS_ORDER+=("type")
+
+
 
 # METAFLAG_array declares whether the flag parameter accepts a structured collection.
 # If active (1), the engine parses the payload as a JSON array and validates every item.
@@ -122,8 +117,13 @@ METAFLAG_array["max_array"]=""
 METAFLAG_array["regex"]=""
 METAFLAG_array["description"]="Boolean flag asserting if the parameter operates as an iterable collection array."
 METAFLAG_array["tipinput"]=""
-METAFLAG_array["validate"]="check_meta_array_exclusivity"
+METAFLAG_array["validate"]=""
 METAFLAG_array["transform"]=""
+
+CORE_METAFLAG_DEFAULTS["array"]="0"
+CORE_METAFLAG_DEFAULTS_ORDER+=("array")
+
+
 
 # METAFLAG_assoc declares whether the flag parameter operates as an associative map.
 # Accepts a global variable name pointer or an inline JSON object sequence.
@@ -144,8 +144,13 @@ METAFLAG_assoc["max_array"]=""
 METAFLAG_assoc["regex"]=""
 METAFLAG_assoc["description"]="Boolean flag asserting if the parameter operates as an associative map."
 METAFLAG_assoc["tipinput"]=""
-METAFLAG_assoc["validate"]="check_meta_assoc_exclusivity"
+METAFLAG_assoc["validate"]=""
 METAFLAG_assoc["transform"]=""
+
+CORE_METAFLAG_DEFAULTS["assoc"]="0"
+CORE_METAFLAG_DEFAULTS_ORDER+=("assoc")
+
+
 
 # METAFLAG_required declares whether the flag must be explicitly supplied by the user.
 # If active (1), the framework automatically mandates a non-empty presence check.
@@ -169,6 +174,11 @@ METAFLAG_required["tipinput"]=""
 METAFLAG_required["validate"]=""
 METAFLAG_required["transform"]=""
 
+CORE_METAFLAG_DEFAULTS["required"]="0"
+CORE_METAFLAG_DEFAULTS_ORDER+=("required")
+
+
+
 # METAFLAG_default defines the fallback value automatically assigned if the user omits the flag.
 # Core compiler rules reject schemas where required is true (1) and a default is simultaneously set.
 declare -gA METAFLAG_default=()
@@ -191,6 +201,11 @@ METAFLAG_default["tipinput"]=""
 METAFLAG_default["validate"]=""
 METAFLAG_default["transform"]=""
 
+CORE_METAFLAG_DEFAULTS["default"]=""
+CORE_METAFLAG_DEFAULTS_ORDER+=("default")
+
+
+
 # METAFLAG_enum specifies a JSON array with the accepted values or aliases.
 # Mandatory if type is set to 'enum'. Rejects definitions that fail alias syntax rules.
 declare -gA METAFLAG_enum=()
@@ -200,7 +215,7 @@ METAFLAG_enum["type"]="string"
 METAFLAG_enum["array"]="1"
 METAFLAG_enum["assoc"]="0"
 METAFLAG_enum["required"]="0"
-METAFLAG_enum["default"]="[]"
+METAFLAG_enum["default"]=""
 METAFLAG_enum["enum"]=""
 METAFLAG_enum["assoc_keys"]=""
 METAFLAG_enum["min"]=""
@@ -208,10 +223,15 @@ METAFLAG_enum["max"]=""
 METAFLAG_enum["min_array"]=""
 METAFLAG_enum["max_array"]=""
 METAFLAG_enum["regex"]=""
-METAFLAG_enum["description"]="JSON array listing accepted values and internal semantic aliases."
+METAFLAG_enum["description"]="Pointer to assoc array where 'keys' are the real options to accept."
 METAFLAG_enum["tipinput"]=""
-METAFLAG_enum["validate"]="check_meta_enum_syntax"
+METAFLAG_enum["validate"]=""
 METAFLAG_enum["transform"]=""
+
+CORE_METAFLAG_DEFAULTS["enum"]=""
+CORE_METAFLAG_DEFAULTS_ORDER+=("enum")
+
+
 
 # METAFLAG_assoc_keys defines a comma-separated list of mandatory keys for maps.
 # Operates exclusively when assoc is active (1) to enforce field presence.
@@ -235,6 +255,11 @@ METAFLAG_assoc_keys["tipinput"]=""
 METAFLAG_assoc_keys["validate"]=""
 METAFLAG_assoc_keys["transform"]=""
 
+CORE_METAFLAG_DEFAULTS["assoc_keys"]=""
+CORE_METAFLAG_DEFAULTS_ORDER+=("assoc_keys")
+
+
+
 # METAFLAG_min enforces the minimum boundary size constraint allowed for the payload.
 # Evaluates string/token length or raw numerical boundaries based on the primary type field.
 declare -gA METAFLAG_min=()
@@ -256,6 +281,11 @@ METAFLAG_min["description"]="Minimum boundary size asserting string token length
 METAFLAG_min["tipinput"]=""
 METAFLAG_min["validate"]=""
 METAFLAG_min["transform"]=""
+
+CORE_METAFLAG_DEFAULTS["min"]=""
+CORE_METAFLAG_DEFAULTS_ORDER+=("min")
+
+
 
 # METAFLAG_max enforces the maximum boundary size constraint allowed for the payload.
 # Evaluates string/token length or raw numerical boundaries based on the primary type field.
@@ -279,6 +309,11 @@ METAFLAG_max["tipinput"]=""
 METAFLAG_max["validate"]=""
 METAFLAG_max["transform"]=""
 
+CORE_METAFLAG_DEFAULTS["max"]=""
+CORE_METAFLAG_DEFAULTS_ORDER+=("max")
+
+
+
 # METAFLAG_min_array defines the minimum number of elements required inside a collection.
 # This evaluation is optional and operates exclusively when the array attribute is active (1).
 declare -gA METAFLAG_min_array=()
@@ -300,6 +335,11 @@ METAFLAG_min_array["description"]="Minimum allowable element count within a vali
 METAFLAG_min_array["tipinput"]=""
 METAFLAG_min_array["validate"]=""
 METAFLAG_min_array["transform"]=""
+
+CORE_METAFLAG_DEFAULTS["min_array"]=""
+CORE_METAFLAG_DEFAULTS_ORDER+=("min_array")
+
+
 
 # METAFLAG_max_array defines the maximum number of elements allowed inside a collection.
 # This evaluation is optional and operates exclusively when the array attribute is active (1).
@@ -323,6 +363,11 @@ METAFLAG_max_array["tipinput"]=""
 METAFLAG_max_array["validate"]=""
 METAFLAG_max_array["transform"]=""
 
+CORE_METAFLAG_DEFAULTS["max_array"]=""
+CORE_METAFLAG_DEFAULTS_ORDER+=("max_array")
+
+
+
 # METAFLAG_regex provisions an optional regular expression verification constraint pattern.
 # Evaluates whether incoming values perfectly satisfy native Bash or grep pattern criteria.
 declare -gA METAFLAG_regex=()
@@ -345,6 +390,11 @@ METAFLAG_regex["tipinput"]=""
 METAFLAG_regex["validate"]=""
 METAFLAG_regex["transform"]=""
 
+CORE_METAFLAG_DEFAULTS["regex"]=""
+CORE_METAFLAG_DEFAULTS_ORDER+=("regex")
+
+
+
 # METAFLAG_description maps the essential human documentation text used to render help modules.
 # Mandatory framework constraint ensuring zero undocumented features bypass compiler loops.
 declare -gA METAFLAG_description=()
@@ -357,7 +407,7 @@ METAFLAG_description["required"]="1"
 METAFLAG_description["default"]=""
 METAFLAG_description["enum"]=""
 METAFLAG_description["assoc_keys"]=""
-METAFLAG_description["min"]="1"
+METAFLAG_description["min"]="4"
 METAFLAG_description["max"]="256"
 METAFLAG_description["min_array"]=""
 METAFLAG_description["max_array"]=""
@@ -366,6 +416,11 @@ METAFLAG_description["description"]="Human-readable operational statement descri
 METAFLAG_description["tipinput"]=""
 METAFLAG_description["validate"]=""
 METAFLAG_description["transform"]=""
+
+CORE_METAFLAG_DEFAULTS["description"]=""
+CORE_METAFLAG_DEFAULTS_ORDER+=("description")
+
+
 
 # METAFLAG_tipinput specifies the custom interactive question or behavioral guide 
 # displayed to the user when the framework operates under strict interactive modes.
@@ -379,7 +434,7 @@ METAFLAG_tipinput["required"]="0"
 METAFLAG_tipinput["default"]=""
 METAFLAG_tipinput["enum"]=""
 METAFLAG_tipinput["assoc_keys"]=""
-METAFLAG_tipinput["min"]=""
+METAFLAG_tipinput["min"]="4"
 METAFLAG_tipinput["max"]="256"
 METAFLAG_tipinput["min_array"]=""
 METAFLAG_tipinput["max_array"]=""
@@ -388,6 +443,11 @@ METAFLAG_tipinput["description"]="Custom interactive question phrase displayed d
 METAFLAG_tipinput["tipinput"]=""
 METAFLAG_tipinput["validate"]=""
 METAFLAG_tipinput["transform"]=""
+
+CORE_METAFLAG_DEFAULTS["tipinput"]=""
+CORE_METAFLAG_DEFAULTS_ORDER+=("tipinput")
+
+
 
 # METAFLAG_validate captures a JSON array of downstream investigator function names.
 # Invoked at the absolute tail of validation loops to compute complex domain-specific rules.
@@ -398,7 +458,7 @@ METAFLAG_validate["type"]="function"
 METAFLAG_validate["array"]="1"
 METAFLAG_validate["assoc"]="0"
 METAFLAG_validate["required"]="0"
-METAFLAG_validate["default"]="[]"
+METAFLAG_validate["default"]=""
 METAFLAG_validate["enum"]=""
 METAFLAG_validate["assoc_keys"]=""
 METAFLAG_validate["min"]=""
@@ -406,10 +466,15 @@ METAFLAG_validate["max"]=""
 METAFLAG_validate["min_array"]=""
 METAFLAG_validate["max_array"]=""
 METAFLAG_validate["regex"]=""
-METAFLAG_validate["description"]="JSON array of dynamic function pointers processing deep user custom validation states."
+METAFLAG_validate["description"]="Pointer to indexed array with all validate functions to call for this value."
 METAFLAG_validate["tipinput"]=""
 METAFLAG_validate["validate"]=""
 METAFLAG_validate["transform"]=""
+
+CORE_METAFLAG_DEFAULTS["validate"]=""
+CORE_METAFLAG_DEFAULTS_ORDER+=("validate")
+
+
 
 # METAFLAG_transform captures a JSON array of downstream transformation function names.
 # Invoked only after validation succeeds and before the final parsed value is stored.
@@ -420,7 +485,7 @@ METAFLAG_transform["type"]="function"
 METAFLAG_transform["array"]="1"
 METAFLAG_transform["assoc"]="0"
 METAFLAG_transform["required"]="0"
-METAFLAG_transform["default"]="[]"
+METAFLAG_transform["default"]=""
 METAFLAG_transform["enum"]=""
 METAFLAG_transform["assoc_keys"]=""
 METAFLAG_transform["min"]=""
@@ -428,7 +493,36 @@ METAFLAG_transform["max"]=""
 METAFLAG_transform["min_array"]=""
 METAFLAG_transform["max_array"]=""
 METAFLAG_transform["regex"]=""
-METAFLAG_transform["description"]="JSON array of dynamic function pointers processing post-validation value transformations."
+METAFLAG_transform["description"]="Pointer to indexed array with all transformation functions to use in this value after validation."
 METAFLAG_transform["tipinput"]=""
 METAFLAG_transform["validate"]=""
 METAFLAG_transform["transform"]=""
+
+CORE_METAFLAG_DEFAULTS["transform"]=""
+CORE_METAFLAG_DEFAULTS_ORDER+=("transform")
+
+
+
+#shell_cli_flag_rules_finalize_register "METAFLAG" "CORE_METAFLAG_DEFAULTS_ORDER"
+
+
+
+# # ------------------------------------------------------------------------------
+# # PHASE 1: ATOMIC METADATA VALIDATION (FOLLOWING STRICT SPECIFIED ORDER)
+# # ------------------------------------------------------------------------------
+# for meta_key in "${CORE_METAFLAG_DEFAULTS_ORDER[@]}"; do
+#   local current_meta_val="${ref_flag["$meta_key"]}"
+#   local meta_spec_array="METAFLAG_${meta_key}"
+
+#   # Verify if the framework schema matrix for the target meta-key exists
+#   if ! declare -p "$meta_spec_array" &>/dev/null; then
+#     VALIDATION_ERROR_MSG="${err_prefix} :: internal engine layout error. Schema array '${meta_spec_array}' is missing."
+#     return 1
+#   fi
+
+#   # Invoke the central engine validator to check the developer's assignment
+#   if ! shell_cli_flag_validate_value "$current_meta_val" "$meta_spec_array"; then
+#     VALIDATION_ERROR_MSG="${VALIDATION_ERROR_MSG} \n[ERR] ${err_prefix}[ key: ${meta_key} ] :: invalid design property."
+#     return 1
+#   fi
+# done

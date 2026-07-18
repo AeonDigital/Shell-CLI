@@ -12,7 +12,8 @@
 #   - None: Consumes structured target parsed inputs parameters.
 #
 # Returns:
-#   - 0: Validation constraints validated completely.
+#   - 0: If all system configurations and parameters pass strict validations.
+#   - 1: If contextual boundaries or safety policies are violated.
 cmd_${TARGET_LOWER_PKG}_ores_${TARGET_CMD}_main_validate() {
   return 0
 }
@@ -24,6 +25,7 @@ cmd_${TARGET_LOWER_PKG}_ores_${TARGET_CMD}_main_validate() {
 #
 # Returns:
 #   - 0: Successful macro task delivery.
+#   - 1: If any critical execution fails.
 cmd_${TARGET_LOWER_PKG}_ores_${TARGET_CMD}_action() {
   echo "================================================================================"
   echo "[RUN] Executing command action context target logic..."

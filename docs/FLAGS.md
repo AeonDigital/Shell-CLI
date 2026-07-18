@@ -100,7 +100,7 @@ FLAG_scope["long"]="scope"
 
 Specifies the data type classification enforcing the validation routing.
 
-*   **Data Type:** `enum` (Pointer to `CORE_SUPPORTED_TYPES`)
+*   **Data Type:** `enum` (Pointer to `CORE_METAFLAG_TYPES`)
 *   **Default:** `"string"`
 *   **Accepted Value Tokens:** `string`, `int`, `float`, `bool`, `json`, 
     `function`, `date`, `time`, `datetime`, `email`, `enum`, `path`, 
@@ -131,7 +131,7 @@ Declares whether the parameter processes a flat iterable collection list.
 *   **Engine Behavior:** If active (`1`), the engine expects the data format 
     `['val1', 'val2']`. It strips the bracket bounds and triggers a native 
     char-by-char state machine parser that extracts strings and populates a 
-    legitimate global Bash indexed array named `SHELL_CLI_VALIDATED_ARRAY`. It 
+    legitimate global Bash indexed array named `SHELL_CLI_NORMALIZATED_ARRAY`. It 
     then loops through the array and applies the full validation pipeline to 
     every element individually, including type checks, boundary checks, and 
     custom `validate` hooks. If `transform` is configured, each item is also 
@@ -171,7 +171,7 @@ dictionary.
     value through a specialized native linear JSON character-by-character state 
     parser (Machine State). This machine handles string escaping, strips 
     non-textual syntactical spaces, extracts pairs, and populates a true global 
-    Bash associative array named `SHELL_CLI_VALIDATED_ASSOC`. The framework then 
+    Bash associative array named `SHELL_CLI_NORMALIZATED_ASSOC`. The framework then 
     applies the full validation pipeline to every value inside the map 
     individually, including type checks, boundary checks, and custom `validate` 
     hooks. If `transform` is configured, each map value is also transformed 
@@ -287,10 +287,10 @@ in the map.
 *   **Data Type:** `string` (Comma-separated tokens)
 *   **Default:** `""`
 *   **Engine Behavior:** After the JSON parsing cycle populates
-    `SHELL_CLI_VALIDATED_ASSOC`, the engine splits this property, sorts the 
+    `SHELL_CLI_NORMALIZATED_ASSOC`, the engine splits this property, sorts the 
     expected keys alphabetically for deterministic tracking, and queries the 
     native map structure using high-performance internal memory checks: 
-    `[ -z "${SHELL_CLI_VALIDATED_ASSOC["$key"]+exists}" ]`.
+    `[ -z "${SHELL_CLI_NORMALIZATED_ASSOC["$key"]+exists}" ]`.
 *   **Compiler Constraint:** Mandates `assoc="1"`. Otherwise, causes an 
     orphaned design compiler error.
 
@@ -382,7 +382,7 @@ Restricts the minimum allowable count of elements within an active collection.
 *   **Data Type:** `int`
 *   **Default:** `""`
 *   **Engine Behavior:** Evaluates the length of the parsed array structure 
-    `${#SHELL_CLI_VALIDATED_ARRAY[@]}`.
+    `${#SHELL_CLI_NORMALIZATED_ARRAY[@]}`.
 *   **Compiler Constraint:** Mandates `array="1"`. If `array="0"`, this key 
     triggers an orphaned design `[ERR]`.
 
@@ -411,7 +411,7 @@ Restricts the maximum allowable count of elements within an active collection.
 *   **Data Type:** `int`
 *   **Default:** `""`
 *   **Engine Behavior:** Evaluates the length of the parsed array structure 
-     `${#SHELL_CLI_VALIDATED_ARRAY[@]}`. Setting `max_array="0"` forces the 
+     `${#SHELL_CLI_NORMALIZATED_ARRAY[@]}`. Setting `max_array="0"` forces the 
      array to remain completely empty.
 *   **Compiler Constraint:** Mandates `array="1"`. Rejects schemas where 
     `min_array` exceeds `max_array`.

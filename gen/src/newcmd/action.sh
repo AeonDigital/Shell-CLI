@@ -9,7 +9,7 @@
 # cmd_gen_ores_newcmd_main_validate enforces contextual pre-execution checks.
 #
 # Arguments:
-#   - None: Consumes global input variables maps directly.
+#   - None: Consumes structured target parsed inputs parameters.
 #
 # Returns:
 #   - 0: If all system configurations and parameters pass strict validations.
@@ -41,10 +41,10 @@ cmd_gen_ores_newcmd_main_validate() {
 }
 
 
-# cmd_gen_ores_newcmd_action orchestrates the dynamic scaffold engine flow.
+# cmd_gen_ores_newcmd_action orchestrates the core execution flow.
 #
 # Arguments:
-#   - None: Consumes structured configuration variables.
+#   - None: Business operations execution trigger point.
 #
 # Returns:
 #   - 0: On absolute multi-task initialization success with zero pipeline errors.

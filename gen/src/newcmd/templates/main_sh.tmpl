@@ -6,30 +6,26 @@
 #              Package Context: $TARGET_PKG
 # ==============================================================================
 
-# Export active packaging identity descriptors to downstream engine blocks
-export SHELL_CLI_CMD_ROOT_PATH="$(cd "$(dirname "${BASH_SOURCE}")" && pwd)"
-export SHELL_CLI_CMD_ACTIVE_PKG="${TARGET_PKG}"
+prepareCLIEnvironment() {
+  local rootPath="$(cd "$(dirname "${BASH_SOURCE}")" && pwd)"
+  if [ ! -f "${rootPath}/globals/utils.sh" ]; then
+    echo "[ERR] Critical Core Fault :: Corporate shared runtime utilities are missing at '${rootPath}/globals/utils.sh'."
+    exit 1
+  fi
 
+  . "${rootPath}/globals/utils.sh"
 
+  # ???
+  local SHELL_CLI_LOCAL_LOAD_MAIN_PKG_SRC="1" # LOAD LOCAL CORE
+  shell_cli_load_core_engine "$@"
 
-# Load active corporate shared runtime infrastructure components
-if [ -f "${SHELL_CLI_CMD_ROOT_PATH}/globals/utils.sh" ]; then
-  . "${SHELL_CLI_CMD_ROOT_PATH}/globals/utils.sh"
-else
-  echo "[ERR] Critical Core Fault :: Corporate shared runtime utilities are missing at '${SHELL_CLI_CMD_ROOT_PATH}/globals/utils.sh'."
-  exit 1
-fi
+  # ???
+  if ! shell_cli_load_active_command "$1" "${rootPath}"; then
+    exit 1
+  fi
+}
+prepareCLIEnvironment "$1"
 
-
-
-# Ensure engine package binary files dependencies are present in workspace context
-shell_cli_ensure_engine "$@"
-
-# Automatically source global assets followed by targeted sub-command file structures
-# Passing the root context path along with the absolute first operational user parameter ($1)
-if ! shell_cli_source_dir "${SHELL_CLI_ROOT_PATH}" "$1"; then
-  exit 1
-fi
 
 # Pass control directly to the central execution coordinator.
-shell_cli_run "${SHELL_CLI_ACTIVE_PKG}" "$@"
+shell_cli_run "$@"
