@@ -1,0 +1,9 @@
+{
+  "key1": "value1",
+  "key 2": "'val number two\nand now? this second line
+  will be \"parsed?'\"",
+  "key_3": true,
+  "k-4": 123,
+  "k5": 0.543,
+  "k6": 0.445
+}

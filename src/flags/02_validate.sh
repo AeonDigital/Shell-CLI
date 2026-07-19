@@ -1,310 +1,297 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: shell_cli/flags/02_flag_validate.sh
-# DESCRIPTION: Core verification primitives and structural validation library 
-#              processing native command-line data type compliance checks.
+# SCRIPT: shell_cli/flags/02_validate.sh
+# DESCRIPTION: 
 # ==============================================================================
 
-# shell_cli_flag_validate_string asserts structural text compliance and safety.
+#
+# GROUP 01 : Primitives
+
+# shell_cli_flag_validate_string validate 'string'.
 #
 # Arguments:
-#   - value: The raw input string payload to be evaluated.
-#   - aux: Optional auxiliary validation constraints configuration.
+#   - value: normalizated value.
+#   - aux: optional auxiliary configuration.
 #
 # Returns:
-#   - 0: If the text contains only printable characters and safe whitespace.
-#   - 1: If invisible malicious terminal control characters are detected.
+#   - 0: if the value is a valid representative of this type
+#   - 1: if the value is not a valid representative of this type.
+#   - 2: if the value contains any control characters.
 shell_cli_flag_validate_string() {
   local value="$1"
   local aux="$2"
 
-  # Strip allowed whitespace components (space, tabs, newline, carriage return)
-  # before evaluation to isolate potential malicious hidden control characters
-  local clean_text
-  clean_text=$(echo -n "$value" | tr -d '[:space:]')
-
   # Assert if any remaining invisible control character block is present
-  if [[ "$clean_text" =~ [[:cntrl:]] ]]; then
-    return 1
+  if [[ "$value" =~ [[:cntrl:]] ]]; then
+    return 2
   fi
 
   return 0
 }
 
-
-
-
-
-# shell_cli_flag_validate_int verifies whole numeric data layout compliance.
+# shell_cli_flag_validate_bool validate 'bool'.
 #
 # Arguments:
-#   - value: The raw input string payload to be evaluated.
-#   - aux: Optional auxiliary validation constraints configuration.
+#   - value: normalizated value.
+#   - aux: optional auxiliary configuration.
 #
 # Returns:
-#   - 0: If the payload matches a clean positive or negative integer sequence.
-#   - 1: If alphabetical characters or illegal decimals are intercepted.
-shell_cli_flag_validate_int() {
-  local value="$1"
-  local aux="$2"
-
-  # Enforce strict terminal and structural string safety first
-  if ! shell_cli_flag_validate_string "$value" "$aux"; then
-    return 1
-  fi
-
-  if [[ "$value" =~ ^-?[0-9]+$ ]]; then
-    return 0
-  fi
-
-  return 1
-}
-
-# shell_cli_flag_validate_float verifies decimal numeric data layout compliance.
-#
-# Arguments:
-#   - value: The raw input string payload to be evaluated.
-#   - aux: Optional auxiliary validation constraints configuration.
-#
-# Returns:
-#   - 0: If the payload matches a valid integer or a standard floating point.
-#   - 1: If character layouts break mathematical numeric formatting rules.
-shell_cli_flag_validate_float() {
-  local value="$1"
-  local aux="$2"
-
-  # Enforce strict terminal and structural string safety first
-  if ! shell_cli_flag_validate_string "$value" "$aux"; then
-    return 1
-  fi
-
-  if [[ "$value" =~ ^-?[0-9]+([.][0-9]+)?$ ]]; then
-    return 0
-  fi
-
-  return 1
-}
-
-# shell_cli_flag_validate_bool verifies structural boolean parameter conformity.
-#
-# Arguments:
-#   - value: The raw input string payload to be evaluated.
-#   - aux: Optional auxiliary validation constraints configuration.
-#
-# Returns:
-#   - 0: If the value perfectly matches true/false indicators (1 or 0).
-#   - 1: If the input resolves to unmapped or unsafe character states.
+#   - 0: if the value is a valid representative of this type
+#   - 1: if the value is not a valid representative of this type.
+#   - 2: if the value contains any control characters.
 shell_cli_flag_validate_bool() {
   local value="$1"
   local aux="$2"
 
   # Enforce strict terminal and structural string safety first
   if ! shell_cli_flag_validate_string "$value" "$aux"; then
+    return 2
+  fi
+
+  if [ "$value" != "1" ] && [ "$value" != "0" ]; then
     return 1
   fi
 
-  local lower_value="${value,,}"
-  
-  if [[ "$lower_value" =~ ^(1|0|true|false)$ ]]; then
-    if [[ "$lower_value" == "true" ]]; then
-      SHELL_CLI_VALIDATED_VALUE="1"
-    elif [[ "$lower_value" == "false" ]]; then
-      SHELL_CLI_VALIDATED_VALUE="0"
-    else
-      SHELL_CLI_VALIDATED_VALUE="$lower_value"
-    fi
-
-    return 0
-  fi
-
-  return 1
+  return 0
 }
 
-
-
-
-
-# shell_cli_flag_validate_date verifies and infers calendar tracking timelines.
+# shell_cli_flag_validate_int validate 'int'.
 #
 # Arguments:
-#   - value: The raw or partial input string payload to be evaluated.
-#   - aux: Optional auxiliary validation constraints configuration.
+#   - value: normalizated value.
+#   - aux: optional auxiliary configuration.
 #
 # Returns:
-#   - 0: If the sequence can be successfully inferred and represents a real day.
-#   - 1: If the input layout violates partial formatting rules or is impossible.
-shell_cli_flag_validate_date() {
+#   - 0: if the value is a valid representative of this type
+#   - 1: if the value is not a valid representative of this type.
+#   - 2: if the value contains any control characters.
+shell_cli_flag_validate_int() {
   local value="$1"
   local aux="$2"
 
   # Enforce strict terminal and structural string safety first
   if ! shell_cli_flag_validate_string "$value" "$aux"; then
+    return 2
+  fi
+
+  if [[ ! "$value" =~ ^-?[0-9]+$ ]]; then
     return 1
   fi
 
-  local inferred="$value"
-
-  # Infer based on input length boundaries
-  case "${#value}" in
-    4)
-      # YYYY -> YYYY-01-01
-      [[ "$value" =~ ^[0-9]{4}$ ]] || return 1
-      inferred="${value}-01-01"
-      ;;
-    7)
-      # YYYY-MM -> YYYY-MM-01
-      [[ "$value" =~ ^[0-9]{4}-[0-9]{2}$ ]] || return 1
-      inferred="${value}-01"
-      ;;
-    10)
-      # YYYY-MM-DD -> Fully formed
-      [[ "$value" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || return 1
-      ;;
-    *)
-      return 1 
-      ;;
-  esac
-
-  # Assert real calendar compliance mapping via native system clock tools
-  if date -d "$inferred" +%Y-%m-%d &>/dev/null; then
-    SHELL_CLI_VALIDATED_VALUE="$inferred"
-    return 0
-  elif date -j -f "%Y-%m-%d" "$inferred" +%Y-%m-%d &>/dev/null; then
-    SHELL_CLI_VALIDATED_VALUE="$inferred"
-    return 0
-  fi
-
-  return 1
+  return 0
 }
 
-# shell_cli_flag_validate_time verifies and infers chronological pattern constraints.
+# shell_cli_flag_validate_float validate 'float'.
 #
 # Arguments:
-#   - value: The raw or partial input string payload to be evaluated.
-#   - aux: Optional auxiliary validation constraints configuration.
+#   - value: normalizated value.
+#   - aux: optional auxiliary configuration.
 #
 # Returns:
-#   - 0: If the sequence can be successfully inferred and represents a real time.
-#   - 1: If chronological layout boundaries or numerical patterns fail format.
+#   - 0: if the value is a valid representative of this type
+#   - 1: if the value is not a valid representative of this type.
+#   - 2: if the value contains any control characters.
+shell_cli_flag_validate_float() {
+  local value="$1"
+  local aux="$2"
+
+  # Enforce strict terminal and structural string safety first
+  if ! shell_cli_flag_validate_string "$value" "$aux"; then
+    return 2
+  fi
+
+  if [[ ! "$value" =~ ^-?[0-9]+([.][0-9]+)?$ ]]; then
+    return 1
+  fi
+
+  return 0
+}
+
+
+
+
+
+#
+# GROUP 02 : Date and Time
+
+# shell_cli_flag_validate_time validate 'time' (HH:MM:SS).
+#
+# Arguments:
+#   - value: normalizated value.
+#   - aux: optional auxiliary configuration.
+#
+# Returns:
+#   - 0: if the value is a valid representative of this type
+#   - 1: if the value is not a valid representative of this type.
+#   - 2: if the value contains any control characters.
 shell_cli_flag_validate_time() {
   local value="$1"
   local aux="$2"
 
   # Enforce strict terminal and structural string safety first
   if ! shell_cli_flag_validate_string "$value" "$aux"; then
+    return 2
+  fi
+
+  if [ "${#value}" != "8" ]; then
     return 1
   fi
 
-  local inferred="$value"
+  local ts=$(date -d "0001-01-01 $value" +%s 2>/dev/null || date -j -f "%Y-%m-%d %H:%M:%S" "0001-01-01 $value" +%s 2>/dev/null)
+  local check_val=$(date -d "@$ts" +%H:%M:%S 2>/dev/null || date -j -r "$ts" +%H:%M:%S 2>/dev/null)
 
-  case "${#value}" in
-    2)
-      # HH -> HH:00:00
-      [[ "$value" =~ ^[0-9]{2}$ ]] || return 1
-      inferred="${value}:00:00"
-      ;;
-    5)
-      # HH:MM -> HH:MM:00
-      [[ "$value" =~ ^[0-9]{2}:[0-9]{2}$ ]] || return 1
-      inferred="${value}:00"
-      ;;
-    8)
-      # HH:MM:SS -> Fully formed
-      [[ "$value" =~ ^[0-9]{2}:[0-9]{2}:[0-9]{2}$ ]] || return 1
-      ;;
-    *)
-      return 1 
-      ;;
-  esac
-
-  # Strict chronological time bounds check on the fully inferred string
-  local time_regex="^([0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$"
-  if [[ "$inferred" =~ $time_regex ]]; then
-    SHELL_CLI_VALIDATED_VALUE="$inferred"
-    return 0
+  if [ -z "$ts" ] || [ "$value" != "$check_val" ]; then
+    return 1
   fi
 
-  return 1
+  return 0
 }
 
-# shell_cli_flag_validate_datetime verifies combined calendar timestamp constraints.
+# shell_cli_flag_validate_date validate 'date' (YYYY-MM-DD).
 #
 # Arguments:
-#   - value: The raw or partial input string payload to be evaluated.
-#   - aux: Optional auxiliary validation constraints configuration.
+#   - value: normalizated value.
+#   - aux: optional auxiliary configuration.
 #
 # Returns:
-#   - 0: If the sequence satisfies or infers a real unified timestamp.
-#   - 1: If the timestamp breaks layout rules or contains impossible dates.
+#   - 0: if the value is a valid representative of this type
+#   - 1: if the value is not a valid representative of this type.
+#   - 2: if the value contains any control characters.
+shell_cli_flag_validate_date() {
+  local value="$1"
+  local aux="$2"
+
+  # Enforce strict terminal and structural string safety first
+  if ! shell_cli_flag_validate_string "$value" "$aux"; then
+    return 2
+  fi
+
+  if [ "${#value}" != "10" ]; then
+    return 1
+  fi
+
+  local ts=$(date -d "$value" +%s 2>/dev/null || date -j -f "%Y-%m-%d" "$value" +%s 2>/dev/null)
+  local check_val=$(date -d "@$ts" +%Y-%m-%d 2>/dev/null || date -j -r "$ts" +%Y-%m-%d 2>/dev/null)
+
+  if [ -z "$ts" ] || [ "$value" != "$check_val" ]; then
+    return 1
+  fi
+
+  return 0
+}
+
+# shell_cli_flag_validate_datetime validate 'datetime' (YYYY-MM-DD HH:MM:SS).
+#
+# Arguments:
+#   - value: normalizated value.
+#   - aux: optional auxiliary configuration.
+#
+# Returns:
+#   - 0: if the value is a valid representative of this type
+#   - 1: if the value is not a valid representative of this type.
+#   - 2: if the value contains any control characters.
 shell_cli_flag_validate_datetime() {
   local value="$1"
   local aux="$2"
 
   # Enforce strict terminal and structural string safety first
   if ! shell_cli_flag_validate_string "$value" "$aux"; then
+    return 2
+  fi
+
+  if [ "${#value}" != "19" ]; then
     return 1
   fi
 
-  local date_part=""
-  local time_part=""
-
-  # Separate input into date and time tokens if space delimiter exists
-  if [[ "$value" == *[[:space:]]* ]]; then
-    date_part="${value%% *}"
-    time_part="${value#* }"
-  else
-    # If no space, evaluate if input belongs to date portion or time portion
-    if [[ "$value" == *:* ]]; then
-      date_part="0001-01-01"
-      time_part="$value"
-    else
-      date_part="$value"
-      time_part="00:00:00"
-    fi
-  fi
-
-  # Delegate inference and validation to sub-components cleanly
-  if ! shell_cli_flag_validate_date "$date_part"; then
+  if [[ ! "$value" =~ ^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[0-9]|3)[[:space:]]([0-1][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$ ]]; then
     return 1
   fi
-  local clean_date="$SHELL_CLI_VALIDATED_VALUE"
 
-  if ! shell_cli_flag_validate_time "$time_part"; then
+  local ts=$(date -d "$value" +%s 2>/dev/null || date -j -f "%Y-%m-%d %H:%M:%S" "$value" +%s 2>/dev/null)
+  local check_val=$(date -d "@$ts" "+%Y-%m-%d %H:%M:%S" 2>/dev/null || date -j -r "$ts" "+%Y-%m-%d %H:%M:%S" 2>/dev/null)
+
+  if [ -z "$ts" ] || [ "$value" != "$check_val" ]; then
     return 1
   fi
-  local clean_time="$SHELL_CLI_VALIDATED_VALUE"
 
-  # Consolidate inferred results back into global pipeline registers
-  SHELL_CLI_VALIDATED_VALUE="${clean_date} ${clean_time}"
   return 0
 }
 
-# shell_cli_flag_validate_email verifies internet mailbox address structure masks.
+
+
+
+
+#
+# GROUP 03 : Structured
+
+# shell_cli_flag_validate_email validate 'email'.
 #
 # Arguments:
-#   - value: The raw input string payload to be evaluated.
-#   - aux: Optional auxiliary validation constraints configuration.
+#   - value: normalizated value.
+#   - aux: optional auxiliary configuration.
 #
 # Returns:
-#   - 0: If the target sequence satisfies a valid standard email address mask.
-#   - 1: If structural domain names, identifiers, or at-sign boundaries fail.
+#   - 0: if the value is a valid representative of this type
+#   - 1: if the value is not a valid representative of this type.
+#   - 2: if the value contains any control characters.
 shell_cli_flag_validate_email() {
   local value="$1"
   local aux="$2"
 
   # Enforce strict terminal and structural string safety first
   if ! shell_cli_flag_validate_string "$value" "$aux"; then
-    return 1
+    return 2
   fi
 
   local email_regex="^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
-  if [[ "$value" =~ $email_regex ]]; then
-    return 0
+  if [[ ! "$value" =~ $email_regex ]]; then
+    return 1
   fi
+
+  return 0
+}
+
+# shell_cli_flag_validate_enum validate 'enum'.
+#
+# Arguments:
+#   - value: normalizated value.
+#   - aux: assoc name with enum values (match with keys or values).
+#
+# Returns:
+#   - 0: if the value is a valid representative of this type
+#   - 1: if the value is not a valid representative of this type.
+#   - 2: if the value contains any control characters.
+shell_cli_flag_validate_enum() {
+  local value="$1"
+  local aux="$2"
+
+  # Enforce strict terminal and structural string safety first
+  if ! shell_cli_flag_validate_string "$value" "$aux"; then
+    return 2
+  fi
+
+  local str_declare=$(declare -p "$aux" 2>/dev/null)
+  if [[ ! "$str_declare" =~ ^"declare -A" ]]; then
+    return 1
+  fi
+
+  # Check if the input exists as a value or an aliased group literal string
+  local -n enum_assoc="$aux"
+  local match="0"
+  local key=""
+  local val=""
+  for key in "${!enum_assoc[@]}"; do
+    val="${enum_assoc[$key]}"
+    if [ "$value" == "$key" ] || [ "$value" == "$val" ]; then
+      return 0
+    fi
+  done
 
   return 1
 }
+
+
 
 # shell_cli_flag_validate_function validates that the supplied value is the name of
 # an existing shell function.
@@ -331,36 +318,7 @@ shell_cli_flag_validate_function() {
   return 1
 }
 
-# shell_cli_flag_validate_enum evaluates membership against active dictionary arrays.
-#
-# Arguments:
-#   - value: The raw input string payload to be evaluated.
-#   - aux: The target global index dictionary array name acting as an enum pointer.
-#
-# Returns:
-#   - 0: If the target input matches one of the authorized array keys/values.
-#   - 1: If the dictionary reference is empty or membership evaluation fails.
-shell_cli_flag_validate_enum() {
-  local value="$1"
-  local aux="$2"
 
-  # Enforce strict terminal and structural string safety first
-  if ! shell_cli_flag_validate_string "$value" "$aux"; then
-    return 1
-  fi
-
-  # Establish a native reference alias linking directly to the global dictionary array
-  local -n target_array="$aux"
-
-  # Check if the input exists as a value or an aliased group literal string
-  for item in "${target_array[@]}"; do
-    if [ "$value" = "$item" ]; then
-      return 0
-    fi
-  done
-
-  return 1
-}
 
 # shell_cli_flag_validate_array validates pure JSON arrays at the root level.
 #

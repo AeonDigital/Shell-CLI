@@ -31,6 +31,8 @@ declare -ga SHELL_CLI_NORMALIZATED_ARRAY=()
 
 # Global associative array mapping the clean key-value pairs of an evaluated dictionary.
 declare -gA SHELL_CLI_NORMALIZATED_ASSOC=()
+# Keep the order of declarated keys when parse a json string
+declare -ga SHELL_CLI_NORMALIZATED_ASSOC_ORDER=()
 
 # Global variable applied across execution pipelines to store the specific failure
 # or violation reasons reported by internal validation loops.
