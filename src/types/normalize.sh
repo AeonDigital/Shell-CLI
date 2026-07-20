@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: shell_cli/flags/02_normalize_types.sh
+# SCRIPT: shell_cli/types/normalize.sh
 # DESCRIPTION: 
 # ==============================================================================
 

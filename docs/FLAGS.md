@@ -100,7 +100,7 @@ FLAG_scope["long"]="scope"
 
 Specifies the data type classification enforcing the validation routing.
 
-*   **Data Type:** `enum` (Pointer to `CORE_METAFLAG_TYPES`)
+*   **Data Type:** `enum` (Pointer to `SHELL_CLI_METAFLAG_TYPES`)
 *   **Default:** `"string"`
 *   **Accepted Value Tokens:** `string`, `int`, `float`, `bool`, `json`, 
     `function`, `date`, `time`, `datetime`, `email`, `enum`, `path`, 

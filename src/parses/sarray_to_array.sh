@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: shell_cli/flags/00_parse_sarray_to_array.sh
+# SCRIPT: shell_cli/parses/sarray_to_array.sh
 # DESCRIPTION: 
 # ==============================================================================
 

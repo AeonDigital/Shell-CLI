@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: shell_cli/flags/00_parse_sjson_to_assoc.sh
+# SCRIPT: shell_cli/parses/sjson_to_assoc.sh
 # DESCRIPTION: 
 # ==============================================================================
 

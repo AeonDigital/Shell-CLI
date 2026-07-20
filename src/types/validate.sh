@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: shell_cli/flags/03_validate_types.sh
+# SCRIPT: shell_cli/types/validate.sh
 # DESCRIPTION: 
 # ==============================================================================
 

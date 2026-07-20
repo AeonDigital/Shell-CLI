@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: shell_cli/flags/00_types.sh
+# SCRIPT: shell_cli/types/types.sh
 # DESCRIPTION: 
 # ==============================================================================
 
 # Global array indexing all primitive, structured, and system types supported 
 # by the core engine.
-declare -gA CORE_METAFLAG_TYPES=(
+declare -gA SHELL_CLI_METAFLAG_TYPES=(
 
   #
   # GROUP 01 : Primitives
