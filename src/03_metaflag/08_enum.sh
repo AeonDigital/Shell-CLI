@@ -8,8 +8,8 @@
 # ==============================================================================
 
 declare -gA METAFLAG_enum=()
-METAFLAG_enum["short"]=""
 METAFLAG_enum["long"]="enum"
+METAFLAG_enum["short"]=""
 METAFLAG_enum["type"]="string"
 METAFLAG_enum["array"]="1"
 METAFLAG_enum["assoc"]="0"

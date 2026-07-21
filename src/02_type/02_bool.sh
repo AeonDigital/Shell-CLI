@@ -16,7 +16,7 @@
 #   "0" for false/0
 #   or the original string otherwise.
 shell_cli_type_normalize_bool() {
-  local value=$(shell_cli_type_normalize_string_full "${1,,}")
+  local value=$(shell_cli_type_normalize_string_code_text_trim "${1,,}")
 
   case "$value" in
     0|false) value="0"  ;;

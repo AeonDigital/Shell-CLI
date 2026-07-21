@@ -8,8 +8,8 @@
 # ==============================================================================
 
 declare -gA METAFLAG_tipinput=()
-METAFLAG_tipinput["short"]=""
 METAFLAG_tipinput["long"]="tipinput"
+METAFLAG_tipinput["short"]=""
 METAFLAG_tipinput["type"]="string"
 METAFLAG_tipinput["array"]="0"
 METAFLAG_tipinput["assoc"]="0"

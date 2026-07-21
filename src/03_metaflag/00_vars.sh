@@ -54,3 +54,51 @@ SHELL_CLI_METAFLAG_DEFAULT_ORDER+=("description")
 SHELL_CLI_METAFLAG_DEFAULT_ORDER+=("tipinput")
 SHELL_CLI_METAFLAG_DEFAULT_ORDER+=("validate")
 SHELL_CLI_METAFLAG_DEFAULT_ORDER+=("transform")
+
+
+# Global Associative array mapping the normalization and validation 
+# method to be used for flag values ​​of type 'string'.
+#
+# Standardization code:
+#
+# - CODE_CTRL : targets all control chars except \r, \t, and \n
+# - TEXT_CTRL : targets all text chars like \r, \t, and \n
+# -      TRIM : performa a trim [ used only for normalization step ]
+#
+#
+# Usage options:
+#
+# - code_text_trim : CODE_CTRL + TEXT_CTRL + TRIM
+# -      code_text : CODE_CTRL + TEXT_CTRL
+# -      code_trim : CODE_CTRL + TRIM
+# -           code : CODE_CTRL
+# -           trim : TRIM
+# -           none : 
+#
+# Usage example:
+#
+# - For single value field (most common use) : 'code_text_trim'
+# - For single value that's accept empty spaces before and/or after 
+#   the main value : 'code_text'
+# - For multiline texts and/or when the field value have to mantain 
+#   identation with spaces or tabs : 'code_trim'
+# - For fields that's receive code controls.
+declare -gA SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE=()
+SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["long"]="code_text_trim"
+SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["short"]="code_text_trim"
+SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["type"]="code_text_trim"
+SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["array"]="code_text_trim"
+SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["assoc"]="code_text_trim"
+SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["required"]="code_text_trim"
+SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["default"]="code_text"
+SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["enum"]="code_text"
+SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["assoc_keys"]="code_text"
+SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["min"]="code_text_trim"
+SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["max"]="code_text_trim"
+SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["min_array"]="code_text_trim"
+SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["max_array"]="code_text_trim"
+SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["regex"]="code_text"
+SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["description"]="code_text"
+SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["tipinput"]="code_text"
+SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["validate"]="code_text"
+SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["transform"]="code_text"

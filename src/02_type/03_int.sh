@@ -14,7 +14,7 @@
 # - Outputs normalizated value.
 #   or the original string otherwise.
 shell_cli_type_normalize_int() {
-  shell_cli_type_normalize_string_full "${1}"
+  shell_cli_type_normalize_string_code_text_trim "${1}"
 }
 
 

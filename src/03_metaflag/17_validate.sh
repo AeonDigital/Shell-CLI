@@ -8,8 +8,8 @@
 # ==============================================================================
 
 declare -gA METAFLAG_validate=()
-METAFLAG_validate["short"]=""
 METAFLAG_validate["long"]="validate"
+METAFLAG_validate["short"]=""
 METAFLAG_validate["type"]="function"
 METAFLAG_validate["array"]="1"
 METAFLAG_validate["assoc"]="0"

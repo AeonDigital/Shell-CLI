@@ -8,8 +8,8 @@
 # ==============================================================================
 
 declare -gA METAFLAG_default=()
-METAFLAG_default["short"]=""
 METAFLAG_default["long"]="default"
+METAFLAG_default["short"]=""
 METAFLAG_default["type"]="string"
 METAFLAG_default["array"]="0"
 METAFLAG_default["assoc"]="0"

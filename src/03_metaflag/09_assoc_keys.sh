@@ -8,8 +8,8 @@
 # ==============================================================================
 
 declare -gA METAFLAG_assoc_keys=()
-METAFLAG_assoc_keys["short"]=""
 METAFLAG_assoc_keys["long"]="assoc_keys"
+METAFLAG_assoc_keys["short"]=""
 METAFLAG_assoc_keys["type"]="string"
 METAFLAG_assoc_keys["array"]="1"
 METAFLAG_assoc_keys["assoc"]="0"

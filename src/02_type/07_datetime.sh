@@ -15,7 +15,7 @@
 #   date in YYYY-MM-DD HH:MM:SS format
 #   or the original string otherwise.
 shell_cli_type_normalize_datetime() {
-  local value=$(shell_cli_type_normalize_string_full "${1}")
+  local value=$(shell_cli_type_normalize_string_code_text_trim "${1}")
   local date_part=""
   local time_part=""
 

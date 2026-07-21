@@ -8,8 +8,8 @@
 # ==============================================================================
 
 declare -gA METAFLAG_type=()
-METAFLAG_type["short"]=""
 METAFLAG_type["long"]="type"
+METAFLAG_type["short"]=""
 METAFLAG_type["type"]="enum"
 METAFLAG_type["array"]="0"
 METAFLAG_type["assoc"]="0"

@@ -8,8 +8,8 @@
 # ==============================================================================
 
 declare -gA METAFLAG_short=()
-METAFLAG_short["short"]=""
 METAFLAG_short["long"]="short"
+METAFLAG_short["short"]=""
 METAFLAG_short["type"]="string"
 METAFLAG_short["array"]="0"
 METAFLAG_short["assoc"]="0"

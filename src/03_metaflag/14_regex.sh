@@ -8,8 +8,8 @@
 # ==============================================================================
 
 declare -gA METAFLAG_regex=()
-METAFLAG_regex["short"]=""
 METAFLAG_regex["long"]="regex"
+METAFLAG_regex["short"]=""
 METAFLAG_regex["type"]="string"
 METAFLAG_regex["array"]="0"
 METAFLAG_regex["assoc"]="0"

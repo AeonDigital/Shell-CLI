@@ -8,8 +8,8 @@
 # ==============================================================================
 
 declare -gA METAFLAG_required=()
-METAFLAG_required["short"]=""
 METAFLAG_required["long"]="required"
+METAFLAG_required["short"]=""
 METAFLAG_required["type"]="bool"
 METAFLAG_required["array"]="0"
 METAFLAG_required["assoc"]="0"

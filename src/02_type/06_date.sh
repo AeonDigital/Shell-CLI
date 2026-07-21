@@ -15,7 +15,7 @@
 #   date in YYYY-MM-DD format
 #   or the original string otherwise.
 shell_cli_type_normalize_date() {
-  local value=$(shell_cli_type_normalize_string_full "${1}")
+  local value=$(shell_cli_type_normalize_string_code_text_trim "${1}")
 
   case "${#value}" in
     4)  value="${value}-01-01"  ;; # YYYY     -> YYYY-01-01

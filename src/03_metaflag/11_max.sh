@@ -8,8 +8,8 @@
 # ==============================================================================
 
 declare -gA METAFLAG_max=()
-METAFLAG_max["short"]=""
 METAFLAG_max["long"]="max"
+METAFLAG_max["short"]=""
 METAFLAG_max["type"]="string"
 METAFLAG_max["array"]="0"
 METAFLAG_max["assoc"]="0"

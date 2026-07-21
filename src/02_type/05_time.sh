@@ -15,7 +15,7 @@
 #   time in HH:MM:SS format
 #   or the original string otherwise.
 shell_cli_type_normalize_time() {
-  local value=$(shell_cli_type_normalize_string_trim "${1}")
+  local value=$(shell_cli_type_normalize_string_code_text_trim "${1}")
 
   case "${#value}" in
     2) value="${value}:00:00" ;; # HH     -> HH:00:00

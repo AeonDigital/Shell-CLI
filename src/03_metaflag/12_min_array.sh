@@ -8,8 +8,8 @@
 # ==============================================================================
 
 declare -gA METAFLAG_min_array=()
-METAFLAG_min_array["short"]=""
 METAFLAG_min_array["long"]="min_array"
+METAFLAG_min_array["short"]=""
 METAFLAG_min_array["type"]="int"
 METAFLAG_min_array["array"]="0"
 METAFLAG_min_array["assoc"]="0"

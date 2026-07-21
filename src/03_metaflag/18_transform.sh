@@ -8,8 +8,8 @@
 # ==============================================================================
 
 declare -gA METAFLAG_transform=()
-METAFLAG_transform["short"]=""
 METAFLAG_transform["long"]="transform"
+METAFLAG_transform["short"]=""
 METAFLAG_transform["type"]="function"
 METAFLAG_transform["array"]="1"
 METAFLAG_transform["assoc"]="0"

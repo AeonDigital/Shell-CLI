@@ -48,8 +48,14 @@ shell_cli_flag_check_rules() {
 
 
   local fpropNormalizeFN=""
-  local fpropNormalizeStringSubType=""
   local fpropValidateFN=""
+
+  local fpropNormalizeStringRules=""  
+  local fpropValidateStringRules=""
+
+  local fpropNormalizatedValue=""
+  local fpropValidateStatus=""
+
 
   for fpropName in "${SHELL_CLI_METAFLAG_DEFAULT_ORDER[@]}"; do
     fpropValue="${flagAssoc["${fpropName}"]}"
@@ -58,7 +64,25 @@ shell_cli_flag_check_rules() {
     local metaFlagType="${metaFlag["type"]}"
 
     fpropNormalizeFN="shell_cli_type_normalize_${metaFlagType}"
-    "${fpropNormalizeFN}" "${fpropValue}"
+    fpropValidateFN="shell_cli_type_validate_${metaFlagType}"
+
+    if [ "$metaFlagType" = "string" ]; then
+      fpropNormalizeStringRules="${SHELL_CLI_METAFLAG_NORMALIZE_STRING_TYPE["${fpropName}"]}"
+      fpropValidateStringRules="${fpropNormalizeStringRules/_trim/}"
+
+      fpropNormalizeFN+="_${fpropNormalizeStringRules}"
+      fpropValidateFN+="_${fpropValidateStringRules}"
+    fi
+
+    fpropNormalizatedValue=$("${fpropNormalizeFN}" "${fpropValue}")
+    fpropValidateStatus=$("${fpropValidateFN}" "$fpropNormalizatedValue"; echo $?)
+    if [ "${fpropValidateStatus}" != 0 ]; then
+      SHELL_CLI_FLAG_CHECK_RULES_ERR_MESSAGE="invalid flag '${fpropName}'; given '${fpropNormalizatedValue}'"
+      if [ "${fpropValidateStatus}" = "10" ]; then
+        SHELL_CLI_FLAG_CHECK_RULES_ERR_MESSAGE+=" (remove control characters)"
+      fi
+      return "$fpropValidateStatus"
+    fi
   done
 
   return 0
