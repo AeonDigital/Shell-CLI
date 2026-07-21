@@ -518,9 +518,9 @@ shell_cli_metaflag_validate() {
 #   fi
 
 #   # Iteratively evaluate and apply official system fallbacks using data-driven keys
-#   for key in "${!SHELL_CLI_METAFLAG_DEFAULTS[@]}"; do
+#   for key in "${!SHELL_CLI_METAFLAG_DEFAULT[@]}"; do
 #     if [ -z "${assoc_ref["$key"]}" ]; then
-#       assoc_ref["$key"]="${SHELL_CLI_METAFLAG_DEFAULTS["$key"]}"
+#       assoc_ref["$key"]="${SHELL_CLI_METAFLAG_DEFAULT["$key"]}"
 #     fi
 #   done
 

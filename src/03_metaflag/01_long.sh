@@ -35,12 +35,19 @@ METAFLAG_long["transform"]=""
 # - fval: value (normalizated and validate by type).
 # - fassoc: name of associative array with all flag definitions.
 #
+# Note:
+# If validation is successful, it adds a '__cross_min_max' key indicating that 
+# this validation has already been performed.
+#
 # Returns:
 # - 0: if the value can be used in this flag.
 # - 1: if the value cannot be used in this flag.
+#      In this case, an error message will be stored in 
+#      'SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE'
 shell_cli_metaflag_validate_long() {
   local fval="$1"
   local fassoc="$2"
+  SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE=""
 
   if [ "$fval" = "" ]; then
     SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="cannot be empty"

@@ -5,14 +5,14 @@
 # DESCRIPTION: 
 # ==============================================================================
 
-#shell_cli_flag_rules_finalize_register "METAFLAG" "SHELL_CLI_METAFLAG_DEFAULTS_ORDER"
+#shell_cli_flag_rules_finalize_register "METAFLAG" "SHELL_CLI_METAFLAG_DEFAULT_ORDER"
 
 
 
 # # ------------------------------------------------------------------------------
 # # PHASE 1: ATOMIC METADATA VALIDATION (FOLLOWING STRICT SPECIFIED ORDER)
 # # ------------------------------------------------------------------------------
-# for meta_key in "${SHELL_CLI_METAFLAG_DEFAULTS_ORDER[@]}"; do
+# for meta_key in "${SHELL_CLI_METAFLAG_DEFAULT_ORDER[@]}"; do
 #   local current_meta_val="${ref_flag["$meta_key"]}"
 #   local meta_spec_array="METAFLAG_${meta_key}"
 
@@ -67,9 +67,9 @@ shell_cli_flag_rules_normalize_all() {
   fi
 
   # Iteratively evaluate and apply official system fallbacks using data-driven keys
-  for key in "${!SHELL_CLI_METAFLAG_DEFAULTS[@]}"; do
+  for key in "${!SHELL_CLI_METAFLAG_DEFAULT[@]}"; do
     if [ -z "${assoc_ref["$key"]}" ]; then
-      assoc_ref["$key"]="${SHELL_CLI_METAFLAG_DEFAULTS["$key"]}"
+      assoc_ref["$key"]="${SHELL_CLI_METAFLAG_DEFAULT["$key"]}"
     fi
   done
 

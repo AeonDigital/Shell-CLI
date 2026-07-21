@@ -109,12 +109,12 @@ _shell_cli_runtime_compile_single_flag() {
 
   # Step A: Ingestion and Fallback Compilation (Inline Fill Paradigm)
   local current_meta_key
-  for current_meta_key in "${SHELL_CLI_METAFLAG_DEFAULTS_ORDER[@]}"; do
+  for current_meta_key in "${SHELL_CLI_METAFLAG_DEFAULT_ORDER[@]}"; do
     local indirect_flag_ref="${src_flag_array_name}[\"${current_meta_key}\"]"
     local source_value="${!indirect_flag_ref}"
     
     if [ -z "$source_value" ]; then
-      local fallback_ref="SHELL_CLI_METAFLAG_DEFAULTS[\"${current_meta_key}\"]"
+      local fallback_ref="SHELL_CLI_METAFLAG_DEFAULT[\"${current_meta_key}\"]"
       source_value="${!fallback_ref}"
     fi
 

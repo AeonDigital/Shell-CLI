@@ -38,9 +38,12 @@ METAFLAG_assoc["transform"]=""
 # Returns:
 # - 0: if the value can be used in this flag.
 # - 1: if the value cannot be used in this flag.
+#      In this case, an error message will be stored in 
+#      'SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE'
 shell_cli_metaflag_validate_assoc() {
   local fval="$1"
   local fassoc="$2"
+  SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE=""
 
   if [ "$fval" = "" ]; then
     SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="cannot be empty"

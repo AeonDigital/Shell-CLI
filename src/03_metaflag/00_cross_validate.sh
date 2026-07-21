@@ -21,6 +21,7 @@
 shell_cli_metaflag_cross_validate_min_max() {
   local fassoc="$2"
   local -n __assoc="${fassoc}"
+  SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE=""
 
   if [ "${__assoc["__cross_min_max"]}" == "1" ]; then
     return 0
@@ -94,6 +95,7 @@ shell_cli_metaflag_cross_validate_min_max() {
 shell_cli_metaflag_cross_validate_min_array_max_array() {
   local fassoc="$2"
   local -n __assoc="${fassoc}"
+  SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE=""
 
   if [ "${__assoc["__cross_min_array_max_array"]}" == "1" ]; then
     return 0
