@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: shell_cli/metaflags/define/15_description.sh
+# SCRIPT: 03_metaflag/15_description.sh
 # DESCRIPTION: maps the essential human documentation text used to render help 
 #   modules. Mandatory framework constraint ensuring zero undocumented features 
 #   bypass compiler loops.
@@ -26,3 +26,26 @@ METAFLAG_description["description"]="Human-readable operational statement descri
 METAFLAG_description["tipinput"]=""
 METAFLAG_description["validate"]=""
 METAFLAG_description["transform"]=""
+
+
+
+# shell_cli_metaflag_validate_description metaflag 'description'.
+#
+# Arguments:
+# - fval: value (normalizated and validate by type).
+# - fassoc: name of associative array with all flag definitions.
+#
+# Returns:
+# - 0: if the value can be used in this flag.
+# - 1: if the value cannot be used in this flag.
+shell_cli_metaflag_validate_description() {
+  local fval="$1"
+  local fassoc="$2"
+
+  if [ "$fval" = "" ]; then
+    SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="cannot be empty"
+    return 1
+  fi
+
+  return 0
+}

@@ -109,12 +109,12 @@ _shell_cli_runtime_compile_single_flag() {
 
   # Step A: Ingestion and Fallback Compilation (Inline Fill Paradigm)
   local current_meta_key
-  for current_meta_key in "${CORE_METAFLAG_DEFAULTS_ORDER[@]}"; do
+  for current_meta_key in "${SHELL_CLI_METAFLAG_DEFAULTS_ORDER[@]}"; do
     local indirect_flag_ref="${src_flag_array_name}[\"${current_meta_key}\"]"
     local source_value="${!indirect_flag_ref}"
     
     if [ -z "$source_value" ]; then
-      local fallback_ref="CORE_METAFLAG_DEFAULTS[\"${current_meta_key}\"]"
+      local fallback_ref="SHELL_CLI_METAFLAG_DEFAULTS[\"${current_meta_key}\"]"
       source_value="${!fallback_ref}"
     fi
 
@@ -318,7 +318,7 @@ shell_cli_runtime_validate_inputs() {
     fi
 
     # Delegate atomic scalar, array, or JSON validations directly using the runtime array name
-    if ! shell_cli_flag_validate_value "$user_raw_value" "$runtime_flag_array_name"; then
+    if ! shell_cli_type_validate_value "$user_raw_value" "$runtime_flag_array_name"; then
       return 1
     fi
 
@@ -452,7 +452,7 @@ shell_cli_runtime_handle_interactive() {
       fi
 
       # Execute instant atomic data validation on input capture
-      if ! shell_cli_flag_validate_value "$captured_raw_input" "$runtime_flag_array_name"; then
+      if ! shell_cli_type_validate_value "$captured_raw_input" "$runtime_flag_array_name"; then
         # Output atomic validation error tracing and force immediate user retry loop
         echo -e "${VALIDATION_ERROR_MSG}"
         continue

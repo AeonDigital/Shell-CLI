@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: shell_cli/metaflags/define/16_tipinput.sh
+# SCRIPT: 03_metaflag/16_tipinput.sh
 # DESCRIPTION: specifies the custom interactive question or behavioral guide 
 #    displayed to the user when the framework operates under strict interactive 
 #    modes.
@@ -26,3 +26,18 @@ METAFLAG_tipinput["description"]="Custom interactive question phrase displayed d
 METAFLAG_tipinput["tipinput"]=""
 METAFLAG_tipinput["validate"]=""
 METAFLAG_tipinput["transform"]=""
+
+
+
+# shell_cli_metaflag_validate_tipinput metaflag 'tipinput'.
+#
+# Arguments:
+# - fval: value (normalizated and validate by type).
+# - fassoc: name of associative array with all flag definitions.
+#
+# Returns:
+# - 0: if the value can be used in this flag.
+# - 1: if the value cannot be used in this flag.
+shell_cli_metaflag_validate_tipinput() {
+  return 0
+}

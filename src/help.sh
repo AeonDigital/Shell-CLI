@@ -80,7 +80,7 @@ shell_cli_help_render_contextual() {
   echo "SUMMARY: ${SHELL_CLI_RUNTIME_CMD["summary"]:-No summary available.}"
   if [ -n "${SHELL_CLI_RUNTIME_CMD["description"]}" ]; then
     echo "DESCRIPTION:"
-    shell_cli_string_wrap "${SHELL_CLI_RUNTIME_CMD["description"]}" "120"
+    shell_cli_utils_string_wrap "${SHELL_CLI_RUNTIME_CMD["description"]}" "120"
   fi
   echo "================================================================================"
 
@@ -119,7 +119,7 @@ shell_cli_help_render_contextual() {
       # Render the human-centric functional usage description text statement
       if [ -n "${_f_h_rules["description"]}" ]; then
         echo -n "      Description: "
-        shell_cli_string_wrap "${_f_h_rules["description"]}" "100" | sed '2,$s/^/                   /'
+        shell_cli_utils_string_wrap "${_f_h_rules["description"]}" "100" | sed '2,$s/^/                   /'
       fi
 
       # Render optional default fallback mapping hints if configured in the matrix

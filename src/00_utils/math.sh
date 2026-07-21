@@ -1,23 +1,23 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: shell_cli/utils/math.sh
+# SCRIPT: 00_utils/math.sh
 # DESCRIPTION: Native arbitrary-precision string math library processing 
 #              decimal and float comparison boundaries in pure Bash.
 # ==============================================================================
 
-# shell_cli_math_compare_float compares two string-formatted decimal numbers.
+# shell_cli_utils_math_compare_float compares two string-formatted decimal numbers.
 #
 # Arguments:
-#   - val1: The first string decimal number to compare.
-#   - val2: The second string decimal number acting as the boundary threshold.
-#   - strict_mode: If "1", forces exclusive inequality (e.g., > or < instead of >= or <=).
-#                  Defaults to "0" (inclusive inequality).
+# - val1: The first string decimal number to compare.
+# - val2: The second string decimal number acting as the boundary threshold.
+# - strict_mode: If "1", forces exclusive inequality (e.g., > or < instead of >= or <=).
+#     Defaults to "0" (inclusive inequality).
 #
 # Returns:
-#   - 0: If val1 is strictly greater than val2 (or equal when strict_mode=0).
-#   - 1: If val1 is less than val2 (or equal when strict_mode=1).
-shell_cli_math_compare_float() {
+# - 0: If val1 is strictly greater than val2 (or equal when strict_mode=0).
+# - 1: If val1 is less than val2 (or equal when strict_mode=1).
+shell_cli_utils_math_compare_float() {
   local val1="$1"
   local val2="$2"
   local strict="${3:-0}"
@@ -68,32 +68,32 @@ shell_cli_math_compare_float() {
   return 0
 }
 
-# shell_cli_math_is_greater_or_equal asserts if val1 is higher/equal than val2 bounds.
+# shell_cli_utils_math_is_greater_or_equal asserts if val1 is higher/equal than val2 bounds.
 #
 # Arguments:
-#   - val1: The user input float payload value string.
-#   - val2: The baseline lower minimum configuration limit threshold string.
-#   - strict: If active (1), checks strictly greater than (>), rejecting equal.
+# - val1: The user input float payload value string.
+# - val2: The baseline lower minimum configuration limit threshold string.
+# - strict: If active (1), checks strictly greater than (>), rejecting equal.
 #
 # Returns:
-#   - 0: If the verification condition is perfectly satisfied.
-#   - 1: If the input falls short of the expected boundary range.
-shell_cli_math_is_greater_or_equal() {
-  shell_cli_math_compare_float "$1" "$2" "$3"
+# - 0: If the verification condition is perfectly satisfied.
+# - 1: If the input falls short of the expected boundary range.
+shell_cli_utils_math_is_greater_or_equal() {
+  shell_cli_utils_math_compare_float "$1" "$2" "$3"
   return $?
 }
 
-# shell_cli_math_is_less_or_equal asserts if val1 is lower/equal than val2 bounds.
+# shell_cli_utils_math_is_less_or_equal asserts if val1 is lower/equal than val2 bounds.
 #
 # Arguments:
-#   - val1: The user input float payload value string.
-#   - val2: The baseline upper maximum configuration limit threshold string.
-#   - strict: If active (1), checks strictly less than (<), rejecting equal.
+# - val1: The user input float payload value string.
+# - val2: The baseline upper maximum configuration limit threshold string.
+# - strict: If active (1), checks strictly less than (<), rejecting equal.
 #
 # Returns:
-#   - 0: If the verification condition is perfectly satisfied.
-#   - 1: If the input exceeds the expected boundary range.
-shell_cli_math_is_less_or_equal() {
-  shell_cli_math_compare_float "$2" "$1" "$3"
+# - 0: If the verification condition is perfectly satisfied.
+# - 1: If the input exceeds the expected boundary range.
+shell_cli_utils_math_is_less_or_equal() {
+  shell_cli_utils_math_compare_float "$2" "$1" "$3"
   return $?
 }

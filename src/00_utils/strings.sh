@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: shell_cli/utils/strings.sh
+# SCRIPT: 00_utils/strings.sh
 # DESCRIPTION: Native utility operations processing safe character wrapping
 #              and dynamic terminal geometry line adjustments.
 # ==============================================================================
 
-# shell_cli_string_wrap formats long paragraphs into word-wrapped lines.
+# shell_cli_utils_string_wrap formats long paragraphs into word-wrapped lines.
 #
 # Arguments:
-#   - text: The comprehensive raw text string sentence to be wrapped.
-#   - max_width: Optional static numeric upper boundary character width limit.
-#                Defaults to 80 characters if left empty or unassigned.
+# - text: The comprehensive raw text string sentence to be wrapped.
+# - max_width: Optional static numeric upper boundary character width limit.
+#     Defaults to 80 characters if left empty or unassigned.
 #
 # Returns:
-#   - 0: Always terminates with success echoing the formatted paragraphs.
-shell_cli_string_wrap() {
+# - 0: Always terminates with success echoing the formatted paragraphs.
+shell_cli_utils_string_wrap() {
   local raw_text="$1"
   local target_width="${2:-80}"
   local term_cols

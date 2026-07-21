@@ -100,14 +100,14 @@ FLAG_scope["long"]="scope"
 
 Specifies the data type classification enforcing the validation routing.
 
-*   **Data Type:** `enum` (Pointer to `SHELL_CLI_METAFLAG_TYPES`)
+*   **Data Type:** `enum` (Pointer to `SHELL_CLI_TYPE`)
 *   **Default:** `"string"`
 *   **Accepted Value Tokens:** `string`, `int`, `float`, `bool`, `json`, 
     `function`, `date`, `time`, `datetime`, `email`, `enum`, `path`, 
     `relativepath`, `filename`, `filepath`, `dirname`, `dirpath`, `url`, 
     `fullurl`, `relativeurl`.
 *   **Engine Behavior:** Directly maps the argument string to a validator 
-    function named `shell_cli_flag_validate_[type]`.
+    function named `shell_cli_type_validate_[type]`.
 
 &nbsp;
 
@@ -600,7 +600,7 @@ Technical authors must note specific framework behaviors that occur behind the
 scenes during validation execution:
 
 *   **String Safety Interception:** Before a property value reaches its typed 
-    validator, the core runs `shell_cli_flag_validate_string` to block hidden 
+    validator, the core runs `shell_cli_type_validate_string` to block hidden 
     malicious or invisible terminal control bytes (`[[:cntrl:]]`). Space, tabs, 
     and carriage returns are stripped during testing to allow multi-line 
     payloads while maintaining safety.

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: shell_cli/metaflags/define/18_transform.sh
+# SCRIPT: 03_metaflag/18_transform.sh
 # DESCRIPTION: captures a JSON array of downstream transformation function 
 #   names. Invoked only after validation succeeds and before the final parsed 
 #   value is stored.
@@ -26,3 +26,40 @@ METAFLAG_transform["description"]="Pointer to indexed array with all transformat
 METAFLAG_transform["tipinput"]=""
 METAFLAG_transform["validate"]=""
 METAFLAG_transform["transform"]=""
+
+
+
+# shell_cli_metaflag_validate_transform metaflag 'transform'.
+#
+# Arguments:
+# - fval: value (normalizated and validate by type).
+# - fassoc: name of associative array with all flag definitions.
+#
+# Returns:
+# - 0: if the value can be used in this flag.
+# - 1: if the value cannot be used in this flag.
+shell_cli_metaflag_validate_transform() {
+  local fval="$1"
+  local fassoc="$2"
+
+  if [ "$fval" = "" ]; then
+    return 0
+  fi
+
+  local str_declare=$(declare -p "$fval" 2>/dev/null)
+  if [[ ! "$str_declare" =~ ^"declare -a" ]]; then
+    SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="pointer '$fval' must be an indexed array (declare -a)."
+    return 1
+  fi
+
+  local -n ref_transform="$fval"
+  for fn_transform in "${ref_transform[@]}"; do
+    if ! declare -f "$fn_transform" >/dev/null; then
+      SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="transform function does not exist ( fn='${fn_transform}' )."
+      return 1
+    fi
+  done
+
+  return 0
+}
+

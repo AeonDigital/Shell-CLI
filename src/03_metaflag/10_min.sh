@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: shell_cli/metaflags/define/10_min.sh
+# SCRIPT: 03_metaflag/10_min.sh
 # DESCRIPTION: enforces the minimum boundary size constraint allowed for the 
 #   payload. Evaluates string/token length or raw numerical boundaries based on 
 #   the primary type field.
@@ -26,3 +26,22 @@ METAFLAG_min["description"]="Minimum boundary size asserting string token length
 METAFLAG_min["tipinput"]=""
 METAFLAG_min["validate"]=""
 METAFLAG_min["transform"]=""
+
+
+
+# shell_cli_metaflag_validate_min metaflag 'min'.
+#
+# Arguments:
+# - fval: value (normalizated and validate by type).
+# - fassoc: name of associative array with all flag definitions.
+#
+# Returns:
+# - 0: if the value can be used in this flag.
+# - 1: if the value cannot be used in this flag.
+shell_cli_metaflag_validate_min() {
+  if ! shell_cli_metaflag_cross_validate_min_max "$2"; then
+    return 1
+  fi
+
+  return 0
+}

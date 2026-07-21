@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: shell_cli/metaflags/define/06_required.sh
+# SCRIPT: 03_metaflag/06_required.sh
 # DESCRIPTION: declares whether the flag must be explicitly supplied by the 
 #   user. If active (1), the framework automatically mandates a non-empty 
 #   presence check.
@@ -26,3 +26,26 @@ METAFLAG_required["description"]="Boolean flag asserting if the parameter must b
 METAFLAG_required["tipinput"]=""
 METAFLAG_required["validate"]=""
 METAFLAG_required["transform"]=""
+
+
+
+# shell_cli_metaflag_validate_required metaflag 'required'.
+#
+# Arguments:
+# - fval: value (normalizated and validate by type).
+# - fassoc: name of associative array with all flag definitions.
+#
+# Returns:
+# - 0: if the value can be used in this flag.
+# - 1: if the value cannot be used in this flag.
+shell_cli_metaflag_validate_required() {
+  local fval="$1"
+  local fassoc="$2"
+
+  if [ "$fval" = "" ]; then
+    SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="cannot be empty"
+    return 1
+  fi
+
+  return 0
+}

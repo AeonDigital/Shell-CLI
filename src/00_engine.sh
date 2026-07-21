@@ -6,7 +6,7 @@
 #              validation engines processing structural user argument matrices.
 # ==============================================================================
 
-# shell_cli_flag_validate_single_value checks a scalar string against core rules.
+# shell_cli_type_validate_single_value checks a scalar string against core rules.
 #
 # Arguments:
 #   - value: The raw or inferred scalar value string to be evaluated.
@@ -17,7 +17,7 @@
 # Returns:
 #   - 0: If the scalar value passes all type, bounds, and regex constraints.
 #   - 1: If any individual constraint or system rule boundary is violated.
-shell_cli_flag_validate_single_value() {
+shell_cli_type_validate_single_value() {
   local value="$1"
   local flag_name="$2"
   local c_key="$3"
@@ -34,7 +34,7 @@ shell_cli_flag_validate_single_value() {
 
   local l_name="--${_sval_rules["long"]}"
   local target_type="${_sval_rules["type"]}"
-  local validator_fn="shell_cli_flag_validate_${target_type}"
+  local validator_fn="shell_cli_type_validate_${target_type}"
 
   # Build the dynamic contextual visual signature prefix uniformly
   local prefix="[ ${l_name} ]"
@@ -67,13 +67,13 @@ shell_cli_flag_validate_single_value() {
       fi
     elif [ "$target_type" = "float" ]; then
       if [ -n "${_sval_rules["min"]}" ]; then
-        if ! shell_cli_math_is_greater_or_equal "$value" "${_sval_rules["min"]}" "0"; then
+        if ! shell_cli_utils_math_is_greater_or_equal "$value" "${_sval_rules["min"]}" "0"; then
           VALIDATION_ERROR_MSG="[ x ] ${prefix} :: value violates minimum allowed (min: ${_sval_rules["min"]})."
           return 1
         fi
       fi
       if [ -n "${_sval_rules["max"]}" ]; then
-        if ! shell_cli_math_is_less_or_equal "$value" "${_sval_rules["max"]}" "0"; then
+        if ! shell_cli_utils_math_is_less_or_equal "$value" "${_sval_rules["max"]}" "0"; then
           VALIDATION_ERROR_MSG="[ x ] ${prefix} :: value violates maximum allowed (max: ${_sval_rules["max"]})."
           return 1
         fi
@@ -160,12 +160,12 @@ shell_cli_flag_apply_transformations() {
     return 0
   fi
 
-  if ! shell_cli_flag_validate_array "$transform_list"; then
+  if ! shell_cli_type_validate_array "$transform_list"; then
     VALIDATION_ERROR_MSG="[ x ] [ --${_tval_rules["long"]} ] :: transform list must be a valid array collection []."
     return 1
   fi
 
-  shell_cli_flag_normalize_array "$transform_list"
+  shell_cli_type_normalize_array "$transform_list"
 
   local transformed_value="$value"
   for custom_fn in "${SHELL_CLI_NORMALIZATED_ARRAY[@]}"; do
@@ -179,7 +179,7 @@ shell_cli_flag_apply_transformations() {
   return 0
 }
 
-# shell_cli_flag_validate_value asserts arguments against compiled metadata matrices.
+# shell_cli_type_validate_value asserts arguments against compiled metadata matrices.
 #
 # Arguments:
 #   - value: The raw parameter argument string typed by the user terminal.
@@ -188,7 +188,7 @@ shell_cli_flag_apply_transformations() {
 # Returns:
 #   - 0: If the user input perfectly satisfies all rule constraints.
 #   - 1: If any boundary, type mask, collection, or custom validator fails.
-shell_cli_flag_validate_value() {
+shell_cli_type_validate_value() {
   local value="$1"
   local flag_name="$2"
   
@@ -215,17 +215,17 @@ shell_cli_flag_validate_value() {
 
   # 2. Direct data routing evaluation according to array layout configurations
   if [ "${_vval_rules["array"]}" = "1" ]; then
-    if ! shell_cli_flag_validate_array "$value"; then
+    if ! shell_cli_type_validate_array "$value"; then
       VALIDATION_ERROR_MSG="[ x ] [ ${l_name} ] :: must be a valid array collection []."
       return 1
     fi
 
-    shell_cli_flag_normalize_array "$value"
+    shell_cli_type_normalize_array "$value"
 
     local -a transformed_items=()
     local count=0
     for current_token in "${SHELL_CLI_NORMALIZATED_ARRAY[@]}"; do
-      if ! shell_cli_flag_validate_single_value "$current_token" "$flag_name" "" "$count"; then
+      if ! shell_cli_type_validate_single_value "$current_token" "$flag_name" "" "$count"; then
         return 1
       fi
       if ! shell_cli_flag_apply_transformations "$SHELL_CLI_VALIDATED_VALUE" "$flag_name"; then
@@ -262,12 +262,12 @@ shell_cli_flag_validate_value() {
 
   # 3. Direct data routing evaluation according to map dictionary layouts
   elif [ "${_vval_rules["assoc"]}" = "1" ]; then
-    if ! shell_cli_flag_validate_json "$value"; then
+    if ! shell_cli_type_validate_json "$value"; then
       VALIDATION_ERROR_MSG="[ x ] [ ${l_name} ] :: must be a valid json string."
       return 1
     fi
 
-    shell_cli_flag_normalize_assoc "$value"
+    shell_cli_type_normalize_assoc "$value"
 
     # Enforce strict sorted predictability over mandatory structural key checks
     if [ -n "${_vval_rules["assoc_keys"]}" ]; then
@@ -293,7 +293,7 @@ shell_cli_flag_validate_value() {
     while IFS= read -r key || [ -n "$key" ]; do
       [ -z "$key" ] && continue
       local current_val="${SHELL_CLI_NORMALIZATED_ASSOC["$key"]}"
-      if ! shell_cli_flag_validate_single_value "$current_val" "$flag_name" "$key" ""; then
+      if ! shell_cli_type_validate_single_value "$current_val" "$flag_name" "$key" ""; then
         return 1
       fi
       if ! shell_cli_flag_apply_transformations "$SHELL_CLI_VALIDATED_VALUE" "$flag_name"; then
@@ -323,7 +323,7 @@ shell_cli_flag_validate_value() {
 
   # 4. Standard validation loop for single scalar values parameters
   else
-    if ! shell_cli_flag_validate_single_value "$value" "$flag_name" "" ""; then
+    if ! shell_cli_type_validate_single_value "$value" "$flag_name" "" ""; then
       return 1
     fi
     if ! shell_cli_flag_apply_transformations "$SHELL_CLI_VALIDATED_VALUE" "$flag_name"; then
@@ -369,7 +369,7 @@ shell_cli_flag_validate() {
     local raw_user_value="${_val_parsed["$flag_name"]}"
 
     # 2. Invoke the central engine validator passing the user input and the schema pointer
-    if ! shell_cli_flag_validate_value "$raw_user_value" "$target_schema_array"; then
+    if ! shell_cli_type_validate_value "$raw_user_value" "$target_schema_array"; then
       return 1
     fi
 

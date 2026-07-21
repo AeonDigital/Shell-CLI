@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: shell_cli/metaflags/define/05_assoc.sh
+# SCRIPT: 03_metaflag/05_assoc.sh
 # DESCRIPTION: declares whether the flag parameter operates as an associative 
 #   map. Accepts a global variable name pointer or an inline JSON object 
 #   sequence.
@@ -26,3 +26,34 @@ METAFLAG_assoc["description"]="Boolean flag asserting if the parameter operates 
 METAFLAG_assoc["tipinput"]=""
 METAFLAG_assoc["validate"]=""
 METAFLAG_assoc["transform"]=""
+
+
+
+# shell_cli_metaflag_validate_assoc metaflag 'assoc'.
+#
+# Arguments:
+# - fval: value (normalizated and validate by type).
+# - fassoc: name of associative array with all flag definitions.
+#
+# Returns:
+# - 0: if the value can be used in this flag.
+# - 1: if the value cannot be used in this flag.
+shell_cli_metaflag_validate_assoc() {
+  local fval="$1"
+  local fassoc="$2"
+
+  if [ "$fval" = "" ]; then
+    SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="cannot be empty"
+    return 1
+  fi
+
+  local -n __assoc="${fassoc}"
+  local _array="${__assoc["array"]}"
+
+  if [ "$fval" = "1" ] && [ "$_array" = "1" ]; then
+    SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="cannot declare 'assoc=true' and 'array=true' simultaneously."
+    return 1
+  fi
+
+  return 0
+}

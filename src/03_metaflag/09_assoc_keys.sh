@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: shell_cli/metaflags/define/09_assoc_keys.sh
+# SCRIPT: 03_metaflag/09_assoc_keys.sh
 # DESCRIPTION: specifies a list of keys that MUST be present in the passed 
 #   value, provided it is not an empty associative array
 #   Operates exclusively when assoc is active (1) to enforce field presence.
@@ -26,3 +26,40 @@ METAFLAG_assoc_keys["description"]="Pointer to array or a JSON-array string with
 METAFLAG_assoc_keys["tipinput"]=""
 METAFLAG_assoc_keys["validate"]=""
 METAFLAG_assoc_keys["transform"]=""
+
+
+
+# shell_cli_metaflag_validate_assoc_keys metaflag 'assoc_keys'.
+#
+# Arguments:
+# - fval: value (normalizated and validate by type).
+# - fassoc: name of associative array with all flag definitions.
+#
+# Returns:
+# - 0: if the value can be used in this flag.
+# - 1: if the value cannot be used in this flag.
+shell_cli_metaflag_validate_assoc_keys() {
+  local fval="$1"
+  local fassoc="$2"
+
+  local -n __assoc="${fassoc}"
+  local _assoc="${__assoc["assoc"]}"
+
+  if [ "$_assoc" = "0" ]; then
+    if [ "$fval" != "" ]; then
+      SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="cannot define 'assoc_keys' for a 'assoc=false' flag."
+      return 1
+    fi
+  else
+    if [ "$fval" != "" ]; then
+      local str_declare=$(declare -p "$fval" 2>/dev/null)
+      if [[ ! "$str_declare" =~ ^"declare -a" ]]; then
+        SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="pointer '$fval' must be an indexed array (declare -a)."
+        return 1
+      fi
+    fi
+  fi
+
+  return 0
+}
+

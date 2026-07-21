@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: shell_cli/metaflags/define/11_max.sh
+# SCRIPT: 03_metaflag/11_max.sh
 # DESCRIPTION: enforces the maximum boundary size constraint allowed for the 
 #   payload. Evaluates string/token length or raw numerical boundaries based on 
 #   the primary type field.
@@ -26,3 +26,22 @@ METAFLAG_max["description"]="Maximum boundary size asserting string token length
 METAFLAG_max["tipinput"]=""
 METAFLAG_max["validate"]=""
 METAFLAG_max["transform"]=""
+
+
+
+# shell_cli_metaflag_validate_max metaflag 'max'.
+#
+# Arguments:
+# - fval: value (normalizated and validate by type).
+# - fassoc: name of associative array with all flag definitions.
+#
+# Returns:
+# - 0: if the value can be used in this flag.
+# - 1: if the value cannot be used in this flag.
+shell_cli_metaflag_validate_max() {
+    if ! shell_cli_metaflag_cross_validate_min_max "$2"; then
+    return 1
+  fi
+
+  return 0
+}

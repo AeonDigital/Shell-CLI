@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: shell_cli/metaflags/define/02_long.sh
+# SCRIPT: 03_metaflag/01_long.sh
 # DESCRIPTION: defines the canonical long name identifier for a command-line 
 #   flag. It acts as a double-dash option (e.g., --scope) and maps directly to 
 #   parsed storage keys.
@@ -26,3 +26,31 @@ METAFLAG_long["description"]="Long canonical name identifier for the flag execut
 METAFLAG_long["tipinput"]=""
 METAFLAG_long["validate"]=""
 METAFLAG_long["transform"]=""
+
+
+
+# shell_cli_metaflag_validate_long metaflag 'long'.
+#
+# Arguments:
+# - fval: value (normalizated and validate by type).
+# - fassoc: name of associative array with all flag definitions.
+#
+# Returns:
+# - 0: if the value can be used in this flag.
+# - 1: if the value cannot be used in this flag.
+shell_cli_metaflag_validate_long() {
+  local fval="$1"
+  local fassoc="$2"
+
+  if [ "$fval" = "" ]; then
+    SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="cannot be empty"
+    return 1
+  fi
+
+  if [[ "$fval" =~ ^(help|interactive)$ ]]; then
+    SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="names 'help' and 'interactive' are reserved."
+    return 1
+  fi
+
+  return 0
+}

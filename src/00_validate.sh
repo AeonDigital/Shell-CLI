@@ -1,82 +1,12 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: shell_cli/flags/metaflags.sh
+# SCRIPT: metaflags/validate.sh
 # DESCRIPTION: 
 # ==============================================================================
 
-#shell_cli_flag_rules_finalize_register "METAFLAG" "CORE_METAFLAG_DEFAULTS_ORDER"
 
-
-
-# # ------------------------------------------------------------------------------
-# # PHASE 1: ATOMIC METADATA VALIDATION (FOLLOWING STRICT SPECIFIED ORDER)
-# # ------------------------------------------------------------------------------
-# for meta_key in "${CORE_METAFLAG_DEFAULTS_ORDER[@]}"; do
-#   local current_meta_val="${ref_flag["$meta_key"]}"
-#   local meta_spec_array="METAFLAG_${meta_key}"
-
-#   # Verify if the framework schema matrix for the target meta-key exists
-#   if ! declare -p "$meta_spec_array" &>/dev/null; then
-#     VALIDATION_ERROR_MSG="${err_prefix} :: internal engine layout error. Schema array '${meta_spec_array}' is missing."
-#     return 1
-#   fi
-
-#   # Invoke the central engine validator to check the developer's assignment
-#   if ! shell_cli_flag_validate_value "$current_meta_val" "$meta_spec_array"; then
-#     VALIDATION_ERROR_MSG="${VALIDATION_ERROR_MSG} \n[ERR] ${err_prefix}[ key: ${meta_key} ] :: invalid design property."
-#     return 1
-#   fi
-# done
-
-
-
-
-
-# shell_cli_flag_rules_normalize_all normalizes and populates uninitialized schema metadata keys.
-#
-# Arguments:
-#   - flag_assoc: The string name of the target associative array.
-#
-# Returns:
-#   - 0: Always terminates with success state after dynamically filling missing keys.
-shell_cli_flag_rules_normalize_all() {
-  local flag_assoc="$1"
-  local -n assoc_ref="$flag_assoc"
-
-  # NORMALIZE: Converts developer "true/false" metadata strings into strict "1/0" engine bytes
-  local bool_keys=("required" "array" "assoc")
-  for b_key in "${bool_keys[@]}"; do
-    local val="${assoc_ref["${b_key}"]}"
-    if [ "$val" != "" ]; then
-      assoc_ref["$b_key"]=$(shell_cli_flag_normalize_bool "$val")
-    fi
-  done
-
-  # NORMALIZE: Infers and expands partial dates, times, or datetimes for metadata bounds
-  local k_type="${assoc_ref["type"]}"
-  if [[ "$k_type" =~ ^(date|time|datetime)$ ]]; then
-    local bound_keys=("min" "max")
-    
-    for bound_key in "${bound_keys[@]}"; do
-      local b_val="${assoc_ref["$bound_key"]}"
-      if [ "$b_val" != "" ]; then
-        assoc_ref["$bound_key"]=$(_shell_cli_flag_normalize_${k_type} "$b_val")
-      fi
-    done
-  fi
-
-  # Iteratively evaluate and apply official system fallbacks using data-driven keys
-  for key in "${!CORE_METAFLAG_DEFAULTS[@]}"; do
-    if [ -z "${assoc_ref["$key"]}" ]; then
-      assoc_ref["$key"]="${CORE_METAFLAG_DEFAULTS["$key"]}"
-    fi
-  done
-
-  return 0
-}
-
-# shell_cli_flag_rules_validate normalize and asserts flag specifications.
+# shell_cli_metaflag_validate normalize and asserts flag specifications.
 #
 # Arguments:
 #   - flag_assoc: The string name of the target associative array.
@@ -84,7 +14,7 @@ shell_cli_flag_rules_normalize_all() {
 # Returns:
 #   - 0: If the configuration schema is structurally intact and logically sound.
 #   - 1: If any metadata constraint fails or a logical architectural rule breaks.
-shell_cli_flag_rules_validate() {
+shell_cli_metaflag_validate() {
   local flag_assoc="$1"
   
   # First, ensure all uninitialized metadata keys are filled with system defaults
@@ -166,7 +96,7 @@ shell_cli_flag_rules_validate() {
   err_key="[ key: type ]"
 
   # Rule C1: validate 'type'
-  if [ "${SHELL_CLI_METAFLAG_TYPES["$k_type"]}" = "" ]; then
+  if [ "${SHELL_CLI_TYPE["$k_type"]}" = "" ]; then
     VALIDATION_ERROR_MSG="${err_prefix}${err_key} :: invalid definition ( type='$k_type' )."
     return 1
   fi
@@ -402,7 +332,7 @@ shell_cli_flag_rules_validate() {
         ;;
         
       float)
-        if ! shell_cli_math_is_less_or_equal "$k_min" "$k_max" "0"; then
+        if ! shell_cli_utils_math_is_less_or_equal "$k_min" "$k_max" "0"; then
           VALIDATION_ERROR_MSG="${err_prefix}${err_key} :: 'min' limit cannot exceed 'max' ( min='$k_min', max='$k_max' )."
           return 1
         fi
@@ -552,96 +482,141 @@ shell_cli_flag_rules_validate() {
   return 0
 }
 
-# shell_cli_flag_rules_validate_all normalize and asserts all flag from same family.
-#
-# Arguments:
-#   - prefix: Prefix used to define all flags under the same family.
-#   - order_array: Name of the order array with all flag names.
-#
-# Returns:
-#   - 0: If the configuration schema is structurally intact and logically sound.
-#   - 1: If any metadata constraint fails or a logical architectural rule breaks.
-shell_cli_flag_rules_finalize_register() {
-  local prefix="$1"
-  local order_array="$2"
-
-  if [ "$prefix" == "" ]; then
-    VALIDATION_ERROR_MSG="[ERR] :: Flag family prefix is required."
-    return 1
-  fi
-
-  if [ "$order_array" == "" ]; then
-    VALIDATION_ERROR_MSG="[ERR] :: Default order array is required."
-    return 1
-  fi
-
-  local str_declare=$(declare -p "$order_array" 2>/dev/null)
-  if [[ ! "$str_declare" =~ ^"declare -a" ]]; then
-    VALIDATION_ERROR_MSG="[ERR] :: Invalid default order array. Expected indexed array (declare -a)."
-    return 1
-  fi
-
-  local -n ref_order_array="$order_array"
-  if [ "${#ref_order_array[@]}" == "0" ]; then
-    return 0
-  fi
-
-  for flag_name in "${ref_order_array[@]}"; do
-    local flag_assoc="${prefix}_${flag_name}"
-
-    local str_declare=$(declare -p "$flag_assoc" 2>/dev/null)
-    if [[ ! "$str_declare" =~ ^"declare -A" ]]; then
-      VALIDATION_ERROR_MSG="[ERR] :: Invalid or undefined assoc flag '$flag_assoc'. Expected associative array (declare -A)."
-      return 1
-    fi
-
-    if ! shell_cli_flag_rules_validate "${flag_assoc}"; then
-      echo -e "${VALIDATION_ERROR_MSG}"
-      return 1
-    fi
-  done
-}
 
 
+# # shell_cli_flag_rules_normalize_all normalizes and populates uninitialized schema metadata keys.
+# #
+# # Arguments:
+# #   - flag_assoc: The string name of the target associative array.
+# #
+# # Returns:
+# #   - 0: Always terminates with success state after dynamically filling missing keys.
+# shell_cli_flag_rules_normalize_all() {
+#   local flag_assoc="$1"
+#   local -n assoc_ref="$flag_assoc"
+
+#   # NORMALIZE: Converts developer "true/false" metadata strings into strict "1/0" engine bytes
+#   local bool_keys=("required" "array" "assoc")
+#   for b_key in "${bool_keys[@]}"; do
+#     local val="${assoc_ref["${b_key}"]}"
+#     if [ "$val" != "" ]; then
+#       assoc_ref["$b_key"]=$(shell_cli_type_normalize_bool "$val")
+#     fi
+#   done
+
+#   # NORMALIZE: Infers and expands partial dates, times, or datetimes for metadata bounds
+#   local k_type="${assoc_ref["type"]}"
+#   if [[ "$k_type" =~ ^(date|time|datetime)$ ]]; then
+#     local bound_keys=("min" "max")
+    
+#     for bound_key in "${bound_keys[@]}"; do
+#       local b_val="${assoc_ref["$bound_key"]}"
+#       if [ "$b_val" != "" ]; then
+#         assoc_ref["$bound_key"]=$(_shell_cli_type_normalize_${k_type} "$b_val")
+#       fi
+#     done
+#   fi
+
+#   # Iteratively evaluate and apply official system fallbacks using data-driven keys
+#   for key in "${!SHELL_CLI_METAFLAG_DEFAULTS[@]}"; do
+#     if [ -z "${assoc_ref["$key"]}" ]; then
+#       assoc_ref["$key"]="${SHELL_CLI_METAFLAG_DEFAULTS["$key"]}"
+#     fi
+#   done
+
+#   return 0
+# }
+
+# # shell_cli_flag_rules_validate_all normalize and asserts all flag from same family.
+# #
+# # Arguments:
+# #   - prefix: Prefix used to define all flags under the same family.
+# #   - order_array: Name of the order array with all flag names.
+# #
+# # Returns:
+# #   - 0: If the configuration schema is structurally intact and logically sound.
+# #   - 1: If any metadata constraint fails or a logical architectural rule breaks.
+# shell_cli_flag_rules_finalize_register() {
+#   local prefix="$1"
+#   local order_array="$2"
+
+#   if [ "$prefix" == "" ]; then
+#     VALIDATION_ERROR_MSG="[ERR] :: Flag family prefix is required."
+#     return 1
+#   fi
+
+#   if [ "$order_array" == "" ]; then
+#     VALIDATION_ERROR_MSG="[ERR] :: Default order array is required."
+#     return 1
+#   fi
+
+#   local str_declare=$(declare -p "$order_array" 2>/dev/null)
+#   if [[ ! "$str_declare" =~ ^"declare -a" ]]; then
+#     VALIDATION_ERROR_MSG="[ERR] :: Invalid default order array. Expected indexed array (declare -a)."
+#     return 1
+#   fi
+
+#   local -n ref_order_array="$order_array"
+#   if [ "${#ref_order_array[@]}" == "0" ]; then
+#     return 0
+#   fi
+
+#   for flag_name in "${ref_order_array[@]}"; do
+#     local flag_assoc="${prefix}_${flag_name}"
+
+#     local str_declare=$(declare -p "$flag_assoc" 2>/dev/null)
+#     if [[ ! "$str_declare" =~ ^"declare -A" ]]; then
+#       VALIDATION_ERROR_MSG="[ERR] :: Invalid or undefined assoc flag '$flag_assoc'. Expected associative array (declare -A)."
+#       return 1
+#     fi
+
+#     if ! shell_cli_flag_rules_validate "${flag_assoc}"; then
+#       echo -e "${VALIDATION_ERROR_MSG}"
+#       return 1
+#     fi
+#   done
+# }
 
 
 
-# shell_cli_flag_normalize_array parses string components into a native indexed array.
-#
-# Arguments:
-#   - value: The verified raw array string sequence (e.g., ['val1', 'val2']).
-#
-# Side Effects:
-#   - Resets and populates the global indexed array SHELL_CLI_NORMALIZATED_ARRAY.
-shell_cli_flag_normalize_array() {
-  local input="$1"
-  local inner="${input#?}"
-  inner="${inner%?}"
 
-  # Reset global indexed array cleanly
-  SHELL_CLI_NORMALIZATED_ARRAY=()
+
+# # shell_cli_type_normalize_array parses string components into a native indexed array.
+# #
+# # Arguments:
+# #   - value: The verified raw array string sequence (e.g., ['val1', 'val2']).
+# #
+# # Side Effects:
+# #   - Resets and populates the global indexed array SHELL_CLI_NORMALIZATED_ARRAY.
+# shell_cli_type_normalize_array() {
+#   local input="$1"
+#   local inner="${input#?}"
+#   inner="${inner%?}"
+
+#   # Reset global indexed array cleanly
+#   SHELL_CLI_NORMALIZATED_ARRAY=()
   
-  local current=""
-  local idx=0
-  local len=${#inner}
-  local in_q=0
+#   local current=""
+#   local idx=0
+#   local len=${#inner}
+#   local in_q=0
 
-  while [ "$idx" -lt "$len" ]; do
-    local char="${inner:$idx:1}"
-    if [ "$in_q" -eq 1 ]; then
-      if [ "$char" = "'" ] || [ "$char" = '"' ]; then
-        in_q=0
-        SHELL_CLI_NORMALIZATED_ARRAY+=("$current")
-        current=""
-      else
-        current+="$char"
-      fi
-    else
-      if [ "$char" = "'" ] || [ "$char" = '"' ]; then
-        in_q=1
-      fi
-    fi
-    idx=$((idx + 1))
-  done
-}
+#   while [ "$idx" -lt "$len" ]; do
+#     local char="${inner:$idx:1}"
+#     if [ "$in_q" -eq 1 ]; then
+#       if [ "$char" = "'" ] || [ "$char" = '"' ]; then
+#         in_q=0
+#         SHELL_CLI_NORMALIZATED_ARRAY+=("$current")
+#         current=""
+#       else
+#         current+="$char"
+#       fi
+#     else
+#       if [ "$char" = "'" ] || [ "$char" = '"' ]; then
+#         in_q=1
+#       fi
+#     fi
+#     idx=$((idx + 1))
+#   done
+# }
 

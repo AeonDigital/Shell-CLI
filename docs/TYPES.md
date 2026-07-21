@@ -55,7 +55,7 @@ The generic fallback type designed to capture standard printable text streams.
 *   **Constraint Correlations:** `min` and `max` evaluate character counts 
     (`${#value}`). Supports `regex`, `array`, and `assoc`.
 *   **Engine Behavior:** Automatically routes data through
-    `shell_cli_flag_validate_string` to strip spaces and assert that no nvisible 
+    `shell_cli_type_validate_string` to strip spaces and assert that no nvisible 
     malicious terminal control bytes (`[[:cntrl:]]`) are present.
 *   **Accepted Input:** `"XERR_UNKNOWN"`, `"A concise human message with 
     accents (á, ç)."`
@@ -91,7 +91,7 @@ rules.
 
 *   **Constraint Correlations:** `min` and `max` evaluate absolute mathematical 
     ranges utilizing the native framework string comparison algorithm 
-    (`shell_cli_math_compare_float`). Supports `array` and `assoc`.
+    (`shell_cli_utils_math_compare_float`). Supports `array` and `assoc`.
 *   **Engine Behavior:** To prevent system crashes in minimalist environments, 
     the engine executes string-splitting and fraction zero-padding natively 
     inside Bash, eliminating third-party calculators like `bc`.

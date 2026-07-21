@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: shell_cli/metaflags/define/01_short.sh
+# SCRIPT: 03_metaflag/02_short.sh
 # DESCRIPTION: defines the short alphanumeric alias for a command-line flag.
 #   It acts as a single-dash alternative (e.g., -s) and must not exceed 3 
 #   characters
@@ -26,3 +26,38 @@ METAFLAG_short["description"]="Short alphanumeric character alias for the flag (
 METAFLAG_short["tipinput"]=""
 METAFLAG_short["validate"]=""
 METAFLAG_short["transform"]=""
+
+
+
+# shell_cli_metaflag_validate_short metaflag 'short'.
+#
+# Arguments:
+# - fval: value (normalizated and validate by type).
+# - fassoc: name of associative array with all flag definitions.
+#
+# Returns:
+# - 0: if the value can be used in this flag.
+# - 1: if the value cannot be used in this flag.
+shell_cli_metaflag_validate_short() {
+  local fval="$1"
+  local fassoc="$2"
+
+  if [ "$fval" = "" ]; then
+    return 0
+  fi
+
+  if [[ "$fval" =~ ^(h|itr)$ ]]; then
+    SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="names 'h' and 'itr' are reserved."
+    return 1
+  fi
+
+  local -n __assoc="${fassoc}"
+  local _long="${__assoc["long"]}"
+
+  if [ "$fval" = "$_long" ]; then
+    SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="cannot be the same as 'long' ( short='$fval' )."
+    return 1
+  fi
+
+  return 0
+}

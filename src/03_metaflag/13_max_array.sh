@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: shell_cli/metaflags/define/13_max_array.sh
+# SCRIPT: 03_metaflag/13_max_array.sh
 # DESCRIPTION: defines the maximum number of elements allowed inside a 
 #   collection. This evaluation is optional and operates exclusively when the 
 #   array attribute is active (1).
@@ -26,3 +26,33 @@ METAFLAG_max_array["description"]="Maximum allowable element count within a vali
 METAFLAG_max_array["tipinput"]=""
 METAFLAG_max_array["validate"]=""
 METAFLAG_max_array["transform"]=""
+
+
+
+# shell_cli_metaflag_validate_max_array metaflag 'max_array'.
+#
+# Arguments:
+# - fval: value (normalizated and validate by type).
+# - fassoc: name of associative array with all flag definitions.
+#
+# Returns:
+# - 0: if the value can be used in this flag.
+# - 1: if the value cannot be used in this flag.
+shell_cli_metaflag_validate_max_array() {
+  local fval="$1"
+  local fassoc="$2"
+
+  local -n __assoc="${fassoc}"
+  local _array="${__assoc["array"]}"
+
+  if [ "$_array" = "0" ] &&  [ "$fval" != "" ]; then
+    SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="cannot define 'max_array' for a 'array=false' flag."
+    return 1
+  fi
+
+  if ! shell_cli_metaflag_cross_validate_min_array_max_array "$2"; then
+    return 1
+  fi
+
+  return 0
+}
