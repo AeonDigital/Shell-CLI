@@ -22,7 +22,7 @@ shell_cli_type_normalize_email() {
 # shell_cli_type_validate_email validate 'email'.
 #
 # Arguments:
-# - value: normalizated value.
+# - value: non empty normalizated value.
 # - aux: optional auxiliary configuration.
 #
 # Returns:

@@ -18,7 +18,7 @@ shell_cli_type_normalize_json() {
   if ! shell_cli_parse_sjson_to_assoc "$1"; then
     return "1"
   fi
-  echo "${SHELL_CLI_PARSE_JSON_TO_ASSOC_STRING}"
+  echo "${SHELL_CLI_PARSE_SJSON_TO_ASSOC_STRING}"
 }
 
 
@@ -26,7 +26,7 @@ shell_cli_type_normalize_json() {
 # shell_cli_type_validate_json validate 'json'.
 #
 # Arguments:
-# - value: normalizated value.
+# - value: non empty normalizated value.
 # - aux: optional auxiliary configuration.
 #
 # Returns:

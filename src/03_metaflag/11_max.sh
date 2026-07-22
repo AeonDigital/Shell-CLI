@@ -11,9 +11,9 @@ declare -gA METAFLAG_max=()
 METAFLAG_max["long"]="max"
 METAFLAG_max["short"]=""
 METAFLAG_max["type"]="string"
-METAFLAG_max["array"]="0"
-METAFLAG_max["assoc"]="0"
-METAFLAG_max["required"]="0"
+METAFLAG_max["array"]=false
+METAFLAG_max["assoc"]=false
+METAFLAG_max["required"]=false
 METAFLAG_max["default"]=""
 METAFLAG_max["enum"]=""
 METAFLAG_max["assoc_keys"]=""
@@ -43,7 +43,7 @@ METAFLAG_max["transform"]=""
 shell_cli_metaflag_validate_max() {
   SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE=""
 
-  if ! shell_cli_metaflag_cross_validate_min_max "$2"; then
+  if ! shell_cli_metaflag_cross_validate_min_max "$1" "$2"; then
     return 1
   fi
 

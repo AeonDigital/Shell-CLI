@@ -22,7 +22,7 @@ shell_cli_type_normalize_float() {
 # shell_cli_type_validate_float validate 'float'.
 #
 # Arguments:
-# - value: normalizated value.
+# - value: non empty normalizated value.
 # - aux: optional auxiliary configuration.
 #
 # Returns:

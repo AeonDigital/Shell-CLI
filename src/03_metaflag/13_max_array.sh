@@ -11,9 +11,9 @@ declare -gA METAFLAG_max_array=()
 METAFLAG_max_array["long"]="max_array"
 METAFLAG_max_array["short"]=""
 METAFLAG_max_array["type"]="int"
-METAFLAG_max_array["array"]="0"
-METAFLAG_max_array["assoc"]="0"
-METAFLAG_max_array["required"]="0"
+METAFLAG_max_array["array"]=false
+METAFLAG_max_array["assoc"]=false
+METAFLAG_max_array["required"]=false
 METAFLAG_max_array["default"]=""
 METAFLAG_max_array["enum"]=""
 METAFLAG_max_array["assoc_keys"]=""
@@ -53,7 +53,7 @@ shell_cli_metaflag_validate_max_array() {
     return 1
   fi
 
-  if ! shell_cli_metaflag_cross_validate_min_array_max_array "$2"; then
+  if ! shell_cli_metaflag_cross_validate_min_array_max_array "$fval" "$fassoc"; then
     return 1
   fi
 

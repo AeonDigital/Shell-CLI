@@ -146,7 +146,7 @@ Declares whether the parameter processes a flat iterable collection list.
 
 ```bash
 FLAG_tags["type"]="string"
-FLAG_tags["array"]="1"
+FLAG_tags["array"]=true
 FLAG_tags["min"]="3" # Every individual element must be >= 3 characters
 ```
 
@@ -185,7 +185,7 @@ dictionary.
 
 ```bash
 FLAG_config["type"]="int"
-FLAG_config["assoc"]="1" # Every value inside the JSON dictionary must be an integer
+FLAG_config["assoc"]=true # Every value inside the JSON dictionary must be an integer
 ```
 
 *   **Accepted Input:** `{"port": 8080, "timeout": 30}`
@@ -213,7 +213,7 @@ Enforces parameter presence assertions during runtime execution.
 #### Schema Declaration
 
 ```bash
-FLAG_scope["required"]="1"
+FLAG_scope["required"]=true
 ```
 
 
@@ -300,7 +300,7 @@ in the map.
 
 ```bash
 FLAG_db["type"]="string"
-FLAG_db["assoc"]="1"
+FLAG_db["assoc"]=true
 FLAG_db["assoc_keys"]="user,password" # These specific keys MUST exist inside the object
 ```
 
@@ -392,7 +392,7 @@ Restricts the minimum allowable count of elements within an active collection.
 
 ```bash
 FLAG_hosts["type"]="string"
-FLAG_hosts["array"]="1"
+FLAG_hosts["array"]=true
 FLAG_hosts["min_array"]="2" # The list MUST contain at least two items
 ```
 
@@ -422,7 +422,7 @@ Restricts the maximum allowable count of elements within an active collection.
 
 ```bash
 FLAG_ips["type"]="string"
-FLAG_ips["array"]="1"
+FLAG_ips["array"]=true
 FLAG_ips["max_array"]="3"
 ```
 

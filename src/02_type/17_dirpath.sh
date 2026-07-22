@@ -22,7 +22,7 @@ shell_cli_type_normalize_dirpath() {
 # shell_cli_type_validate_dirpath validate 'dirpath'.
 #
 # Arguments:
-# - value: normalizated value.
+# - value: non empty normalizated value.
 # - aux: optional auxiliary configuration.
 #
 # Returns:

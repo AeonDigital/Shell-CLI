@@ -43,7 +43,7 @@ shell_cli_type_normalize_datetime() {
 # shell_cli_type_validate_datetime validate 'datetime' (YYYY-MM-DD HH:MM:SS).
 #
 # Arguments:
-# - value: normalizated value.
+# - value: non empty normalizated value.
 # - aux: optional auxiliary configuration.
 #
 # Returns:

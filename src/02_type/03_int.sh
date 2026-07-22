@@ -22,7 +22,7 @@ shell_cli_type_normalize_int() {
 # shell_cli_type_validate_int validate 'int'.
 #
 # Arguments:
-# - value: normalizated value.
+# - value: non empty normalizated value.
 # - aux: optional auxiliary configuration.
 #
 # Returns:

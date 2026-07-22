@@ -58,7 +58,7 @@ declare -gA CMD_MYTOOL_ORES_status_FLAG_environment=(
   ["short"]="e"
   ["long"]="environment"
   ["type"]="string"
-  ["required"]="1"
+  ["required"]=true
   ["description"]="Target environment"
 )
 

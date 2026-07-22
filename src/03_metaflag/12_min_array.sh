@@ -11,9 +11,9 @@ declare -gA METAFLAG_min_array=()
 METAFLAG_min_array["long"]="min_array"
 METAFLAG_min_array["short"]=""
 METAFLAG_min_array["type"]="int"
-METAFLAG_min_array["array"]="0"
-METAFLAG_min_array["assoc"]="0"
-METAFLAG_min_array["required"]="0"
+METAFLAG_min_array["array"]=false
+METAFLAG_min_array["assoc"]=false
+METAFLAG_min_array["required"]=false
 METAFLAG_min_array["default"]=""
 METAFLAG_min_array["enum"]=""
 METAFLAG_min_array["assoc_keys"]=""
@@ -53,7 +53,7 @@ shell_cli_metaflag_validate_min_array() {
     return 1
   fi
 
-  if ! shell_cli_metaflag_cross_validate_min_array_max_array "$2"; then
+  if ! shell_cli_metaflag_cross_validate_min_array_max_array "$fval" "$fassoc"; then
     return 1
   fi
 

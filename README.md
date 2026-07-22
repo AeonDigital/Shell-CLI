@@ -238,7 +238,7 @@ localized behavior using the `_OVERRIDE` convention.
 # A. Centralized Application-Wide Shared Flag Registry Map
 declare -gA CMD_XERRORS_GLOBAL_FLAG_scope=(
   ["type"]="enum"
-  ["required"]="0"
+  ["required"]=false
   ["enum"]="PROJECT_ALLOWED_SCOPES"
   ["description"]="Target project environment scope boundary mapping."
 )
@@ -248,7 +248,7 @@ declare -g CMD_XERRORS_code_add_FLAG_scope="CMD_XERRORS_GLOBAL_FLAG_scope"
 
 # C. Optional Override Map updating properties EXCLUSIVELY for this command context
 declare -gA CMD_XERRORS_code_add_FLAG_scope_OVERRIDE=(
-  ["required"]="1" # Elevates this specific command flag to be strictly mandatory
+  ["required"]=true # Elevates this specific command flag to be strictly mandatory
 )
 ```
 

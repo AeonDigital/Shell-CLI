@@ -18,7 +18,7 @@ shell_cli_type_normalize_enum() {
   if ! shell_cli_parse_sjson_to_assoc "$1"; then
     return "1"
   fi
-  echo "${SHELL_CLI_PARSE_JSON_TO_ASSOC_STRING}"
+  echo "${SHELL_CLI_PARSE_SJSON_TO_ASSOC_STRING}"
 }
 
 
@@ -26,7 +26,7 @@ shell_cli_type_normalize_enum() {
 # shell_cli_type_validate_enum validate 'enum'.
 #
 # Arguments:
-# - value: normalizated value.
+# - value: non empty normalizated value.
 # - aux: associative array name or JSON string.
 #
 # Returns:

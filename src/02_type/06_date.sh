@@ -32,7 +32,7 @@ shell_cli_type_normalize_date() {
 # shell_cli_type_validate_date validate 'date' (YYYY-MM-DD).
 #
 # Arguments:
-# - value: normalizated value.
+# - value: non empty normalizated value.
 # - aux: optional auxiliary configuration.
 #
 # Returns:

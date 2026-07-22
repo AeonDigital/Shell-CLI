@@ -22,7 +22,7 @@ shell_cli_type_normalize_url() {
 # shell_cli_type_validate_url validate 'url'.
 #
 # Arguments:
-# - value: normalizated value.
+# - value: non empty normalizated value.
 # - aux: optional auxiliary configuration.
 #
 # Returns:

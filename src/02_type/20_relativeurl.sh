@@ -22,7 +22,7 @@ shell_cli_type_normalize_relativeurl() {
 # shell_cli_type_validate_relativeurl validate 'relativeurl'.
 #
 # Arguments:
-# - value: normalizated value.
+# - value: non empty normalizated value.
 # - aux: optional auxiliary configuration.
 #
 # Returns:

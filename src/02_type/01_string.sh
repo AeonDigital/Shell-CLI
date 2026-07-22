@@ -27,22 +27,31 @@ shell_cli_type_normalize_string() {
   local removeCodeCtrlChars="$2"
   local removeTextCtrlChars="$3"
   local trim="$4"
-  
+
+
   if [ "$removeCodeCtrlChars" = "1" ]; then
-    # Remove chars
+    # control chars
     # \000-\010 - 0 -> 8    (NUL; SOH; STX; ETX; EOT; ENQ; ACK; BEL)
     # \013\014  - 11 and 12 (VT; FF)
     # \016-\037 - 14 -> 31  (SO; SI; DLE; DC1; DC2; DC3; DC4; NAK; SYN; ETB; CAN; EM; SUB; ESC; FS; GS; RS; US)
     # \177      - 127       (DEL)
-    local clean_text=$(printf "%s" "$value" | tr -d '\000-\010\013\014\016-\037\177')
+    local code_ctrl_chars=""
+    code_ctrl_chars+=$'\000'$'\001'$'\002'$'\003'$'\004'$'\005'$'\006'$'\007'$'\010'
+    code_ctrl_chars+=$'\013'$'\014'$'\016'$'\017'$'\020'$'\021'$'\022'$'\023'$'\024'
+    code_ctrl_chars+=$'\025'$'\026'$'\027'$'\030'$'\031'$'\032'$'\033'$'\034'$'\035'
+    code_ctrl_chars+=$'\036'$'\037'$'\177'
+
+    local clean_text=$(printf "%s" "$value" | tr -d "$code_ctrl_chars")
   fi
 
   if [ "$removeTextCtrlChars" = "1" ]; then
-    # Remove chars
+    # text control chars:
     # \011      - 9         (HT) [ \t HORIZONTAL TABULATION ]
     # \012      - 10        (LF) [ \n LINE FEED ]
     # \015      - 13        (CR) [ \r CARRIAGE RETURN ]
-    clean_text=$(printf "%s" "$clean_text" | tr -d '\011\012\015')
+    local text_ctrl_chars=$'\011'$'\012'$'\015'
+
+    clean_text=$(printf "%s" "$clean_text" | tr -d "$text_ctrl_chars")
   fi
 
   if [ "$trim" = "1" ]; then
@@ -130,7 +139,7 @@ shell_cli_type_normalize_string_none() {
 # shell_cli_type_validate_string validate 'string'.
 #
 # Arguments:
-# - value: normalizated value.
+# - value: non empty normalizated value.
 # - invalidateCodeCtrlChars: invalidate any string contains any control 
 #   characters (except \n, \t and \r).
 # - invalidateTextCtrlChars: invalidate any string contains any text control 
@@ -145,23 +154,32 @@ shell_cli_type_validate_string() {
   local invalidateCodeCtrlChars="$2"
   local invalidateTextCtrlChars="$3"
 
+
   if [ "$invalidateCodeCtrlChars" = "1" ]; then
-    # Invalid control chars
+    # control chars
     # \000-\010 - 0 -> 8    (NUL; SOH; STX; ETX; EOT; ENQ; ACK; BEL)
     # \013\014  - 11 and 12 (VT; FF)
     # \016-\037 - 14 -> 31  (SO; SI; DLE; DC1; DC2; DC3; DC4; NAK; SYN; ETB; CAN; EM; SUB; ESC; FS; GS; RS; US)
     # \177      - 127       (DEL)
-    if [[ "$value" =~ [$'\000'-$'\010'$'\013'$'\014'$'\016'-$'\037'$'\177'] ]]; then
+    local code_ctrl_chars=""
+    code_ctrl_chars+=$'\000'$'\001'$'\002'$'\003'$'\004'$'\005'$'\006'$'\007'$'\010'
+    code_ctrl_chars+=$'\013'$'\014'$'\016'$'\017'$'\020'$'\021'$'\022'$'\023'$'\024'
+    code_ctrl_chars+=$'\025'$'\026'$'\027'$'\030'$'\031'$'\032'$'\033'$'\034'$'\035'
+    code_ctrl_chars+=$'\036'$'\037'$'\177'
+
+    if [[ "$value" =~ [$code_ctrl_chars] ]]; then
       return 10
     fi
   fi
 
   if [ "$invalidateTextCtrlChars" = "1" ]; then
-    # Invalid control chars:
+    # text control chars:
     # \011      - 9         (HT) [ \t HORIZONTAL TABULATION ]
     # \012      - 10        (LF) [ \n LINE FEED ]
     # \015      - 13        (CR) [ \r CARRIAGE RETURN ]
-    if [[ "$value" =~ [$'\011'$'\012'$'\015'] ]]; then
+    local text_ctrl_chars=$'\011'$'\012'$'\015'
+
+    if [[ "$value" =~ [$text_ctrl_chars] ]]; then
       return 10
     fi
   fi
@@ -174,7 +192,7 @@ shell_cli_type_validate_string() {
 # - invalidate if found ANY text control characters (\n, \r, and \t)
 #
 # Arguments:
-# - value: normalizated value.
+# - value: non empty normalizated value.
 #
 # Returns:
 # - 0: if the value is a valid representative of this type
@@ -188,7 +206,7 @@ shell_cli_type_validate_string_code_text() {
 # - invalidate if found ANY control characters (except \n, \r, and \t)
 #
 # Arguments:
-# - value: normalizated value.
+# - value: non empty normalizated value.
 #
 # Returns:
 # - 0: if the value is a valid representative of this type
@@ -201,7 +219,7 @@ shell_cli_type_validate_string_code_trim() {
 # shell_cli_type_validate_string_none validate 'string'.
 #
 # Arguments:
-# - value: normalizated value.
+# - value: non empty normalizated value.
 #
 # Returns:
 # - 0: if the value is a valid representative of this type

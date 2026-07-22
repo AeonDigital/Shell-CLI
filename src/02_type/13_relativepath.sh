@@ -22,7 +22,7 @@ shell_cli_type_normalize_relativepath() {
 # shell_cli_type_validate_relativepath validate 'relativepath'.
 #
 # Arguments:
-# - value: normalizated value.
+# - value: non empty normalizated value.
 # - aux: optional auxiliary configuration.
 #
 # Returns:

@@ -22,7 +22,7 @@ shell_cli_type_normalize_function() {
 # shell_cli_type_validate_function validate 'function'.
 #
 # Arguments:
-# - value: normalizated value.
+# - value: non empty normalizated value.
 # - aux: optional auxiliary configuration.
 #
 # Returns:

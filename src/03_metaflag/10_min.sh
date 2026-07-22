@@ -11,9 +11,9 @@ declare -gA METAFLAG_min=()
 METAFLAG_min["long"]="min"
 METAFLAG_min["short"]=""
 METAFLAG_min["type"]="string"
-METAFLAG_min["array"]="0"
-METAFLAG_min["assoc"]="0"
-METAFLAG_min["required"]="0"
+METAFLAG_min["array"]=false
+METAFLAG_min["assoc"]=false
+METAFLAG_min["required"]=false
 METAFLAG_min["default"]=""
 METAFLAG_min["enum"]=""
 METAFLAG_min["assoc_keys"]=""
@@ -43,7 +43,7 @@ METAFLAG_min["transform"]=""
 shell_cli_metaflag_validate_min() {
   SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE=""
   
-  if ! shell_cli_metaflag_cross_validate_min_max "$2"; then
+  if ! shell_cli_metaflag_cross_validate_min_max "$1" "$2"; then
     return 1
   fi
 

@@ -22,7 +22,7 @@ shell_cli_type_normalize_filename() {
 # shell_cli_type_validate_filename validate 'filename'.
 #
 # Arguments:
-# - value: normalizated value.
+# - value: non empty normalizated value.
 # - aux: optional auxiliary configuration.
 #
 # Returns:

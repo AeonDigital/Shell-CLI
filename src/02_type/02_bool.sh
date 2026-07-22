@@ -32,7 +32,7 @@ shell_cli_type_normalize_bool() {
 # shell_cli_type_validate_bool validate 'bool'.
 #
 # Arguments:
-# - value: normalizated value.
+# - value: non empty normalizated value.
 # - aux: optional auxiliary configuration.
 #
 # Returns:

@@ -32,6 +32,7 @@ shell_cli_metaflag_cross_validate_min_max() {
 
   if [ "$_min" != "" ] && [ "$_max" != "" ]; then
     local _type="${__assoc["type"]}"
+
     case "$_type" in
       int)
         if (( $_min > $_max )); then
