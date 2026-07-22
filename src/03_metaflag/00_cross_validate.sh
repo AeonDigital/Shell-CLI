@@ -5,7 +5,7 @@
 # DESCRIPTION: 
 # ==============================================================================
 
-# shell_cli_metaflag_cross_validate_min_max metaflag 'min' and 'max'.
+# shell_cli_metaflag_property_cross_validate_min_max metaflag 'min' and 'max'.
 #
 # Arguments:
 # - fval: value (normalizated and validate by type).
@@ -18,7 +18,7 @@
 # Returns:
 # - 0: if the value can be used in this flag.
 # - 1: if the value cannot be used in this flag.
-shell_cli_metaflag_cross_validate_min_max() {
+shell_cli_metaflag_property_cross_validate_min_max() {
   local fassoc="$2"
   local -n __assoc="${fassoc}"
   SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE=""
@@ -80,7 +80,7 @@ shell_cli_metaflag_cross_validate_min_max() {
   return 0
 }
 
-# shell_cli_metaflag_cross_validate_min_array_max_array metaflag 'min_array' and 'max_array'.
+# shell_cli_metaflag_property_cross_validate_min_array_max_array metaflag 'min_array' and 'max_array'.
 #
 # Arguments:
 # - fval: value (normalizated and validate by type).
@@ -93,7 +93,7 @@ shell_cli_metaflag_cross_validate_min_max() {
 # Returns:
 # - 0: if the value can be used in this flag.
 # - 1: if the value cannot be used in this flag.
-shell_cli_metaflag_cross_validate_min_array_max_array() {
+shell_cli_metaflag_property_cross_validate_min_array_max_array() {
   local fassoc="$2"
   local -n __assoc="${fassoc}"
   SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE=""

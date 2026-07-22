@@ -10,10 +10,16 @@
 declare -g SHELL_CLI_FLAG_CHECK_RULES_ERR_MESSAGE=""
 
 
-# shell_cli_flag_check_rules normalize, validate and asserts all flag specifications.
+# Stores the name of each flag family that has been fully validated.
+declare -A SHELL_CLI_FLAG_CHECKED_FAMILY=()
+
+
+
+# shell_cli_flag_check_rules normalize, validate and asserts all flag properties
+# specifications.
 #
 # Arguments:
-# - fassoc: name of associative array with all flag definitions.
+# - assocName: name of the associative array representing the flag to be checked.
 #
 # Returns:
 # - 0: if all flag properties are valid.
@@ -27,7 +33,7 @@ shell_cli_flag_check_rules() {
 
   local str_declare=$(declare -p "$assocName" 2>/dev/null)
   if [[ ! "$str_declare" =~ ^"declare -A" ]]; then
-    SHELL_CLI_FLAG_CHECK_RULES_ERR_MESSAGE="${errPrefix} :: invalid flag definition '$assocName'; must be an associative array (declare -A)."
+    SHELL_CLI_FLAG_CHECK_RULES_ERR_MESSAGE="${errPrefix} :: invalid definition '$assocName'; must be an associative array (declare -A)."
     return 1
   fi
 
@@ -133,5 +139,90 @@ shell_cli_flag_check_rules() {
 
 
   flagAssoc["__checked"]="1"
+  return 0
+}
+
+
+
+# shell_cli_flag_check_flagfamily_rules normalizes, validates, and asserts all flag specifications
+# for the entire specified family.
+#
+# Arguments:
+# - flagFamily: name (prefix) of the flag definitions to be checked.
+# - flagOrderArray: name of the indexed array that orders this family flag.
+#
+# Returns:
+# - 0: if all flag properties of the entire family are valid.
+# - 1: if any flag property are invalid.
+#      In this case, an error message will be stored in 
+#      'SHELL_CLI_FLAG_CHECK_RULES_ERR_MESSAGE'
+shell_cli_flag_check_flagfamily_rules() {
+  local flagFamily="$1"
+  local flagOrderArray="$2"
+
+
+  if [ "${SHELL_CLI_FLAG_CHECKED_FAMILY["$flagFamily"]}" = "1" ]; then
+    return 0
+  fi
+
+
+
+  if [ "${flagFamily}" = "" ]; then
+    SHELL_CLI_FLAG_CHECK_RULES_ERR_MESSAGE="[ERR] :: Flag family name is required."
+    return 1
+  fi
+
+  if [ "${flagOrderArray}" = "" ]; then
+    SHELL_CLI_FLAG_CHECK_RULES_ERR_MESSAGE="[ERR] :: Default order array is required."
+    return 1
+  fi
+
+  local str_declare=$(declare -p "$flagOrderArray" 2>/dev/null)
+  if [[ ! "$str_declare" =~ ^"declare -a" ]]; then
+    SHELL_CLI_FLAG_CHECK_RULES_ERR_MESSAGE="[ERR] :: Invalid default order array '$flagOrderArray'. Expected indexed array (declare -a)."
+    return 1
+  fi
+
+
+  #
+  # Loads the flag's associative array and checks if it has already been validated.
+  local -n arrayOrder="${flagOrderArray}"
+  if [ "${#arrayOrder[@]}" = "0" ]; then
+    SHELL_CLI_FLAG_CHECK_RULES_ERR_MESSAGE="[ERR] :: invalid order definition '$flagOrderArray'; empty array."
+    return 1
+  fi
+
+  #
+  # Get entire assoc flag definition for this family and chek if all exists
+  local -a flagAssocNames=()
+  local flagName=""
+  for flagName in "${arrayOrder[@]}"; do
+    flagName="${flagFamily}_${flagName}"
+
+    local str_declare=$(declare -p "$flagName" 2>/dev/null)
+    if [[ ! "$str_declare" =~ ^"declare -A" ]]; then
+      SHELL_CLI_FLAG_CHECK_RULES_ERR_MESSAGE="[ERR] :: Invalid or undefined assoc flag '$flagName'. Expected associative array (declare -A)."
+      return 1
+    fi
+
+    flagAssocNames+=("${flagName}")
+  done
+
+
+
+  #
+  # check all flags
+  local checkStatus="0"
+  for flagName in "${flagAssocNames[@]}"; do
+    shell_cli_flag_check_rules "${flagName}"
+    checkStatus=$?
+
+    if [ "$checkStatus" != "0" ]; then
+      return $checkStatus
+    fi
+  done
+
+
+  SHELL_CLI_FLAG_CHECKED_FAMILY["$flagFamily"]="1"
   return 0
 }

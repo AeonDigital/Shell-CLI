@@ -43,7 +43,7 @@ METAFLAG_max["transform"]=""
 shell_cli_metaflag_validate_max() {
   SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE=""
 
-  if ! shell_cli_metaflag_cross_validate_min_max "$1" "$2"; then
+  if ! shell_cli_metaflag_property_cross_validate_min_max "$1" "$2"; then
     return 1
   fi
 

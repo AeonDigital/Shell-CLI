@@ -53,7 +53,7 @@ shell_cli_metaflag_validate_max_array() {
     return 1
   fi
 
-  if ! shell_cli_metaflag_cross_validate_min_array_max_array "$fval" "$fassoc"; then
+  if ! shell_cli_metaflag_property_cross_validate_min_array_max_array "$fval" "$fassoc"; then
     return 1
   fi
 
