@@ -10,22 +10,27 @@
 declare -gA METAFLAG_long=()
 METAFLAG_long["long"]="long"
 METAFLAG_long["short"]=""
+METAFLAG_long["description"]="Long canonical name identifier for the flag execution mapping."
+METAFLAG_long["tipinput"]=""
 METAFLAG_long["type"]="string"
-METAFLAG_long["array"]=false
-METAFLAG_long["assoc"]=false
+METAFLAG_long["enum"]=""
+
 METAFLAG_long["required"]=true
 METAFLAG_long["default"]=""
-METAFLAG_long["enum"]=""
+
+METAFLAG_long["array"]=false
+METAFLAG_long["assoc"]=false
 METAFLAG_long["assoc_keys"]=""
+
+METAFLAG_long["normalize"]=""
+METAFLAG_long["validate"]=""
+METAFLAG_long["transform"]=""
+METAFLAG_long["regex"]="^[a-z0-9_-]+$"
+
 METAFLAG_long["min"]="4"
 METAFLAG_long["max"]="32"
 METAFLAG_long["min_array"]=""
 METAFLAG_long["max_array"]=""
-METAFLAG_long["regex"]="^[a-z0-9_-]+$"
-METAFLAG_long["description"]="Long canonical name identifier for the flag execution mapping."
-METAFLAG_long["tipinput"]=""
-METAFLAG_long["validate"]=""
-METAFLAG_long["transform"]=""
 
 
 

@@ -10,22 +10,27 @@
 declare -gA METAFLAG_short=()
 METAFLAG_short["long"]="short"
 METAFLAG_short["short"]=""
+METAFLAG_short["description"]="Short alphanumeric character alias for the flag (1 to 3 chars)."
+METAFLAG_short["tipinput"]=""
 METAFLAG_short["type"]="string"
-METAFLAG_short["array"]=false
-METAFLAG_short["assoc"]=false
+METAFLAG_short["enum"]=""
+
 METAFLAG_short["required"]=false
 METAFLAG_short["default"]=""
-METAFLAG_short["enum"]=""
+
+METAFLAG_short["array"]=false
+METAFLAG_short["assoc"]=false
 METAFLAG_short["assoc_keys"]=""
+
+METAFLAG_short["normalize"]=""
+METAFLAG_short["validate"]=""
+METAFLAG_short["transform"]=""
+METAFLAG_short["regex"]="^[a-zA-Z0-9]+$"
+
 METAFLAG_short["min"]="1"
 METAFLAG_short["max"]="3"
 METAFLAG_short["min_array"]=""
 METAFLAG_short["max_array"]=""
-METAFLAG_short["regex"]="^[a-zA-Z0-9]+$"
-METAFLAG_short["description"]="Short alphanumeric character alias for the flag (1 to 3 chars)."
-METAFLAG_short["tipinput"]=""
-METAFLAG_short["validate"]=""
-METAFLAG_short["transform"]=""
 
 
 

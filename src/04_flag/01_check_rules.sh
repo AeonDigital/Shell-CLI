@@ -33,15 +33,15 @@ shell_cli_flag_check_rules() {
 
   local str_declare=$(declare -p "$assocName" 2>/dev/null)
   if [[ ! "$str_declare" =~ ^"declare -A" ]]; then
-    SHELL_CLI_FLAG_CHECK_RULES_ERR_MESSAGE="${errPrefix} :: invalid definition '$assocName'; must be an associative array (declare -A)."
+    SHELL_CLI_FLAG_CHECK_RULES_ERR_MESSAGE="${errPrefix} :: invalid definition; must be an associative array (declare -A)."
     return 1
   fi
 
 
   #
   # Loads the flag's associative array and checks if it has already been validated.
-  local -n flagAssoc="${assocName}"
-  if [ "${flagAssoc["__checked"]}" = "1" ]; then
+  local -n flagAssocDefinition="${assocName}"
+  if [ "${flagAssocDefinition["__checked"]}" = "1" ]; then
     return 0
   fi
 
@@ -54,11 +54,11 @@ shell_cli_flag_check_rules() {
   local fpropDefault=""
 
   for fpropName in "${SHELL_CLI_METAFLAG_DEFAULT_ORDER[@]}"; do
-    fpropValue="${flagAssoc["${fpropName}"]}"
+    fpropValue="${flagAssocDefinition["${fpropName}"]}"
     
     fpropDefault="${SHELL_CLI_METAFLAG_DEFAULT["${fpropName}"]}"
     if [ "${fpropValue}" = "" ] && [ "${fpropDefault}" != "" ]; then
-      flagAssoc["${fpropName}"]="$fpropDefault"
+      flagAssocDefinition["${fpropName}"]="$fpropDefault"
     fi
   done
 
@@ -67,7 +67,7 @@ shell_cli_flag_check_rules() {
   #
   # Normalize and validate raw values of each property in the given flag
   for fpropName in "${SHELL_CLI_METAFLAG_DEFAULT_ORDER[@]}"; do
-    fpropValue="${flagAssoc["${fpropName}"]}"
+    fpropValue="${flagAssocDefinition["${fpropName}"]}"
     local finalPropValue="${fpropValue}"
     
     local -n metaFlag="METAFLAG_${fpropName}"
@@ -79,42 +79,34 @@ shell_cli_flag_check_rules() {
     if [ "${fpropValue}" != "" ]; then
       local metaFlagType="${metaFlag["type"]}"
 
-      local propNormalizeFN="shell_cli_type_normalize_${metaFlagType}"
-      local propValidateFN="shell_cli_type_validate_${metaFlagType}"
-      local propNormalizatedValue=""
-      local propValidateStatus=""
+      local normalizeByTypeFN="shell_cli_type_normalize_${metaFlagType}"
+      local validateByTypeFN="shell_cli_type_validate_${metaFlagType}"
+      local normalizatedValue=""
+      local validateStatus=""
 
       if [ "$metaFlagType" = "enum" ]; then
-        propNormalizatedValue=$("${propNormalizeFN}" "${metaFlag["enum"]}")
-        propValidateStatus=$("${propValidateFN}" "${fpropValue}" "$propNormalizatedValue"; echo $?)
-        propNormalizatedValue="${fpropValue}"
+        normalizatedValue=$("${normalizeByTypeFN}" "${metaFlag["enum"]}")
+        validateStatus=$("${validateByTypeFN}" "${fpropValue}" "$normalizatedValue"; echo $?)
+        normalizatedValue="${fpropValue}"
       else
-        if [ "$metaFlagType" = "string" ]; then
-          local fpropNormalizeStringRules="${SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["${fpropName}"]}"
-          local fpropValidateStringRules="${fpropNormalizeStringRules/_trim/}"
-
-          propNormalizeFN+="_${fpropNormalizeStringRules}"
-          propValidateFN+="_${fpropValidateStringRules}"
-        fi
-
-        propNormalizatedValue=$("${propNormalizeFN}" "${fpropValue}")
-        propValidateStatus=$("${propValidateFN}" "$propNormalizatedValue"; echo $?)
+        normalizatedValue=$("${normalizeByTypeFN}" "${fpropValue}")
+        validateStatus=$("${validateByTypeFN}" "$normalizatedValue"; echo $?)
       fi
 
 
-      if [ "${propValidateStatus}" != 0 ]; then
-        SHELL_CLI_FLAG_CHECK_RULES_ERR_MESSAGE="${errPrefix}[ prop: ${metaFlagType} ] :: invalid property '${fpropName}'; value='${propNormalizatedValue}'"
-        if [ "${propValidateStatus}" = "10" ]; then
+      if [ "${validateStatus}" != 0 ]; then
+        SHELL_CLI_FLAG_CHECK_RULES_ERR_MESSAGE="${errPrefix}[ prop: ${metaFlagType} ] :: invalid property '${fpropName}'; value='${normalizatedValue}'"
+        if [ "${validateStatus}" = "10" ]; then
           SHELL_CLI_FLAG_CHECK_RULES_ERR_MESSAGE+=" (remove control characters)"
         fi
-        return "$propValidateStatus"
+        return "$validateStatus"
       fi
 
-      finalPropValue="$propNormalizatedValue"
+      finalPropValue="$normalizatedValue"
     fi
 
 
-    flagAssoc["${fpropName}"]="$finalPropValue"
+    flagAssocDefinition["${fpropName}"]="$finalPropValue"
     unset -n metaFlag
   done
 
@@ -124,7 +116,7 @@ shell_cli_flag_check_rules() {
   # Validates the value against the flag's specific rules and in 
   # relation to its other properties.
   for fpropName in "${SHELL_CLI_METAFLAG_DEFAULT_ORDER[@]}"; do
-    fpropValue="${flagAssoc["${fpropName}"]}"
+    fpropValue="${flagAssocDefinition["${fpropName}"]}"
 
     local metaflagValidateFN="shell_cli_metaflag_validate_${fpropName}"
     local metaFlagValidateStatus=""
@@ -138,7 +130,7 @@ shell_cli_flag_check_rules() {
   done
 
 
-  flagAssoc["__checked"]="1"
+  flagAssocDefinition["__checked"]="1"
   return 0
 }
 

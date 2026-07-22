@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: 02_type/01_string.sh
+# SCRIPT: 02_type/02_text.sh
 # DESCRIPTION: 
 # ==============================================================================
 
-# shell_cli_type_normalize_string normalize 'string' value.
+# shell_cli_type_normalize_text normalize 'text' value.
 # - remove ALL control characters (except \n, \r, and \t)
-# - remove text control characters (\n, \r, and \t)
 # - performa a trim
 #
 # Arguments:
@@ -15,15 +14,14 @@
 #
 # Returns:
 # - Outputs normalizated value.
-shell_cli_type_normalize_string() {
-  shell_cli_type_normalize_main "$1" "1" "1" "1"
+shell_cli_type_normalize_text() {
+  shell_cli_type_normalize_main "$1" "1" "0" "1"
 }
 
 
 
-# shell_cli_type_validate_string validate 'string'.
+# shell_cli_type_validate_text validate 'text'.
 # - invalidate if found ANY control characters (except \n, \r, and \t)
-# - invalidate if found ANY text control characters (\n, \r, and \t)
 #
 # Arguments:
 # - value: non empty normalizated value.
@@ -32,7 +30,7 @@ shell_cli_type_normalize_string() {
 # - 0: if the value is a valid representative of this type
 # - 1: if the value is not a valid representative of this type.
 # - 10: if the value contains any invalid control characters.
-shell_cli_type_validate_string() {
-  local status=$(shell_cli_type_validate_main "$1" "1" "1"; echo $?)
+shell_cli_type_validate_text() {
+  local status=$(shell_cli_type_validate_main "$1" "1" "0"; echo $?)
   return "$status"
 }

@@ -12,7 +12,9 @@ declare -gA SHELL_CLI_TYPE=(
   #
   # GROUP 01 : Primitives
 
-  ["string"]="string" 
+  ["string"]="string"
+  ["text"]="text"
+  ["code"]="code"
   ["bool"]="bool"
   ["int"]="int" 
   ["float"]="float" 
