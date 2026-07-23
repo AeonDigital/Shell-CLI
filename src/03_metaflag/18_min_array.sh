@@ -34,7 +34,7 @@ METAFLAG_min_array["max_array"]=""
 
 
 
-# shell_cli_metaflag_validate_min_array metaflag 'min_array'.
+# shell_cli_metaflag_property_validate_min_array metaflag 'min_array'.
 #
 # Arguments:
 # - fval: value (normalizated and validate by type).
@@ -44,17 +44,17 @@ METAFLAG_min_array["max_array"]=""
 # - 0: if the value can be used in this flag.
 # - 1: if the value cannot be used in this flag.
 #      In this case, an error message will be stored in 
-#      'SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE'
-shell_cli_metaflag_validate_min_array() {
+#      'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'
+shell_cli_metaflag_property_validate_min_array() {
   local fval="$1"
   local fassoc="$2"
-  SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE=""
+  SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE=""
 
   local -n __assoc="${fassoc}"
   local _array="${__assoc["array"]}"
 
   if [ "$_array" = "0" ] &&  [ "$fval" != "" ]; then
-    SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="cannot define 'min_array' for a 'array=false' flag."
+    SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="cannot define 'min_array' for a 'array=false' flag."
     return 1
   fi
 

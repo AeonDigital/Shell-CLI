@@ -34,7 +34,7 @@ METAFLAG_transform["max_array"]=""
 
 
 
-# shell_cli_metaflag_validate_transform metaflag 'transform'.
+# shell_cli_metaflag_property_validate_transform metaflag 'transform'.
 #
 # Arguments:
 # - fval: value (normalizated and validate by type).
@@ -44,11 +44,11 @@ METAFLAG_transform["max_array"]=""
 # - 0: if the value can be used in this flag.
 # - 1: if the value cannot be used in this flag.
 #      In this case, an error message will be stored in 
-#      'SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE'
-shell_cli_metaflag_validate_transform() {
+#      'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'
+shell_cli_metaflag_property_validate_transform() {
   local fval="$1"
   local fassoc="$2"
-  SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE=""
+  SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE=""
 
   if [ "$fval" = "" ]; then
     return 0
@@ -56,14 +56,14 @@ shell_cli_metaflag_validate_transform() {
 
   local str_declare=$(declare -p "$fval" 2>/dev/null)
   if [[ ! "$str_declare" =~ ^"declare -a" ]]; then
-    SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="pointer '$fval' must be an indexed array (declare -a)."
+    SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="pointer '$fval' must be an indexed array (declare -a)."
     return 1
   fi
 
   local -n ref_transform="$fval"
   for fn_transform in "${ref_transform[@]}"; do
     if ! declare -f "$fn_transform" >/dev/null; then
-      SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="transform function does not exist ( fn='${fn_transform}' )."
+      SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="transform function does not exist ( fn='${fn_transform}' )."
       return 1
     fi
   done

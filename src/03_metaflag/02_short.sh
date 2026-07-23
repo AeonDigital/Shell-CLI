@@ -34,7 +34,7 @@ METAFLAG_short["max_array"]=""
 
 
 
-# shell_cli_metaflag_validate_short metaflag 'short'.
+# shell_cli_metaflag_property_validate_short metaflag 'short'.
 #
 # Arguments:
 # - fval: value (normalizated and validate by type).
@@ -44,18 +44,18 @@ METAFLAG_short["max_array"]=""
 # - 0: if the value can be used in this flag.
 # - 1: if the value cannot be used in this flag.
 #      In this case, an error message will be stored in 
-#      'SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE'
-shell_cli_metaflag_validate_short() {
+#      'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'
+shell_cli_metaflag_property_validate_short() {
   local fval="$1"
   local fassoc="$2"
-  SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE=""
+  SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE=""
 
   if [ "$fval" = "" ]; then
     return 0
   fi
 
   if [[ "$fval" =~ ^(h|itr)$ ]]; then
-    SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="names 'h' and 'itr' are reserved."
+    SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="names 'h' and 'itr' are reserved."
     return 1
   fi
 
@@ -63,9 +63,35 @@ shell_cli_metaflag_validate_short() {
   local _long="${__assoc["long"]}"
 
   if [ "$fval" = "$_long" ]; then
-    SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="cannot be the same as 'long' ( short='$fval' )."
+    SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="cannot be the same as 'long' ( short='$fval' )."
     return 1
   fi
 
   return 0
+}
+
+
+
+# shell_cli_metaflag_check_input_short checks whether the input flag 
+# value matches the configuration of this property.
+#
+# Arguments:
+# - inputVal: value inputed (normalizated and validate by type).
+# - ruleVal: current value of this property.
+#
+# Returns:
+# - 0: if valid.
+#      The new value after check will be stored in
+#      'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'
+# - 1: if invalid.
+#      In this case, an error message will be stored in 
+#      'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'
+shell_cli_metaflag_check_input_short() {
+  # This check should never be performed.
+  # It is included here solely as a placeholder.
+  local inputVal="$1"
+  local ruleVal="$2"
+  SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE="inapplicable validation of 'short'"
+  SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE="!ERR"
+  return 1
 }

@@ -34,7 +34,7 @@ METAFLAG_type["max_array"]=""
 
 
 
-# shell_cli_metaflag_validate_type metaflag 'type'.
+# shell_cli_metaflag_property_validate_type metaflag 'type'.
 #
 # Arguments:
 # - fval: value (normalizated and validate by type).
@@ -44,21 +44,47 @@ METAFLAG_type["max_array"]=""
 # - 0: if the value can be used in this flag.
 # - 1: if the value cannot be used in this flag.
 #      In this case, an error message will be stored in 
-#      'SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE'
-shell_cli_metaflag_validate_type() {
+#      'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'
+shell_cli_metaflag_property_validate_type() {
   local fval="$1"
   local fassoc="$2"
-  SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE=""
+  SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE=""
 
   if [ "$fval" = "" ]; then
-    SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="cannot be empty"
+    SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="cannot be empty"
     return 1
   fi
 
   if [ "${SHELL_CLI_TYPE["$fval"]}" = "" ]; then
-    SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="invalid definition ( type='$fval' )."
+    SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="invalid definition ( type='$fval' )."
     return 1
   fi
 
   return 0
+}
+
+
+
+# shell_cli_metaflag_check_input_type checks whether the input flag 
+# value matches the configuration of this property.
+#
+# Arguments:
+# - inputVal: value inputed (normalizated and validate by type).
+# - ruleVal: current value of this property.
+#
+# Returns:
+# - 0: if valid.
+#      The new value after check will be stored in
+#      'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'
+# - 1: if invalid.
+#      In this case, an error message will be stored in 
+#      'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'
+shell_cli_metaflag_check_input_type() {
+  # This check should never be performed.
+  # It is included here solely as a placeholder.
+  local inputVal="$1"
+  local ruleVal="$2"
+  SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE="inapplicable validation of 'type'"
+  SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE="!ERR"
+  return 1
 }

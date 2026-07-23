@@ -34,7 +34,7 @@ METAFLAG_assoc_keys["max_array"]=""
 
 
 
-# shell_cli_metaflag_validate_assoc_keys metaflag 'assoc_keys'.
+# shell_cli_metaflag_property_validate_assoc_keys metaflag 'assoc_keys'.
 #
 # Arguments:
 # - fval: value (normalizated and validate by type).
@@ -44,25 +44,25 @@ METAFLAG_assoc_keys["max_array"]=""
 # - 0: if the value can be used in this flag.
 # - 1: if the value cannot be used in this flag.
 #      In this case, an error message will be stored in 
-#      'SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE'
-shell_cli_metaflag_validate_assoc_keys() {
+#      'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'
+shell_cli_metaflag_property_validate_assoc_keys() {
   local fval="$1"
   local fassoc="$2"
-  SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE=""
+  SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE=""
 
   local -n __assoc="${fassoc}"
   local _assoc="${__assoc["assoc"]}"
 
   if [ "$_assoc" = "0" ]; then
     if [ "$fval" != "" ]; then
-      SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="cannot define 'assoc_keys' for a 'assoc=false' flag."
+      SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="cannot define 'assoc_keys' for a 'assoc=false' flag."
       return 1
     fi
   else
     if [ "$fval" != "" ]; then
       local str_declare=$(declare -p "$fval" 2>/dev/null)
       if [[ ! "$str_declare" =~ ^"declare -a" ]]; then
-        SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="pointer '$fval' must be an indexed array (declare -a)."
+        SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="pointer '$fval' must be an indexed array (declare -a)."
         return 1
       fi
     fi

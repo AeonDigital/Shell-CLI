@@ -34,7 +34,7 @@ METAFLAG_assoc["max_array"]=""
 
 
 
-# shell_cli_metaflag_validate_assoc metaflag 'assoc'.
+# shell_cli_metaflag_property_validate_assoc metaflag 'assoc'.
 #
 # Arguments:
 # - fval: value (normalizated and validate by type).
@@ -44,14 +44,14 @@ METAFLAG_assoc["max_array"]=""
 # - 0: if the value can be used in this flag.
 # - 1: if the value cannot be used in this flag.
 #      In this case, an error message will be stored in 
-#      'SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE'
-shell_cli_metaflag_validate_assoc() {
+#      'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'
+shell_cli_metaflag_property_validate_assoc() {
   local fval="$1"
   local fassoc="$2"
-  SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE=""
+  SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE=""
 
   if [ "$fval" = "" ]; then
-    SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="cannot be empty"
+    SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="cannot be empty"
     return 1
   fi
 
@@ -59,7 +59,7 @@ shell_cli_metaflag_validate_assoc() {
   local _array="${__assoc["array"]}"
 
   if [ "$fval" = "1" ] && [ "$_array" = "1" ]; then
-    SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="cannot declare 'assoc=true' and 'array=true' simultaneously."
+    SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="cannot declare 'assoc=true' and 'array=true' simultaneously."
     return 1
   fi
 

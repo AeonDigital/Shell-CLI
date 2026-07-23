@@ -34,7 +34,7 @@ METAFLAG_max["max_array"]=""
 
 
 
-# shell_cli_metaflag_validate_max metaflag 'max'.
+# shell_cli_metaflag_property_validate_max metaflag 'max'.
 #
 # Arguments:
 # - fval: value (normalizated and validate by type).
@@ -44,9 +44,9 @@ METAFLAG_max["max_array"]=""
 # - 0: if the value can be used in this flag.
 # - 1: if the value cannot be used in this flag.
 #      In this case, an error message will be stored in 
-#      'SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE'
-shell_cli_metaflag_validate_max() {
-  SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE=""
+#      'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'
+shell_cli_metaflag_property_validate_max() {
+  SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE=""
 
   if ! shell_cli_metaflag_property_cross_validate_min_max "$1" "$2"; then
     return 1

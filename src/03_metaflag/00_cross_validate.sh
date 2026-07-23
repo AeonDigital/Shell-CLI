@@ -21,7 +21,7 @@
 shell_cli_metaflag_property_cross_validate_min_max() {
   local fassoc="$2"
   local -n __assoc="${fassoc}"
-  SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE=""
+  SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE=""
 
   if [ "${__assoc["__cross_min_max"]}" == "1" ]; then
     return 0
@@ -36,14 +36,14 @@ shell_cli_metaflag_property_cross_validate_min_max() {
     case "$_type" in
       int)
         if (( $_min > $_max )); then
-          SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="'min' limit cannot exceed 'max' ( min='$_min', max='$_max' )."
+          SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="'min' limit cannot exceed 'max' ( min='$_min', max='$_max' )."
           return 1
         fi
         ;;
         
       float)
         if ! shell_cli_utils_math_is_less_or_equal "$_min" "$_max" "0"; then
-          SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="'min' limit cannot exceed 'max' ( min='$_min', max='$_max' )."
+          SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="'min' limit cannot exceed 'max' ( min='$_min', max='$_max' )."
           return 1
         fi
         ;;
@@ -62,14 +62,14 @@ shell_cli_metaflag_property_cross_validate_min_max() {
         local max_sec=$(date -d "${prefix}${_max}" +%s 2>/dev/null || date -j -f "$fmt" "${prefix}${_max}" +%s 2>/dev/null)
 
         if (( $min_sec > $max_sec )); then
-          SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="'min' limit cannot exceed 'max' ( min='$_min', max='$_max' )."
+          SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="'min' limit cannot exceed 'max' ( min='$_min', max='$_max' )."
           return 1
         fi
         ;;
         
       *)
         if (( $_min > $_max )); then
-          SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="'min' length cannot exceed 'max' ( min='$_min', max='$_max' )."
+          SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="'min' length cannot exceed 'max' ( min='$_min', max='$_max' )."
           return 1
         fi
         ;;
@@ -96,7 +96,7 @@ shell_cli_metaflag_property_cross_validate_min_max() {
 shell_cli_metaflag_property_cross_validate_min_array_max_array() {
   local fassoc="$2"
   local -n __assoc="${fassoc}"
-  SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE=""
+  SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE=""
 
   if [ "${__assoc["__cross_min_array_max_array"]}" == "1" ]; then
     return 0
@@ -108,7 +108,7 @@ shell_cli_metaflag_property_cross_validate_min_array_max_array() {
 
   if [ "${_array}" = "1" ] && [ "$_min_array" != "" ] && [ "$_max_array" != "" ]; then
     if (( $_min_array > $_max_array )); then
-      SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="'min_array' limit cannot exceed 'max_array' ( min_array='$_min_array', max_array='$_max_array' )."
+      SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="'min_array' limit cannot exceed 'max_array' ( min_array='$_min_array', max_array='$_max_array' )."
       return 1
     fi
   fi

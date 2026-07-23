@@ -6,8 +6,19 @@
 # ==============================================================================
 
 # Stores the last error message generated from the last 
-# execution of 'shell_cli_metaflag_validate_<flag_property>' function.
-declare -g SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE=""
+# execution of 'shell_cli_metaflag_property_validate_<flag_property>' function.
+declare -g SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE=""
+
+
+# Stores the last error message generated from the last 
+# execution of 'shell_cli_metaflag_check_input_<flag_property>' function.
+declare -g SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE=""
+
+# Stores the new value to be used as the counterpart to the one received from 
+# user input. Is always populated by the function 
+# 'shell_cli_metaflag_check_input_<flag_property>'
+declare -g SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE=""
+
 
 
 # Global associative array mapping all mandatory and optional metadata schema keys
@@ -68,54 +79,24 @@ SHELL_CLI_METAFLAG_DEFAULT_ORDER+=("max_array")
 
 
 
-# Global Associative array mapping the normalization and validation 
-# method to be used for flag values ​​of type 'string'.
+# Global indexed array that defines the strict execution order for validating 
+# inputs against each property's rules.
+# Type normalization and validation occur only if the passed value is not empty.
+# 
+# The properties listed below do not have any form of validation for the input 
+# values ​​assigned to the flags.
 #
-# Standardization code:
+# - long
+# - short
+# - description
+# - tipinput
 #
-# - CODE_CTRL : targets all control chars except \r, \t, and \n
-# - TEXT_CTRL : targets all text chars like \r, \t, and \n
-# -      TRIM : performa a trim [ used only for normalization step ]
-#
-#
-# Usage options:
-#
-# - code_text_trim : CODE_CTRL + TEXT_CTRL + TRIM
-# -      code_text : CODE_CTRL + TEXT_CTRL
-# -      code_trim : CODE_CTRL + TRIM
-# -           code : CODE_CTRL
-# -           trim : TRIM
-# -           none : 
-#
-# Usage example:
-#
-# - For single value field (most common use) : 'code_text_trim'
-# - For single value that's accept empty spaces before and/or after 
-#   the main value : 'code_text'
-# - For multiline texts and/or when the field value have to mantain 
-#   identation with spaces or tabs : 'code_trim'
-# - For fields that's receive code controls.
-declare -gA SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE=()
-SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["long"]="code_text_trim"
-SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["short"]="code_text_trim"
-SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["description"]="code_text"
-SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["tipinput"]="code_text"
-SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["type"]="code_text_trim"
-SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["enum"]="code_text"
+declare -ga SHELL_CLI_METAFLAG_CHECK_INPUT_VALUE_ORDER=()
+SHELL_CLI_METAFLAG_DEFAULT_ORDER+=("required")
+SHELL_CLI_METAFLAG_DEFAULT_ORDER+=("default")
+SHELL_CLI_METAFLAG_DEFAULT_ORDER+=("enum")
 
-SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["required"]="code_text_trim"
-SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["default"]="code_text"
 
-SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["array"]="code_text_trim"
-SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["assoc"]="code_text_trim"
-SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["assoc_keys"]="code_text"
+# SEGUIR COM A VALIDAÇÃO POR ARRAY/ASSOC!
 
-SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["normalize"]="code_text"
-SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["validate"]="code_text"
-SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["transform"]="code_text"
-SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["regex"]="code_text"
 
-SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["min"]="code_text_trim"
-SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["max"]="code_text_trim"
-SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["min_array"]="code_text_trim"
-SHELL_CLI_METAFLAG_PREPARE_STRING_VALUE["max_array"]="code_text_trim"

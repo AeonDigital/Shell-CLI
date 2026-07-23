@@ -34,7 +34,7 @@ METAFLAG_array["max_array"]=""
 
 
 
-# shell_cli_metaflag_validate_array metaflag 'array'.
+# shell_cli_metaflag_property_validate_array metaflag 'array'.
 #
 # Arguments:
 # - fval: value (normalizated and validate by type).
@@ -44,14 +44,14 @@ METAFLAG_array["max_array"]=""
 # - 0: if the value can be used in this flag.
 # - 1: if the value cannot be used in this flag.
 #      In this case, an error message will be stored in 
-#      'SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE'
-shell_cli_metaflag_validate_array() {
+#      'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'
+shell_cli_metaflag_property_validate_array() {
   local fval="$1"
   local fassoc="$2"
-  SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE=""
+  SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE=""
 
   if [ "$fval" = "" ]; then
-    SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="cannot be empty"
+    SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="cannot be empty"
     return 1
   fi
 
@@ -59,8 +59,37 @@ shell_cli_metaflag_validate_array() {
   local _assoc="${__assoc["assoc"]}"
 
   if [ "$fval" = "1" ] && [ "$_assoc" = "1" ]; then
-    SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="cannot declare 'array=true' and 'assoc=true' simultaneously."
+    SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="cannot declare 'array=true' and 'assoc=true' simultaneously."
     return 1
+  fi
+
+  return 0
+}
+
+
+
+# shell_cli_metaflag_check_input_default checks whether the input flag 
+# value matches the configuration of this property.
+#
+# Arguments:
+# - inputVal: value inputed (normalizated and validate by type).
+# - ruleVal: current value of this property.
+#
+# Returns:
+# - 0: if valid.
+#      The new value after check will be stored in
+#      'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'
+# - 1: if invalid.
+#      In this case, an error message will be stored in 
+#      'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'
+shell_cli_metaflag_check_input_default() {
+  local inputVal="$1"
+  local ruleVal="$2"
+  SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE=""
+  SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE=""
+
+  if [ "$inputVal" = "" ] && [ "$ruleVal" != "" ]; then
+    SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE="$ruleVal"
   fi
 
   return 0

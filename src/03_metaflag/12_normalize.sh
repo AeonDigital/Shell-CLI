@@ -33,7 +33,7 @@ METAFLAG_normalize["max_array"]=""
 
 
 
-# shell_cli_metaflag_validate_normalize metaflag 'normalize'.
+# shell_cli_metaflag_property_validate_normalize metaflag 'normalize'.
 #
 # Arguments:
 # - fval: value (normalizated and validate by type).
@@ -43,18 +43,18 @@ METAFLAG_normalize["max_array"]=""
 # - 0: if the value can be used in this flag.
 # - 1: if the value cannot be used in this flag.
 #      In this case, an error message will be stored in 
-#      'SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE'
-shell_cli_metaflag_validate_normalize() {
+#      'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'
+shell_cli_metaflag_property_validate_normalize() {
   local fval="$1"
   local fassoc="$2"
-  SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE=""
+  SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE=""
 
   if [ "$fval" = "" ]; then
     return 0
   fi
 
   if ! declare -f "$fval" >/dev/null; then
-    SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="normalize function does not exist ( fn='${fval}' )."
+    SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="normalize function does not exist ( fn='${fval}' )."
     return 1
   fi
 

@@ -5,42 +5,32 @@
 # DESCRIPTION: 
 # ==============================================================================
 
-# Stores the last error message generated from the last 
-# execution of 'shell_cli_flag_check_rules' function.
-declare -g SHELL_CLI_FLAG_CHECK_RULES_ERR_MESSAGE=""
-
-
-# Stores the name of each flag family that has been fully validated.
-declare -A SHELL_CLI_FLAG_CHECKED_FAMILY=()
-
-
-
 # shell_cli_flag_check_rules normalize, validate and asserts all flag properties
 # specifications.
 #
 # Arguments:
-# - assocName: name of the associative array representing the flag to be checked.
+# - flagVarName: name of the associative array representing the flag to be checked.
 #
 # Returns:
 # - 0: if all flag properties are valid.
 # - 1: if any flag property are invalid.
 #      In this case, an error message will be stored in 
-#      'SHELL_CLI_FLAG_CHECK_RULES_ERR_MESSAGE'
+#      'SHELL_CLI_FLAG_CHECK_RULE_ERR_MESSAGE'
 shell_cli_flag_check_rules() {
-  local assocName="$1"
-  local errPrefix="[ERR][ ${assocName} ]"
-  SHELL_CLI_FLAG_CHECK_RULES_ERR_MESSAGE=""
+  local flagVarName="$1"
+  local errPrefix="[ERR][ ${flagVarName} ]"
+  SHELL_CLI_FLAG_CHECK_RULE_ERR_MESSAGE=""
 
-  local str_declare=$(declare -p "$assocName" 2>/dev/null)
+  local str_declare=$(declare -p "$flagVarName" 2>/dev/null)
   if [[ ! "$str_declare" =~ ^"declare -A" ]]; then
-    SHELL_CLI_FLAG_CHECK_RULES_ERR_MESSAGE="${errPrefix} :: invalid definition; must be an associative array (declare -A)."
+    SHELL_CLI_FLAG_CHECK_RULE_ERR_MESSAGE="${errPrefix} :: invalid definition; must be an associative array (declare -A)."
     return 1
   fi
 
 
   #
   # Loads the flag's associative array and checks if it has already been validated.
-  local -n flagAssocDefinition="${assocName}"
+  local -n flagAssocDefinition="${flagVarName}"
   if [ "${flagAssocDefinition["__checked"]}" = "1" ]; then
     return 0
   fi
@@ -87,6 +77,7 @@ shell_cli_flag_check_rules() {
       if [ "$metaFlagType" = "enum" ]; then
         normalizatedValue=$("${normalizeByTypeFN}" "${metaFlag["enum"]}")
         validateStatus=$("${validateByTypeFN}" "${fpropValue}" "$normalizatedValue"; echo $?)
+
         normalizatedValue="${fpropValue}"
       else
         normalizatedValue=$("${normalizeByTypeFN}" "${fpropValue}")
@@ -95,9 +86,9 @@ shell_cli_flag_check_rules() {
 
 
       if [ "${validateStatus}" != 0 ]; then
-        SHELL_CLI_FLAG_CHECK_RULES_ERR_MESSAGE="${errPrefix}[ prop: ${metaFlagType} ] :: invalid property '${fpropName}'; value='${normalizatedValue}'"
+        SHELL_CLI_FLAG_CHECK_RULE_ERR_MESSAGE="${errPrefix}[ prop: ${metaFlagType} ] :: invalid property '${fpropName}'; value='${normalizatedValue}'"
         if [ "${validateStatus}" = "10" ]; then
-          SHELL_CLI_FLAG_CHECK_RULES_ERR_MESSAGE+=" (remove control characters)"
+          SHELL_CLI_FLAG_CHECK_RULE_ERR_MESSAGE+=" (remove control characters)"
         fi
         return "$validateStatus"
       fi
@@ -118,14 +109,14 @@ shell_cli_flag_check_rules() {
   for fpropName in "${SHELL_CLI_METAFLAG_DEFAULT_ORDER[@]}"; do
     fpropValue="${flagAssocDefinition["${fpropName}"]}"
 
-    local metaflagValidateFN="shell_cli_metaflag_validate_${fpropName}"
-    local metaFlagValidateStatus=""
+    local metaflagPropertyValidateFN="shell_cli_metaflag_property_validate_${fpropName}"
+    local metaFlagPropertyValidateStatus=""
 
-    "$metaflagValidateFN" "$fpropValue" "$assocName"
-    metaFlagValidateStatus="$?"
-    if [ "${metaFlagValidateStatus}" != "0" ]; then
-      SHELL_CLI_FLAG_CHECK_RULES_ERR_MESSAGE="${errPrefix}[ prop: ${fpropName} ] :: ${SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE}"
-      return "$metaFlagValidateStatus"
+    "$metaflagPropertyValidateFN" "$fpropValue" "$flagVarName"
+    metaFlagPropertyValidateStatus="$?"
+    if [ "${metaFlagPropertyValidateStatus}" != "0" ]; then
+      SHELL_CLI_FLAG_CHECK_RULE_ERR_MESSAGE="${errPrefix}[ prop: ${fpropName} ] :: ${SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE}"
+      return "$metaFlagPropertyValidateStatus"
     fi
   done
 
@@ -147,7 +138,7 @@ shell_cli_flag_check_rules() {
 # - 0: if all flag properties of the entire family are valid.
 # - 1: if any flag property are invalid.
 #      In this case, an error message will be stored in 
-#      'SHELL_CLI_FLAG_CHECK_RULES_ERR_MESSAGE'
+#      'SHELL_CLI_FLAG_CHECK_RULE_ERR_MESSAGE'
 shell_cli_flag_check_flagfamily_rules() {
   local flagFamily="$1"
   local flagOrderArray="$2"
@@ -160,18 +151,18 @@ shell_cli_flag_check_flagfamily_rules() {
 
 
   if [ "${flagFamily}" = "" ]; then
-    SHELL_CLI_FLAG_CHECK_RULES_ERR_MESSAGE="[ERR] :: Flag family name is required."
+    SHELL_CLI_FLAG_CHECK_RULE_ERR_MESSAGE="[ERR] :: Flag family name is required."
     return 1
   fi
 
   if [ "${flagOrderArray}" = "" ]; then
-    SHELL_CLI_FLAG_CHECK_RULES_ERR_MESSAGE="[ERR] :: Default order array is required."
+    SHELL_CLI_FLAG_CHECK_RULE_ERR_MESSAGE="[ERR] :: Default order array is required."
     return 1
   fi
 
   local str_declare=$(declare -p "$flagOrderArray" 2>/dev/null)
   if [[ ! "$str_declare" =~ ^"declare -a" ]]; then
-    SHELL_CLI_FLAG_CHECK_RULES_ERR_MESSAGE="[ERR] :: Invalid default order array '$flagOrderArray'. Expected indexed array (declare -a)."
+    SHELL_CLI_FLAG_CHECK_RULE_ERR_MESSAGE="[ERR] :: Invalid default order array '$flagOrderArray'. Expected indexed array (declare -a)."
     return 1
   fi
 
@@ -180,7 +171,7 @@ shell_cli_flag_check_flagfamily_rules() {
   # Loads the flag's associative array and checks if it has already been validated.
   local -n arrayOrder="${flagOrderArray}"
   if [ "${#arrayOrder[@]}" = "0" ]; then
-    SHELL_CLI_FLAG_CHECK_RULES_ERR_MESSAGE="[ERR] :: invalid order definition '$flagOrderArray'; empty array."
+    SHELL_CLI_FLAG_CHECK_RULE_ERR_MESSAGE="[ERR] :: invalid order definition '$flagOrderArray'; empty array."
     return 1
   fi
 
@@ -193,7 +184,7 @@ shell_cli_flag_check_flagfamily_rules() {
 
     local str_declare=$(declare -p "$flagName" 2>/dev/null)
     if [[ ! "$str_declare" =~ ^"declare -A" ]]; then
-      SHELL_CLI_FLAG_CHECK_RULES_ERR_MESSAGE="[ERR] :: Invalid or undefined assoc flag '$flagName'. Expected associative array (declare -A)."
+      SHELL_CLI_FLAG_CHECK_RULE_ERR_MESSAGE="[ERR] :: Invalid or undefined assoc flag '$flagName'. Expected associative array (declare -A)."
       return 1
     fi
 

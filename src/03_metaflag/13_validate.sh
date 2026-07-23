@@ -34,7 +34,7 @@ METAFLAG_validate["max_array"]=""
 
 
 
-# shell_cli_metaflag_validate_validate metaflag 'validate'.
+# shell_cli_metaflag_property_validate_validate metaflag 'validate'.
 #
 # Arguments:
 # - fval: value (normalizated and validate by type).
@@ -44,11 +44,11 @@ METAFLAG_validate["max_array"]=""
 # - 0: if the value can be used in this flag.
 # - 1: if the value cannot be used in this flag.
 #      In this case, an error message will be stored in 
-#      'SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE'
-shell_cli_metaflag_validate_validate() {
+#      'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'
+shell_cli_metaflag_property_validate_validate() {
   local fval="$1"
   local fassoc="$2"
-  SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE=""
+  SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE=""
 
   if [ "$fval" = "" ]; then
     return 0
@@ -56,14 +56,14 @@ shell_cli_metaflag_validate_validate() {
 
   local str_declare=$(declare -p "$fval" 2>/dev/null)
   if [[ ! "$str_declare" =~ ^"declare -a" ]]; then
-    SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="pointer '$fval' must be an indexed array (declare -a)."
+    SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="pointer '$fval' must be an indexed array (declare -a)."
     return 1
   fi
 
   local -n ref_validate="$fval"
   for fn_validate in "${ref_validate[@]}"; do
     if ! declare -f "$fn_validate" >/dev/null; then
-      SHELL_CLI_METAFLAG_VALIDATE_ERR_MESSAGE="validation function does not exist ( fn='${fn_validate}' )."
+      SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="validation function does not exist ( fn='${fn_validate}' )."
       return 1
     fi
   done
