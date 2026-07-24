@@ -38,7 +38,7 @@ shell_cli_type_validate_json() {
   local aux="$2"
 
   # Enforce strict terminal and structural string safety first
-  if ! shell_cli_type_validate_string "$value" "1"; then
+  if ! shell_cli_type_validate_string "$value"; then
     return 10
   fi
 

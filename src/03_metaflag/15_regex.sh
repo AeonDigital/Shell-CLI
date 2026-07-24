@@ -62,3 +62,40 @@ shell_cli_metaflag_property_validate_regex() {
 
   return 0
 }
+
+
+
+# shell_cli_metaflag_check_input_regex checks whether the input flag 
+# value matches the configuration of this property.
+#
+# Arguments:
+# - inputVal: value inputed (normalizated and validate by type).
+# - typeVal: type of value.
+# - ruleVal: current value of this property.
+#
+# Returns:
+# - 0: if valid.
+#      The new value after check will be stored in
+#      'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'
+# - 1: if invalid.
+#      In this case, an error message will be stored in 
+#      'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'
+shell_cli_metaflag_check_input_regex() {
+  local inputVal="$1"
+  local typeVal="$2"
+  local ruleVal="$3"
+  SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE=""
+  SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE=""
+
+  if [ "${ruleVal}" = "" ]; then
+    return 0
+  fi
+
+  if [[ ! ${inputVal} =~ "${ruleVal}" ]]; then
+    SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE="does not match with regular expression; ( regex: '${ruleVal}' )"
+    return 1
+  fi
+
+  SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE="${inputVal}"
+  return 0
+}

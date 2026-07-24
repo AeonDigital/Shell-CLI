@@ -64,7 +64,8 @@ shell_cli_metaflag_property_validate_description() {
 # value matches the configuration of this property.
 #
 # Arguments:
-# - inputVal: value inputed (normalizated and validate by type).
+# - inputVal: value inputed.
+# - typeVal: type of value.
 # - ruleVal: current value of this property.
 #
 # Returns:
@@ -78,7 +79,8 @@ shell_cli_metaflag_check_input_description() {
   # This check should never be performed.
   # It is included here solely as a placeholder.
   local inputVal="$1"
-  local ruleVal="$2"
+  local typeVal="$2"
+  local ruleVal="$3"
   SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE="inapplicable validation of 'description'"
   SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE="!ERR"
   return 1

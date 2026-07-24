@@ -14,11 +14,7 @@
 # - Outputs normalizated value.
 #   or the original string otherwise.
 shell_cli_type_normalize_enum() {
-  # In this case, normalization is identical to validation.
-  if ! shell_cli_parse_sjson_to_assoc "$1"; then
-    return "1"
-  fi
-  echo "${SHELL_CLI_PARSE_SJSON_TO_ASSOC_STRING}"
+  shell_cli_type_normalize_main_assoc_types "$1"
 }
 
 
@@ -27,38 +23,21 @@ shell_cli_type_normalize_enum() {
 #
 # Arguments:
 # - value: non empty normalizated value.
-# - aux: associative array name or JSON string.
+# - aux: name of the associative array containing the acceptable values.
 #
 # Returns:
 # - 0: if the value is a valid representative of this type
 #      the given value must match with any 'key' or 'value' in the
 #      assoc array map.
+#      The values ​​corresponding to the selected 'key' and 'value' will 
+#      be stored in the variables:
+#      - SHELL_CLI_TYPE_VALIDATE_TMP_SELECTED_KEY
+#      - SHELL_CLI_TYPE_VALIDATE_TMP_SELECTED_VALUE
+#
 # - 1: if the value is not a valid representative of this type.
-# - 2: if the aux is not a valid assoc array or stringified JSON object.
-# - 10: if the value contains any control characters.
+# - 2: if 'aux' is not an assoc.
+# - 10: if the value contains any invalid control characters.
 shell_cli_type_validate_enum() {
-  local value="$1"
-  local aux="$2"
-
-  # Enforce strict terminal and structural string safety first
-  if ! shell_cli_type_validate_string "$value" "1"; then
-    return 10
-  fi
-
-  # In this case, normalization is identical to validation.
-  if ! shell_cli_parse_sjson_to_assoc "$aux"; then
-    return "2"
-  fi
-
-  # Check if the input exists as a value or an aliased group literal string
-  local key=""
-  local val=""
-  for key in "${!SHELL_CLI_PARSE_SJSON_TO_ASSOC[@]}"; do
-    val="${SHELL_CLI_PARSE_SJSON_TO_ASSOC[$key]}"
-    if [ "$value" = "$key" ] || [ "$value" = "$val" ]; then
-      return 0
-    fi
-  done
-
-  return 1
+  shell_cli_type_validate_main_assoc_types "$1" "$2"
+  return "$?"
 }

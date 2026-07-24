@@ -25,6 +25,7 @@ shell_cli_type_normalize_text() {
 #
 # Arguments:
 # - value: non empty normalizated value.
+# - aux: optional auxiliary configuration.
 #
 # Returns:
 # - 0: if the value is a valid representative of this type

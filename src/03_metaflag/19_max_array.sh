@@ -64,3 +64,41 @@ shell_cli_metaflag_property_validate_max_array() {
 
   return 0
 }
+
+
+
+# shell_cli_metaflag_check_input_max_array checks whether the input flag 
+# value matches the configuration of this property.
+#
+# Arguments:
+# - inputVal: array name with values inputed.
+# - typeVal: type of value.
+# - ruleVal: current value of this property.
+#
+# Returns:
+# - 0: if valid.
+#      The new value after check will be stored in
+#      'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'
+# - 1: if invalid.
+#      In this case, an error message will be stored in 
+#      'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'
+shell_cli_metaflag_check_input_max_array() {
+  local inputVal="$1"
+  local typeVal="$2"
+  local ruleVal="$3"
+  SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE=""
+  SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE=""
+
+
+  if [ "$inputVal" = "" ] || [ "$ruleVal" = "0" ]; then
+    return 0
+  fi
+
+  local -n inputArrayValues="${inputVal}"
+  if [ "${#inputArrayValues[@]}" -gt "${ruleVal}" ]; then
+    SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE="collection violates maximum item count; ( max_array: '${ruleVal}' )"
+    return 1
+  fi
+
+  return 0
+}

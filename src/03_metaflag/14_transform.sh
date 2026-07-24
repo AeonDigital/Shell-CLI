@@ -54,8 +54,7 @@ shell_cli_metaflag_property_validate_transform() {
     return 0
   fi
 
-  local str_declare=$(declare -p "$fval" 2>/dev/null)
-  if [[ ! "$str_declare" =~ ^"declare -a" ]]; then
+  if ! shell_cli_utils_array_is_indexed "$fval"; then
     SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="pointer '$fval' must be an indexed array (declare -a)."
     return 1
   fi
