@@ -12,10 +12,6 @@ declare -ga SHELL_CLI_PARSE_SARRAY_TO_ARRAY=()
 # On error, contains the original raw string.
 declare SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING=""
 
-# Exit status indicator of the last parse attempt.
-# "0" means success, "1" means error.
-declare SHELL_CLI_PARSE_SARRAY_TO_ARRAY_RESULT="0"
-
 
 
 
@@ -40,9 +36,8 @@ declare SHELL_CLI_PARSE_SARRAY_TO_ARRAY_RESULT="0"
 #
 # - If the string is malformed:
 #   * 'SHELL_CLI_PARSE_SARRAY_TO_ARRAY' will contain a single element
-#     starting with "!ERR" followed by the error message.
+#     with the error message.
 #   * 'SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING' is set to the original string.
-#   * 'SHELL_CLI_PARSE_SARRAY_TO_ARRAY_RESULT' is set to "1".
 #   * Function returns with status 1.
 #
 # Constraints:
@@ -68,7 +63,6 @@ shell_cli_parse_sarray_to_array() {
   # Reset global associative array cleanly
   SHELL_CLI_PARSE_SARRAY_TO_ARRAY=()
   SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING=""
-  SHELL_CLI_PARSE_SARRAY_TO_ARRAY_RESULT="0"
 
   local invalidArray="0"
   local invalidArrayMsg=""
@@ -88,13 +82,13 @@ shell_cli_parse_sarray_to_array() {
       SHELL_CLI_PARSE_SARRAY_TO_ARRAY+=("$v")
     done
     
-    SHELL_CLI_PARSE_SARRAY_TO_ARRAY_RESULT="$value"
+    SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING="$value"
     return 0
   fi
 
   # empty object
   if [[ "$value" =~ ^\[[[:space:]]*\]$ ]]; then
-    SHELL_CLI_PARSE_SARRAY_TO_ARRAY_RESULT="[]"
+    SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING="[]"
     return 0
   fi
 
@@ -231,12 +225,11 @@ shell_cli_parse_sarray_to_array() {
 
 
   if [ "$invalidArray" = "1" ]; then
-    SHELL_CLI_PARSE_SARRAY_TO_ARRAY+=('!ERR'" $invalidArrayMsg")
-    SHELL_CLI_PARSE_SARRAY_TO_ARRAY_RESULT="$value"
-    SHELL_CLI_PARSE_SARRAY_TO_ARRAY_RESULT="1"
+    SHELL_CLI_PARSE_SARRAY_TO_ARRAY+=("$invalidArrayMsg")
+    SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING="$value"
     return 1
   fi
 
-  SHELL_CLI_PARSE_SARRAY_TO_ARRAY_RESULT="$stringifiedArray"
+  SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING="$stringifiedArray"
   return 0
 }

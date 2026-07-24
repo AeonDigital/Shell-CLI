@@ -68,28 +68,48 @@ shell_cli_metaflag_property_validate_array() {
 
 
 
-# shell_cli_metaflag_check_input_default checks whether the input flag 
+# shell_cli_metaflag_check_input_array checks whether the input flag 
 # value matches the configuration of this property.
 #
 # Arguments:
-# - inputVal: value inputed (normalizated and validate by type).
+# - inputVal: value inputed.
+# - typeVal: type of value.
 # - ruleVal: current value of this property.
 #
 # Returns:
 # - 0: if valid.
-#      The new value after check will be stored in
-#      'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'
+#      If the provided value is a string compatible with the array type, it 
+#      will be deserialized and stored in 'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ARRAY'; 
+#      at the same time, its re-serialized value will be stored in 
+#      'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'.
 # - 1: if invalid.
 #      In this case, an error message will be stored in 
 #      'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'
-shell_cli_metaflag_check_input_default() {
+shell_cli_metaflag_check_input_array() {
   local inputVal="$1"
-  local ruleVal="$2"
+  local typeVal="$2"
+  local ruleVal="$3"
   SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE=""
   SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE=""
+  SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ARRAY=()
 
-  if [ "$inputVal" = "" ] && [ "$ruleVal" != "" ]; then
-    SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE="$ruleVal"
+  if [ "$inputVal" = "" ] || [ "$ruleVal" = "0" ]; then
+    return 0
+  fi
+
+  local str_declare=$(declare -p "$inputVal" 2>/dev/null)
+  if [[ "$str_declare" =~ ^"declare -a" ]]; then
+    SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE="$inputVal"
+    return 0
+  fi
+
+  shell_cli_parse_sarray_to_array "$inputVal"
+  if [ "$?" != "0" ]; then
+    SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE="${SHELL_CLI_PARSE_SARRAY_TO_ARRAY[0]}"
+    return 1
+  else
+    SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE="${SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING}"
+    SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ARRAY=("${SHELL_CLI_PARSE_SARRAY_TO_ARRAY[@]}")
   fi
 
   return 0

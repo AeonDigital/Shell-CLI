@@ -18,10 +18,6 @@ declare -ga SHELL_CLI_PARSE_SJSON_TO_ASSOC_ORDER=()
 # On error, contains the original raw string.
 declare SHELL_CLI_PARSE_SJSON_TO_ASSOC_STRING=""
 
-# Exit status indicator of the last parse attempt.
-# "0" means success, "1" means error.
-declare SHELL_CLI_PARSE_SJSON_TO_ASSOC_RESULT="0"
-
 
 
 
@@ -49,9 +45,8 @@ declare SHELL_CLI_PARSE_SJSON_TO_ASSOC_RESULT="0"
 #   * The function returns the reconstructed JSON string.
 #
 # - If the string is malformed:
-#   * 'SHELL_CLI_PARSE_SJSON_TO_ASSOC' will contain:
-#     ['!ERR'] : original value
-#     ['err']  : error message
+#   * 'SHELL_CLI_PARSE_SJSON_TO_ASSOC' will contain a single element
+#     with key ['0'] with the error message.
 #   * 'SHELL_CLI_PARSE_SJSON_TO_ASSOC_STRING' is set to the original string.
 #   * Function returns with status 1.
 #
@@ -79,7 +74,7 @@ shell_cli_parse_sjson_to_assoc() {
   SHELL_CLI_PARSE_SJSON_TO_ASSOC=()
   SHELL_CLI_PARSE_SJSON_TO_ASSOC_ORDER=()
   SHELL_CLI_PARSE_SJSON_TO_ASSOC_STRING=""
-  SHELL_CLI_PARSE_SJSON_TO_ASSOC_RESULT="0"
+
 
   local invalidJSON="0"
   local invalidJSONMsg=""
@@ -320,10 +315,8 @@ shell_cli_parse_sjson_to_assoc() {
 
 
   if [ "$invalidJSON" = "1" ]; then
-    SHELL_CLI_PARSE_SJSON_TO_ASSOC['!ERR']="${value}"
-    SHELL_CLI_PARSE_SJSON_TO_ASSOC['err']="${invalidJSONMsg}"
+    SHELL_CLI_PARSE_SJSON_TO_ASSOC["0"]="${invalidJSONMsg}"
     SHELL_CLI_PARSE_SJSON_TO_ASSOC_STRING="$value"
-    SHELL_CLI_PARSE_SJSON_TO_ASSOC_RESULT="1"
     return 1
   fi
 

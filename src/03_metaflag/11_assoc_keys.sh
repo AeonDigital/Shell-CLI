@@ -71,3 +71,54 @@ shell_cli_metaflag_property_validate_assoc_keys() {
   return 0
 }
 
+
+
+# shell_cli_metaflag_check_input_assoc_keys checks whether the input flag 
+# value matches the configuration of this property.
+#
+# Arguments:
+# - inputVal: assoc name with values inputed.
+# - typeVal: type of value.
+# - ruleVal: current value of this property.
+#
+# Returns:
+# - 0: if valid.
+#      The new value after check will be stored in
+#      'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'
+# - 1: if invalid.
+#      In this case, an error message will be stored in 
+#      'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'
+shell_cli_metaflag_check_input_assoc_keys() {
+  local inputVal="$1"
+  local typeVal="$2"
+  local ruleVal="$3"
+  SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE=""
+  SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE=""
+
+  if [ "$inputVal" = "" ] || [ "$ruleVal" = "" ]; then
+    return 0
+  fi
+
+  local -n inputAssocValues="${inputVal}"
+  local -n requiredKeys="${ruleVal}"
+  local -a lostAssocKeys=()
+
+  local k=""
+  for k in "${requiredKeys[@]}"; do
+    if [[ -v "${inputAssocValues[$k]}" ]]; then
+      continue
+    fi
+    lostAssocKeys+=("$k")
+  done
+
+  if [ "${#lostAssocKeys[@]}" != "0" ]; then
+    local lostKeys=""
+    printf -v lostKeys "%s, " "${lostAssocKeys[@]}"
+    lostKeys="${lostKeys%, }"
+
+    SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE="missing keys '${lostKeys}'"
+    return 1
+  fi
+
+  return 0
+}

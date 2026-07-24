@@ -81,6 +81,7 @@ shell_cli_metaflag_property_validate_enum() {
 #
 # Arguments:
 # - inputVal: value inputed (normalizated and validate by type).
+# - typeVal: type of value.
 # - ruleVal: current value of this property.
 #
 # Returns:
@@ -92,11 +93,12 @@ shell_cli_metaflag_property_validate_enum() {
 #      'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'
 shell_cli_metaflag_check_input_enum() {
   local inputVal="$1"
-  local ruleVal="$2"
+  local typeVal="$2"
+  local ruleVal="$3"
   SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE=""
   SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE=""
 
-  if [ "$inputVal" = "" ]; then
+  if [ "${ruleVal}" = "" ]; then
     return 0
   fi
 
@@ -112,6 +114,6 @@ shell_cli_metaflag_check_input_enum() {
     fi
   done
 
-  SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE="must be a '$ruleVal' collection member; value='$inputVal'"
+  SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE="expected one of '$ruleVal' collection member; ( value: '$inputVal' )"
   return 1
 }

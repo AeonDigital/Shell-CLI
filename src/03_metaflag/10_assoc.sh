@@ -65,3 +65,63 @@ shell_cli_metaflag_property_validate_assoc() {
 
   return 0
 }
+
+
+
+# shell_cli_metaflag_check_input_assoc checks whether the input flag 
+# value matches the configuration of this property.
+#
+# Arguments:
+# - inputVal: value inputed.
+# - typeVal: type of value.
+# - ruleVal: current value of this property.
+#
+# Returns:
+# - 0: if valid.
+#      If the provided value is a string compatible with the assoc type, it 
+#      will be deserialized and stored in 'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ASSOC'; 
+#      at the same time, its re-serialized value will be stored in 
+#      'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'. Furthermore, the declaration 
+#      order of the associative array keys will be preserved in 
+#      'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ASSOC_ORDER'.
+# - 1: if invalid.
+#      In this case, an error message will be stored in 
+#      'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'
+shell_cli_metaflag_check_input_assoc() {
+  local inputVal="$1"
+  local typeVal="$2"
+  local ruleVal="$3"
+  SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE=""
+  SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE=""
+  SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ASSOC=()
+  SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ASSOC_ORDER=()
+
+  if [ "$inputVal" = "" ] || [ "$ruleVal" = "" ]; then
+    return 0
+  fi
+
+  local str_declare=$(declare -p "$inputVal" 2>/dev/null)
+  if [[ "$str_declare" =~ ^"declare -A" ]]; then
+    SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE="$inputVal"
+    return 0
+  fi
+
+  shell_cli_parse_sjson_to_assoc "$inputVal"
+  if [ "$?" != "0" ]; then
+    SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE="${SHELL_CLI_PARSE_SJSON_TO_ASSOC[0]}"
+    return 1
+  else
+    SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE="${SHELL_CLI_PARSE_SJSON_TO_ASSOC_STRING}"
+
+    local k=""
+    local v=""
+    for k in "${!SHELL_CLI_PARSE_SJSON_TO_ASSOC[@]}"; do
+      v="${SHELL_CLI_PARSE_SJSON_TO_ASSOC[$k]}"
+      SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ASSOC["$k"]="$v"
+    done
+
+    SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ASSOC_ORDER=("${SHELL_CLI_PARSE_SJSON_TO_ASSOC_ORDER[@]}")
+  fi
+
+  return 0
+}
