@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: 03_metaflag/12_normalize.sh
+# SCRIPT: 03_metaflag/09_normalize.sh
 # DESCRIPTION: registers the normalization method for the input value by 
 #   pointing to a normalization function.
 # ==============================================================================
@@ -9,27 +9,30 @@
 declare -gA METAFLAG_normalize=()
 METAFLAG_normalize["long"]="normalize"
 METAFLAG_normalize["short"]=""
+METAFLAG_normalize["type"]="function"
+METAFLAG_normalize["accept_values"]=""
+
 METAFLAG_normalize["description"]="Specifies a function responsible for normalizing the value before validation."
 METAFLAG_normalize["tipinput"]=""
-METAFLAG_normalize["type"]="function"
-METAFLAG_normalize["enum"]=""
 
-METAFLAG_normalize["required"]=false
 METAFLAG_normalize["default"]=""
-
-METAFLAG_normalize["array"]=false
-METAFLAG_normalize["assoc"]=false
-METAFLAG_normalize["assoc_keys"]=""
+METAFLAG_normalize["required"]=false
 
 METAFLAG_normalize["normalize"]=""
-METAFLAG_normalize["validate"]=""
-METAFLAG_normalize["transform"]=""
-METAFLAG_normalize["regex"]=""
-
 METAFLAG_normalize["min"]=""
 METAFLAG_normalize["max"]=""
+METAFLAG_normalize["regex"]=""
+METAFLAG_normalize["validate"]=""
+METAFLAG_normalize["transform"]=""
+
+METAFLAG_normalize["is_array"]=false
 METAFLAG_normalize["min_array"]=""
 METAFLAG_normalize["max_array"]=""
+
+METAFLAG_normalize["is_assoc"]=false
+METAFLAG_normalize["required_keys"]=""
+
+
 
 
 

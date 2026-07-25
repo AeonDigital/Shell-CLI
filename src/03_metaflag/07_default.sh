@@ -1,36 +1,38 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: 03_metaflag/08_default.sh
+# SCRIPT: 03_metaflag/07_default.sh
 # DESCRIPTION: defines the fallback value automatically assigned if the user 
-#   omits the flag. Core compiler rules reject schemas where required is true 
-#   (1) and a default is simultaneously set.
+#   omits the flag.
 # ==============================================================================
 
 declare -gA METAFLAG_default=()
 METAFLAG_default["long"]="default"
 METAFLAG_default["short"]=""
+METAFLAG_default["type"]="code"
+METAFLAG_default["accept_values"]=""
+
 METAFLAG_default["description"]="Fallback visual or data value applied if the user execution omits the parameter."
 METAFLAG_default["tipinput"]=""
-METAFLAG_default["type"]="code"
-METAFLAG_default["enum"]=""
 
-METAFLAG_default["required"]=false
 METAFLAG_default["default"]=""
-
-METAFLAG_default["array"]=false
-METAFLAG_default["assoc"]=false
-METAFLAG_default["assoc_keys"]=""
+METAFLAG_default["required"]=false
 
 METAFLAG_default["normalize"]=""
-METAFLAG_default["validate"]=""
-METAFLAG_default["transform"]=""
-METAFLAG_default["regex"]=""
-
 METAFLAG_default["min"]=""
 METAFLAG_default["max"]=""
+METAFLAG_default["regex"]=""
+METAFLAG_default["validate"]=""
+METAFLAG_default["transform"]=""
+
+METAFLAG_default["is_array"]=false
 METAFLAG_default["min_array"]=""
 METAFLAG_default["max_array"]=""
+
+METAFLAG_default["is_assoc"]=false
+METAFLAG_default["required_keys"]=""
+
+
 
 
 

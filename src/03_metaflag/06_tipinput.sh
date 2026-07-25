@@ -1,36 +1,38 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: 03_metaflag/04_tipinput.sh
+# SCRIPT: 03_metaflag/06_tipinput.sh
 # DESCRIPTION: specifies the custom interactive question or behavioral guide 
-#    displayed to the user when the framework operates under strict interactive 
-#    modes.
+#    displayed to the user when operates under strict interactive mode.
 # ==============================================================================
 
 declare -gA METAFLAG_tipinput=()
 METAFLAG_tipinput["long"]="tipinput"
 METAFLAG_tipinput["short"]=""
+METAFLAG_tipinput["type"]="text"
+METAFLAG_tipinput["accept_values"]=""
+
 METAFLAG_tipinput["description"]="Custom interactive question phrase displayed during user prompt execution."
 METAFLAG_tipinput["tipinput"]=""
-METAFLAG_tipinput["type"]="text"
-METAFLAG_tipinput["enum"]=""
 
-METAFLAG_tipinput["required"]=false
 METAFLAG_tipinput["default"]=""
-
-METAFLAG_tipinput["array"]=false
-METAFLAG_tipinput["assoc"]=false
-METAFLAG_tipinput["assoc_keys"]=""
+METAFLAG_tipinput["required"]=false
 
 METAFLAG_tipinput["normalize"]=""
-METAFLAG_tipinput["validate"]=""
-METAFLAG_tipinput["transform"]=""
-METAFLAG_tipinput["regex"]=""
-
 METAFLAG_tipinput["min"]="4"
 METAFLAG_tipinput["max"]="256"
+METAFLAG_tipinput["regex"]=""
+METAFLAG_tipinput["validate"]=""
+METAFLAG_tipinput["transform"]=""
+
+METAFLAG_tipinput["is_array"]=false
 METAFLAG_tipinput["min_array"]=""
 METAFLAG_tipinput["max_array"]=""
+
+METAFLAG_tipinput["is_array"]=false
+METAFLAG_tipinput["required_keys"]=""
+
+
 
 
 

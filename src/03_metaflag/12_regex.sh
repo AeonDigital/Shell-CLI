@@ -1,36 +1,38 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: 03_metaflag/15_regex.sh
+# SCRIPT: 03_metaflag/12_regex.sh
 # DESCRIPTION: provisions an optional regular expression verification 
-#   constraint pattern. Evaluates whether incoming values perfectly satisfy 
-#   native Bash or grep pattern criteria.
+#   constraint pattern. 
 # ==============================================================================
 
 declare -gA METAFLAG_regex=()
 METAFLAG_regex["long"]="regex"
 METAFLAG_regex["short"]=""
+METAFLAG_regex["type"]="text"
+METAFLAG_regex["accept_values"]=""
+
 METAFLAG_regex["description"]="Optional structural regular expression layout pattern verified natively at runtime."
 METAFLAG_regex["tipinput"]=""
-METAFLAG_regex["type"]="text"
-METAFLAG_regex["enum"]=""
 
-METAFLAG_regex["required"]=false
 METAFLAG_regex["default"]=""
-
-METAFLAG_regex["array"]=false
-METAFLAG_regex["assoc"]=false
-METAFLAG_regex["assoc_keys"]=""
+METAFLAG_regex["required"]=false
 
 METAFLAG_regex["normalize"]=""
-METAFLAG_regex["validate"]=""
-METAFLAG_regex["transform"]=""
-METAFLAG_regex["regex"]=""
-
 METAFLAG_regex["min"]=""
 METAFLAG_regex["max"]=""
+METAFLAG_regex["regex"]=""
+METAFLAG_regex["validate"]=""
+METAFLAG_regex["transform"]=""
+
+METAFLAG_regex["is_array"]=false
 METAFLAG_regex["min_array"]=""
 METAFLAG_regex["max_array"]=""
+
+METAFLAG_regex["is_assoc"]=false
+METAFLAG_regex["required_keys"]=""
+
+
 
 
 

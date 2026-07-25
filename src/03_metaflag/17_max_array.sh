@@ -1,36 +1,38 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: 03_metaflag/19_max_array.sh
+# SCRIPT: 03_metaflag/17_max_array.sh
 # DESCRIPTION: defines the maximum number of elements allowed inside a 
-#   collection. This evaluation is optional and operates exclusively when the 
-#   array attribute is active (1).
+#   collection. 
 # ==============================================================================
 
 declare -gA METAFLAG_max_array=()
 METAFLAG_max_array["long"]="max_array"
 METAFLAG_max_array["short"]=""
+METAFLAG_max_array["type"]="int"
+METAFLAG_max_array["accept_values"]=""
+
 METAFLAG_max_array["description"]="Maximum allowable element count within a validated array collection."
 METAFLAG_max_array["tipinput"]=""
-METAFLAG_max_array["type"]="int"
-METAFLAG_max_array["enum"]=""
 
-METAFLAG_max_array["required"]=false
 METAFLAG_max_array["default"]=""
-
-METAFLAG_max_array["array"]=false
-METAFLAG_max_array["assoc"]=false
-METAFLAG_max_array["assoc_keys"]=""
+METAFLAG_max_array["required"]=false
 
 METAFLAG_max_array["normalize"]=""
+METAFLAG_max_array["min"]=""
+METAFLAG_max_array["max"]=""
 METAFLAG_max_array["validate"]=""
 METAFLAG_max_array["transform"]=""
 METAFLAG_max_array["regex"]=""
 
-METAFLAG_max_array["min"]=""
-METAFLAG_max_array["max"]=""
+METAFLAG_max_array["is_array"]=false
 METAFLAG_max_array["min_array"]=""
 METAFLAG_max_array["max_array"]=""
+
+METAFLAG_max_array["is_assoc"]=false
+METAFLAG_max_array["required_keys"]=""
+
+
 
 
 

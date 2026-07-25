@@ -1,36 +1,38 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: 03_metaflag/07_required.sh
-# DESCRIPTION: declares whether the flag must be explicitly supplied by the 
-#   user. If active (1), the framework automatically mandates a non-empty 
-#   presence check.
+# SCRIPT: 03_metaflag/08_required.sh
+# DESCRIPTION: specifies whether the flag must be filled in, either by the user 
+#   or via a default value.
 # ==============================================================================
 
 declare -gA METAFLAG_required=()
 METAFLAG_required["long"]="required"
 METAFLAG_required["short"]=""
+METAFLAG_required["type"]="bool"
+METAFLAG_required["accept_values"]=""
+
 METAFLAG_required["description"]="Boolean flag asserting if the parameter must be explicitly present during runtime execution."
 METAFLAG_required["tipinput"]=""
-METAFLAG_required["type"]="bool"
-METAFLAG_required["enum"]=""
 
-METAFLAG_required["required"]=false
 METAFLAG_required["default"]="0"
-
-METAFLAG_required["array"]=false
-METAFLAG_required["assoc"]=false
-METAFLAG_required["assoc_keys"]=""
+METAFLAG_required["required"]=false
 
 METAFLAG_required["normalize"]=""
-METAFLAG_required["validate"]=""
-METAFLAG_required["transform"]=""
-METAFLAG_required["regex"]=""
-
 METAFLAG_required["min"]=""
 METAFLAG_required["max"]=""
+METAFLAG_required["regex"]=""
+METAFLAG_required["validate"]=""
+METAFLAG_required["transform"]=""
+
+METAFLAG_required["is_array"]=false
 METAFLAG_required["min_array"]=""
 METAFLAG_required["max_array"]=""
+
+METAFLAG_required["is_assoc"]=false
+METAFLAG_required["required_keys"]=""
+
+
 
 
 

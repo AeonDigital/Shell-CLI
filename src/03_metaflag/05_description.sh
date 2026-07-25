@@ -1,36 +1,38 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: 03_metaflag/03_description.sh
+# SCRIPT: 03_metaflag/05_description.sh
 # DESCRIPTION: maps the essential human documentation text used to render help 
-#   modules. Mandatory framework constraint ensuring zero undocumented features 
-#   bypass compiler loops.
+#   modules. 
 # ==============================================================================
 
 declare -gA METAFLAG_description=()
 METAFLAG_description["long"]="description"
 METAFLAG_description["short"]=""
+METAFLAG_description["type"]="text"
+METAFLAG_description["accept_values"]=""
+
 METAFLAG_description["description"]="Human-readable operational statement describing flag objective for automated UI rendering."
 METAFLAG_description["tipinput"]=""
-METAFLAG_description["type"]="text"
-METAFLAG_description["enum"]=""
 
-METAFLAG_description["required"]=true
 METAFLAG_description["default"]=""
-
-METAFLAG_description["array"]=false
-METAFLAG_description["assoc"]=false
-METAFLAG_description["assoc_keys"]=""
+METAFLAG_description["required"]=true
 
 METAFLAG_description["normalize"]=""
-METAFLAG_description["validate"]=""
-METAFLAG_description["transform"]=""
-METAFLAG_description["regex"]=""
-
 METAFLAG_description["min"]="4"
 METAFLAG_description["max"]="256"
+METAFLAG_description["regex"]=""
+METAFLAG_description["validate"]=""
+METAFLAG_description["transform"]=""
+
+METAFLAG_description["is_array"]=false
 METAFLAG_description["min_array"]=""
 METAFLAG_description["max_array"]=""
+
+METAFLAG_description["is_assoc"]=false
+METAFLAG_description["required_keys"]=""
+
+
 
 
 

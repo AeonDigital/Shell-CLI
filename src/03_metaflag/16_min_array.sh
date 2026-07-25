@@ -1,36 +1,38 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: 03_metaflag/18_min_array.sh
+# SCRIPT: 03_metaflag/16_min_array.sh
 # DESCRIPTION: defines the minimum number of elements required inside a 
-#   collection. This evaluation is optional and operates exclusively when the 
-#   array attribute is active (1).
+#   collection. 
 # ==============================================================================
 
 declare -gA METAFLAG_min_array=()
 METAFLAG_min_array["long"]="min_array"
 METAFLAG_min_array["short"]=""
+METAFLAG_min_array["type"]="int"
+METAFLAG_min_array["accept_values"]=""
+
 METAFLAG_min_array["description"]="Minimum allowable element count within a validated array collection."
 METAFLAG_min_array["tipinput"]=""
-METAFLAG_min_array["type"]="int"
-METAFLAG_min_array["enum"]=""
 
-METAFLAG_min_array["required"]=false
 METAFLAG_min_array["default"]=""
-
-METAFLAG_min_array["array"]=false
-METAFLAG_min_array["assoc"]=false
-METAFLAG_min_array["assoc_keys"]=""
+METAFLAG_min_array["required"]=false
 
 METAFLAG_min_array["normalize"]=""
-METAFLAG_min_array["validate"]=""
-METAFLAG_min_array["transform"]=""
-METAFLAG_min_array["regex"]=""
-
 METAFLAG_min_array["min"]=""
 METAFLAG_min_array["max"]=""
+METAFLAG_min_array["regex"]=""
+METAFLAG_min_array["validate"]=""
+METAFLAG_min_array["transform"]=""
+
+METAFLAG_min_array["is_array"]=false
 METAFLAG_min_array["min_array"]=""
 METAFLAG_min_array["max_array"]=""
+
+METAFLAG_min_array["is_assoc"]=false
+METAFLAG_min_array["required_keys"]=""
+
+
 
 
 

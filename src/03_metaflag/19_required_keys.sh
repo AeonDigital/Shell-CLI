@@ -1,40 +1,42 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: 03_metaflag/11_assoc_keys.sh
+# SCRIPT: 03_metaflag/19_required_keys.sh
 # DESCRIPTION: specifies a list of keys that MUST be present in the passed 
-#   value, provided it is not an empty associative array
-#   Operates exclusively when assoc is active (1) to enforce field presence.
+#   value. Use only if is_assoc=true.
 # ==============================================================================
 
-declare -gA METAFLAG_assoc_keys=()
-METAFLAG_assoc_keys["long"]="assoc_keys"
-METAFLAG_assoc_keys["short"]=""
-METAFLAG_assoc_keys["description"]="Pointer to array or a JSON-array string with the required 'keys'."
-METAFLAG_assoc_keys["tipinput"]=""
-METAFLAG_assoc_keys["type"]="text"
-METAFLAG_assoc_keys["enum"]=""
+declare -gA METAFLAG_required_keys=()
+METAFLAG_required_keys["long"]="required_keys"
+METAFLAG_required_keys["short"]=""
+METAFLAG_required_keys["type"]="text"
+METAFLAG_required_keys["accept_values"]=""
 
-METAFLAG_assoc_keys["required"]=false
-METAFLAG_assoc_keys["default"]=""
+METAFLAG_required_keys["description"]="Pointer to array or a JSON-array string with the required 'keys'."
+METAFLAG_required_keys["tipinput"]=""
 
-METAFLAG_assoc_keys["array"]=true
-METAFLAG_assoc_keys["assoc"]=false
-METAFLAG_assoc_keys["assoc_keys"]=""
+METAFLAG_required_keys["default"]=""
+METAFLAG_required_keys["required"]=false
 
-METAFLAG_assoc_keys["normalize"]=""
-METAFLAG_assoc_keys["validate"]=""
-METAFLAG_assoc_keys["transform"]=""
-METAFLAG_assoc_keys["regex"]=""
+METAFLAG_required_keys["normalize"]=""
+METAFLAG_required_keys["min"]=""
+METAFLAG_required_keys["max"]=""
+METAFLAG_required_keys["regex"]=""
+METAFLAG_required_keys["validate"]=""
+METAFLAG_required_keys["transform"]=""
 
-METAFLAG_assoc_keys["min"]=""
-METAFLAG_assoc_keys["max"]=""
-METAFLAG_assoc_keys["min_array"]=""
-METAFLAG_assoc_keys["max_array"]=""
+METAFLAG_required_keys["is_array"]=true
+METAFLAG_required_keys["min_array"]=""
+METAFLAG_required_keys["max_array"]=""
+
+METAFLAG_required_keys["is_assoc"]=false
+METAFLAG_required_keys["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_assoc_keys metaflag 'assoc_keys'.
+
+
+# shell_cli_metaflag_property_validate_required_keys metaflag 'required_keys'.
 #
 # Arguments:
 # - fval: value (normalizated and validate by type).
@@ -45,7 +47,7 @@ METAFLAG_assoc_keys["max_array"]=""
 # - 1: if the value cannot be used in this flag.
 #      In this case, an error message will be stored in 
 #      'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'
-shell_cli_metaflag_property_validate_assoc_keys() {
+shell_cli_metaflag_property_validate_required_keys() {
   local fval="$1"
   local fassoc="$2"
   SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE=""
@@ -55,7 +57,7 @@ shell_cli_metaflag_property_validate_assoc_keys() {
 
   if [ "$_assoc" = "0" ]; then
     if [ "$fval" != "" ]; then
-      SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="cannot define 'assoc_keys' for a 'assoc=false' flag."
+      SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="cannot define 'required_keys' for a 'is_assoc=false' flag."
       return 1
     fi
   else
@@ -72,7 +74,7 @@ shell_cli_metaflag_property_validate_assoc_keys() {
 
 
 
-# shell_cli_metaflag_check_input_assoc_keys checks whether the input flag 
+# shell_cli_metaflag_check_input_required_keys checks whether the input flag 
 # value matches the configuration of this property.
 #
 # Arguments:
@@ -87,7 +89,7 @@ shell_cli_metaflag_property_validate_assoc_keys() {
 # - 1: if invalid.
 #      In this case, an error message will be stored in 
 #      'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'
-shell_cli_metaflag_check_input_assoc_keys() {
+shell_cli_metaflag_check_input_required_keys() {
   local inputVal="$1"
   local typeVal="$2"
   local ruleVal="$3"

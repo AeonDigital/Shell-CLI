@@ -2,35 +2,37 @@
 
 # ==============================================================================
 # SCRIPT: 03_metaflag/13_validate.sh
-# DESCRIPTION: captures a JSON array of downstream investigator function names.
-#   Invoked at the absolute tail of validation loops to compute complex domain-
-#   specific rules.
+# DESCRIPTION: allows you to configure a series of validator functions to be 
+#   executed against the received value.
 # ==============================================================================
 
 declare -gA METAFLAG_validate=()
 METAFLAG_validate["long"]="validate"
 METAFLAG_validate["short"]=""
+METAFLAG_validate["type"]="function"
+METAFLAG_validate["accept_values"]=""
+
 METAFLAG_validate["description"]="Pointer to indexed array with all validate functions to call for this value."
 METAFLAG_validate["tipinput"]=""
-METAFLAG_validate["type"]="function"
-METAFLAG_validate["enum"]=""
 
-METAFLAG_validate["required"]=false
 METAFLAG_validate["default"]=""
-
-METAFLAG_validate["array"]=true
-METAFLAG_validate["assoc"]=false
-METAFLAG_validate["assoc_keys"]=""
+METAFLAG_validate["required"]=false
 
 METAFLAG_validate["normalize"]=""
-METAFLAG_validate["validate"]=""
-METAFLAG_validate["transform"]=""
-METAFLAG_validate["regex"]=""
-
 METAFLAG_validate["min"]=""
 METAFLAG_validate["max"]=""
+METAFLAG_validate["regex"]=""
+METAFLAG_validate["validate"]=""
+METAFLAG_validate["transform"]=""
+
+METAFLAG_validate["is_array"]=true
 METAFLAG_validate["min_array"]=""
 METAFLAG_validate["max_array"]=""
+
+METAFLAG_validate["is_assoc"]=false
+METAFLAG_validate["required_keys"]=""
+
+
 
 
 

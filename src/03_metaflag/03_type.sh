@@ -1,36 +1,38 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: 03_metaflag/05_type.sh
+# SCRIPT: 03_metaflag/03_type.sh
 # DESCRIPTION: defines the primitive, structured, or system classification of 
-#   the flag data. It instructs the core engine which specialized native 
-#   validation routine to trigger.
+#   the flag data.
 # ==============================================================================
 
 declare -gA METAFLAG_type=()
 METAFLAG_type["long"]="type"
 METAFLAG_type["short"]=""
+METAFLAG_type["type"]="string"
+METAFLAG_type["accept_values"]="SHELL_CLI_TYPE"
+
 METAFLAG_type["description"]="Data type classification enforcing specific core parsing and validation pipelines."
 METAFLAG_type["tipinput"]=""
-METAFLAG_type["type"]="enum"
-METAFLAG_type["enum"]="SHELL_CLI_TYPE"
 
-METAFLAG_type["required"]=true
 METAFLAG_type["default"]=""
-
-METAFLAG_type["array"]=false
-METAFLAG_type["assoc"]=false
-METAFLAG_type["assoc_keys"]=""
+METAFLAG_type["required"]=true
 
 METAFLAG_type["normalize"]=""
-METAFLAG_type["validate"]=""
-METAFLAG_type["transform"]=""
-METAFLAG_type["regex"]=""
-
 METAFLAG_type["min"]=""
 METAFLAG_type["max"]=""
+METAFLAG_type["regex"]=""
+METAFLAG_type["validate"]=""
+METAFLAG_type["transform"]=""
+
+METAFLAG_type["is_array"]=false
 METAFLAG_type["min_array"]=""
 METAFLAG_type["max_array"]=""
+
+METAFLAG_type["is_assoc"]=false
+METAFLAG_type["required_keys"]=""
+
+
 
 
 
@@ -56,7 +58,7 @@ shell_cli_metaflag_property_validate_type() {
   fi
 
   if [ "${SHELL_CLI_TYPE["$fval"]}" = "" ]; then
-    SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="invalid definition ( type='$fval' )."
+    SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="invalid definition; ( type: '$fval' )"
     return 1
   fi
 

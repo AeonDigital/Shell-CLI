@@ -1,36 +1,38 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: 03_metaflag/17_max.sh
+# SCRIPT: 03_metaflag/11_max.sh
 # DESCRIPTION: enforces the maximum boundary size constraint allowed for the 
-#   payload. Evaluates string/token length or raw numerical boundaries based on 
-#   the primary type field.
+#   payload. Evaluates value based on the primary type field.
 # ==============================================================================
 
 declare -gA METAFLAG_max=()
 METAFLAG_max["long"]="max"
 METAFLAG_max["short"]=""
+METAFLAG_max["type"]="string"
+METAFLAG_max["accept_values"]=""
+
 METAFLAG_max["description"]="Maximum boundary size asserting string token length or upper numerical value restrictions."
 METAFLAG_max["tipinput"]=""
-METAFLAG_max["type"]="string"
-METAFLAG_max["enum"]=""
 
-METAFLAG_max["required"]=false
 METAFLAG_max["default"]=""
-
-METAFLAG_max["array"]=false
-METAFLAG_max["assoc"]=false
-METAFLAG_max["assoc_keys"]=""
+METAFLAG_max["required"]=false
 
 METAFLAG_max["normalize"]=""
-METAFLAG_max["validate"]=""
-METAFLAG_max["transform"]=""
-METAFLAG_max["regex"]=""
-
 METAFLAG_max["min"]=""
 METAFLAG_max["max"]=""
+METAFLAG_max["regex"]=""
+METAFLAG_max["validate"]=""
+METAFLAG_max["transform"]=""
+
+METAFLAG_max["is_array"]=false
 METAFLAG_max["min_array"]=""
 METAFLAG_max["max_array"]=""
+
+METAFLAG_max["is_assoc"]=false
+METAFLAG_max["required_keys"]=""
+
+
 
 
 

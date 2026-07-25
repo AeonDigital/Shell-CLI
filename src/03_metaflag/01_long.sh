@@ -3,34 +3,36 @@
 # ==============================================================================
 # SCRIPT: 03_metaflag/01_long.sh
 # DESCRIPTION: defines the canonical long name identifier for a command-line 
-#   flag. It acts as a double-dash option (e.g., --scope) and maps directly to 
-#   parsed storage keys.
+#   flag. It acts as a double-dash option (e.g., --scope).
 # ==============================================================================
 
 declare -gA METAFLAG_long=()
 METAFLAG_long["long"]="long"
 METAFLAG_long["short"]=""
+METAFLAG_long["type"]="string"
+METAFLAG_long["accept_values"]=""
+
 METAFLAG_long["description"]="Long canonical name identifier for the flag execution mapping."
 METAFLAG_long["tipinput"]=""
-METAFLAG_long["type"]="string"
-METAFLAG_long["enum"]=""
 
-METAFLAG_long["required"]=true
 METAFLAG_long["default"]=""
-
-METAFLAG_long["array"]=false
-METAFLAG_long["assoc"]=false
-METAFLAG_long["assoc_keys"]=""
+METAFLAG_long["required"]=true
 
 METAFLAG_long["normalize"]=""
-METAFLAG_long["validate"]=""
-METAFLAG_long["transform"]=""
-METAFLAG_long["regex"]="^[a-z0-9_-]+$"
-
 METAFLAG_long["min"]="4"
 METAFLAG_long["max"]="32"
+METAFLAG_long["regex"]="^[a-z0-9_-]+$"
+METAFLAG_long["validate"]=""
+METAFLAG_long["transform"]=""
+
+METAFLAG_long["is_array"]=false
 METAFLAG_long["min_array"]=""
 METAFLAG_long["max_array"]=""
+
+METAFLAG_long["is_assoc"]=false
+METAFLAG_long["required_keys"]=""
+
+
 
 
 

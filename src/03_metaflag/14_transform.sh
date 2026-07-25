@@ -2,35 +2,37 @@
 
 # ==============================================================================
 # SCRIPT: 03_metaflag/14_transform.sh
-# DESCRIPTION: captures a JSON array of downstream transformation function 
-#   names. Invoked only after validation succeeds and before the final parsed 
-#   value is stored.
+# DESCRIPTION: It allows for the configuration of a series of transformation 
+#   functions to be applied to the received value after its validation.
 # ==============================================================================
 
 declare -gA METAFLAG_transform=()
 METAFLAG_transform["long"]="transform"
 METAFLAG_transform["short"]=""
+METAFLAG_transform["type"]="function"
+METAFLAG_transform["accept_values"]=""
+
 METAFLAG_transform["description"]="Pointer to indexed array with all transformation functions to use in this value after validation."
 METAFLAG_transform["tipinput"]=""
-METAFLAG_transform["type"]="function"
-METAFLAG_transform["enum"]=""
 
-METAFLAG_transform["required"]=false
 METAFLAG_transform["default"]=""
-
-METAFLAG_transform["array"]=true
-METAFLAG_transform["assoc"]=false
-METAFLAG_transform["assoc_keys"]=""
+METAFLAG_transform["required"]=false
 
 METAFLAG_transform["normalize"]=""
-METAFLAG_transform["validate"]=""
-METAFLAG_transform["transform"]=""
-METAFLAG_transform["regex"]=""
-
 METAFLAG_transform["min"]=""
 METAFLAG_transform["max"]=""
+METAFLAG_transform["regex"]=""
+METAFLAG_transform["validate"]=""
+METAFLAG_transform["transform"]=""
+
+METAFLAG_transform["is_array"]=true
 METAFLAG_transform["min_array"]=""
 METAFLAG_transform["max_array"]=""
+
+METAFLAG_transform["is_assoc"]=false
+METAFLAG_transform["required_keys"]=""
+
+
 
 
 
