@@ -26,10 +26,10 @@ shell_cli_flag_check_value() {
 
   #
   # Check flag rules consistency
-  shell_cli_flag_check_rules "${flagVarName}"
+  shell_cli_compile_flag "${flagVarName}"
   local checkFlagStatus="$?"
   if [ "${checkFlagStatus}" != "0" ]; then
-    SHELL_CLI_FLAG_CHECK_VALUE_ERR_MESSAGE="${SHELL_CLI_FLAG_CHECK_RULE_ERR_MESSAGE}"
+    SHELL_CLI_FLAG_CHECK_VALUE_ERR_MESSAGE="${SHELL_CLI_FLAG_COMPILE_ERR_MESSAGE}"
     return "${checkFlagStatus}"
   fi
 
