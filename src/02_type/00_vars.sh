@@ -32,7 +32,6 @@ declare -gA SHELL_CLI_TYPE=(
   # GROUP 03 : Structured
 
   ["email"]="email" 
-  ["enum"]="enum"
   ["json"]="json" 
   ["function"]="function"
 

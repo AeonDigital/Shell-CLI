@@ -36,3 +36,65 @@ shell_cli_utils_array_is_assoc() {
   fi
   return 1
 }
+
+# shell_cli_utils_array_indexed_clone clones the specified indexed 
+# array into a new one with the provided name.
+#
+# Arguments:
+# - originalArray: name of the original indexed array
+# - cloneArrayName: name of the new indexed array.
+#
+# Returns:
+# - 0: if success.
+# - 1: if fail.
+shell_cli_utils_array_indexed_clone() {
+  local originalArray="$1"
+  local cloneArrayName="$2"
+
+  if ! shell_cli_utils_array_is_indexed "$originalArray"; then
+    return 1
+  fi
+
+  eval "declare -ga ${cloneArrayName}=()"
+  local -n objArray="${originalArray}"
+  local -n tmpClone="${cloneArrayName}"
+  
+  local v=""
+  for v in "${objArray[@]}"; do
+    tmpClone+=("$v")
+  done
+
+  return 0
+}
+
+# shell_cli_utils_array_assoc_clone clones the specified associative 
+# array into a new one with the provided name.
+#
+# Arguments:
+# - originalAssoc: name of the original associative array
+# - cloneAssocName: name of the new associative array.
+#
+# Returns:
+# - 0: if success.
+# - 1: if fail.
+shell_cli_utils_array_assoc_clone() {
+  local originalAssoc="$1"
+  local cloneAssocName="$2"
+
+  if ! shell_cli_utils_array_is_assoc "$originalAssoc"; then
+    return 1
+  fi
+
+  eval "declare -gA ${cloneAssocName}=()"
+  local -n objAssoc="${originalAssoc}"
+  local -n tmpClone="${cloneAssocName}"
+  
+  local k=""
+  local v=""
+  for k in "${!objAssoc[@]}"; do
+    v="${objAssoc[$k]}"
+    tmpClone["$k"]="$v"
+  done
+
+  return 0
+}

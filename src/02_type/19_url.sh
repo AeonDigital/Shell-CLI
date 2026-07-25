@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: 02_type/17_filepath.sh
+# SCRIPT: 02_type/19_url.sh
 # DESCRIPTION: 
 # ==============================================================================
 
-# shell_cli_type_normalize_filepath normalize 'filepath' value.
+# shell_cli_type_normalize_url normalize 'url' value.
 #
 # Arguments:
 # - value: raw value.
@@ -13,13 +13,13 @@
 # Returns:
 # - Outputs normalizated value.
 #   or the original string otherwise.
-shell_cli_type_normalize_filepath() {
+shell_cli_type_normalize_url() {
   shell_cli_type_normalize_string "${1}"
 }
 
 
 
-# shell_cli_type_validate_filepath validate 'filepath'.
+# shell_cli_type_validate_url validate 'url'.
 #
 # Arguments:
 # - value: non empty normalizated value.
@@ -29,7 +29,7 @@ shell_cli_type_normalize_filepath() {
 # - 0: if the value is a valid representative of this type
 # - 1: if the value is not a valid representative of this type.
 # - 10: if the value contains any control characters.
-shell_cli_type_validate_filepath() {
+shell_cli_type_validate_url() {
   local value="$1"
   local aux="$2"
 
@@ -38,14 +38,9 @@ shell_cli_type_validate_filepath() {
     return 10
   fi
 
-  if ! shell_cli_type_validate_path "$value"; then
-    return 1
+  if shell_cli_type_validate_fullurl "$value" || shell_cli_type_validate_relativeurl "$value"; then
+    return 0
   fi
 
-  # Rejects strings terminating with a path divider trailing slash character
-  if [[ "$value" =~ \/$ ]] || [[ "$value" =~ \\$ ]] || [ -z "$value" ]; then
-    return 1
-  fi
-
-  return 0
+  return 1
 }

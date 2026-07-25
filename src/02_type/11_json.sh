@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: 02_type/20_url.sh
+# SCRIPT: 02_type/11_json.sh
 # DESCRIPTION: 
 # ==============================================================================
 
-# shell_cli_type_normalize_url normalize 'url' value.
+# shell_cli_type_normalize_json normalize 'json' value.
 #
 # Arguments:
 # - value: raw value.
@@ -13,13 +13,17 @@
 # Returns:
 # - Outputs normalizated value.
 #   or the original string otherwise.
-shell_cli_type_normalize_url() {
-  shell_cli_type_normalize_string "${1}"
+shell_cli_type_normalize_json() {
+  # In this case, normalization is identical to validation.
+  if ! shell_cli_parse_sjson_to_assoc "$1"; then
+    return "1"
+  fi
+  echo "${SHELL_CLI_PARSE_SJSON_TO_ASSOC_STRING}"
 }
 
 
 
-# shell_cli_type_validate_url validate 'url'.
+# shell_cli_type_validate_json validate 'json'.
 #
 # Arguments:
 # - value: non empty normalizated value.
@@ -29,7 +33,7 @@ shell_cli_type_normalize_url() {
 # - 0: if the value is a valid representative of this type
 # - 1: if the value is not a valid representative of this type.
 # - 10: if the value contains any control characters.
-shell_cli_type_validate_url() {
+shell_cli_type_validate_json() {
   local value="$1"
   local aux="$2"
 
@@ -38,9 +42,10 @@ shell_cli_type_validate_url() {
     return 10
   fi
 
-  if shell_cli_type_validate_fullurl "$value" || shell_cli_type_validate_relativeurl "$value"; then
-    return 0
+  # In this case, normalization is identical to validation.
+  if ! shell_cli_parse_sjson_to_assoc "$value"; then
+    return "2"
   fi
 
-  return 1
+  return 0
 }

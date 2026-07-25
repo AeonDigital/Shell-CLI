@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: 02_type/12_json.sh
+# SCRIPT: 02_type/13_path.sh
 # DESCRIPTION: 
 # ==============================================================================
 
-# shell_cli_type_normalize_json normalize 'json' value.
+# shell_cli_type_normalize_path normalize 'path' value.
 #
 # Arguments:
 # - value: raw value.
@@ -13,17 +13,13 @@
 # Returns:
 # - Outputs normalizated value.
 #   or the original string otherwise.
-shell_cli_type_normalize_json() {
-  # In this case, normalization is identical to validation.
-  if ! shell_cli_parse_sjson_to_assoc "$1"; then
-    return "1"
-  fi
-  echo "${SHELL_CLI_PARSE_SJSON_TO_ASSOC_STRING}"
+shell_cli_type_normalize_path() {
+  shell_cli_type_normalize_string "${1}"
 }
 
 
 
-# shell_cli_type_validate_json validate 'json'.
+# shell_cli_type_validate_path validate 'path'.
 #
 # Arguments:
 # - value: non empty normalizated value.
@@ -33,7 +29,7 @@ shell_cli_type_normalize_json() {
 # - 0: if the value is a valid representative of this type
 # - 1: if the value is not a valid representative of this type.
 # - 10: if the value contains any control characters.
-shell_cli_type_validate_json() {
+shell_cli_type_validate_path() {
   local value="$1"
   local aux="$2"
 
@@ -42,9 +38,14 @@ shell_cli_type_validate_json() {
     return 10
   fi
 
-  # In this case, normalization is identical to validation.
-  if ! shell_cli_parse_sjson_to_assoc "$value"; then
-    return "2"
+  # 1. Rejects wildcards (?, *), html boundaries (<, >), quotes (") and pipe (|)
+  if [[ "$value" =~ [\*\?\"\<\>\|] ]]; then
+    return 1
+  fi
+
+  # Cross-Platform check for Windows drive letters (e.g., C:)
+  if [[ "$value" =~ : ]] && [[ ! "$value" =~ ^[A-Za-z]: ]]; then
+    return 1
   fi
 
   return 0

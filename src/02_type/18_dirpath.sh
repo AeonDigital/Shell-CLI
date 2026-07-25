@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: 02_type/13_function.sh
+# SCRIPT: 02_type/18_dirpath.sh
 # DESCRIPTION: 
 # ==============================================================================
 
-# shell_cli_type_normalize_function normalize 'function' value.
+# shell_cli_type_normalize_dirpath normalize 'dirpath' value.
 #
 # Arguments:
 # - value: raw value.
@@ -13,13 +13,13 @@
 # Returns:
 # - Outputs normalizated value.
 #   or the original string otherwise.
-shell_cli_type_normalize_function() {
+shell_cli_type_normalize_dirpath() {
   shell_cli_type_normalize_string "${1}"
 }
 
 
 
-# shell_cli_type_validate_function validate 'function'.
+# shell_cli_type_validate_dirpath validate 'dirpath'.
 #
 # Arguments:
 # - value: non empty normalizated value.
@@ -29,17 +29,18 @@ shell_cli_type_normalize_function() {
 # - 0: if the value is a valid representative of this type
 # - 1: if the value is not a valid representative of this type.
 # - 10: if the value contains any control characters.
-shell_cli_type_validate_function() {
+shell_cli_type_validate_dirpath() {
   local value="$1"
   local aux="$2"
 
+  # Enforce strict terminal and structural string safety first
   if ! shell_cli_type_validate_string "$value"; then
     return 10
   fi
 
-  if declare -f "$value" >/dev/null; then
-    return 0
+  if ! shell_cli_type_validate_path "$value"; then
+    return 1
   fi
 
-  return 1
+  return 0
 }

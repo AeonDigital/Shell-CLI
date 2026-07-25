@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: 02_type/21_fullurl.sh
+# SCRIPT: 02_type/14_relativepath.sh
 # DESCRIPTION: 
 # ==============================================================================
 
-# shell_cli_type_normalize_fullurl normalize 'fullurl' value.
+# shell_cli_type_normalize_relativepath normalize 'relativepath' value.
 #
 # Arguments:
 # - value: raw value.
@@ -13,13 +13,13 @@
 # Returns:
 # - Outputs normalizated value.
 #   or the original string otherwise.
-shell_cli_type_normalize_fullurl() {
+shell_cli_type_normalize_relativepath() {
   shell_cli_type_normalize_string "${1}"
 }
 
 
 
-# shell_cli_type_validate_fullurl validate 'fullurl'.
+# shell_cli_type_validate_relativepath validate 'relativepath'.
 #
 # Arguments:
 # - value: non empty normalizated value.
@@ -29,7 +29,7 @@ shell_cli_type_normalize_fullurl() {
 # - 0: if the value is a valid representative of this type
 # - 1: if the value is not a valid representative of this type.
 # - 10: if the value contains any control characters.
-shell_cli_type_validate_fullurl() {
+shell_cli_type_validate_relativepath() {
   local value="$1"
   local aux="$2"
 
@@ -38,11 +38,15 @@ shell_cli_type_validate_fullurl() {
     return 10
   fi
 
-  # Enforces explicit schema protocol definitions followed by hostname validation
-  local url_regex="^(https?|ftp|file):\/\/([A-Za-z0-9.-]+)(:[0-9]+)?(\/[A-Za-z0-9._%+-]*)*(\?.*)?(#.*)?$"
-  if [[ "$value" =~ $url_regex ]]; then
-    return 0
+  # Leverage core validation rules for general character checking first
+  if ! shell_cli_type_validate_path "$value"; then
+    return 1
   fi
 
-  return 1
+  # Reject absolute Unix roots or Windows drive letters prefix structures
+  if [[ "$value" =~ ^\/ ]] || [[ "$value" =~ ^[A-Za-z]:\\ ]] || [[ "$value" =~ ^[A-Za-z]:\/ ]]; then
+    return 1
+  fi
+
+  return 0
 }

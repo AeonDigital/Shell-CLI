@@ -5,7 +5,16 @@
 # DESCRIPTION: 
 # ==============================================================================
 
-# Holds all key/value pairs extracted from the input.
+# Normalized JSON string reconstructed from the object/string originally 
+# provided.
+declare SHELL_CLI_PARSE_SJSON_TO_ASSOC_STRING=""
+
+# Name of the object originally provided if it is already an associative 
+# array.
+declare SHELL_CLI_PARSE_SJSON_TO_ASSOC_NAME=""
+
+# Values ​​obtained from the extraction performed on the object/string 
+# originally provided.
 declare -gA SHELL_CLI_PARSE_SJSON_TO_ASSOC=()
 
 # Holds the order of discovered keys.
@@ -14,9 +23,10 @@ declare -gA SHELL_CLI_PARSE_SJSON_TO_ASSOC=()
 #       insertion order, so this information is lost.
 declare -ga SHELL_CLI_PARSE_SJSON_TO_ASSOC_ORDER=()
 
-# Holds the normalized string result (array name or reconstructed JSON).
-# On error, contains the original raw string.
-declare SHELL_CLI_PARSE_SJSON_TO_ASSOC_STRING=""
+
+
+# Parser error message.
+declare SHELL_CLI_PARSE_SJSON_TO_ASSOC_ERR_MESSAGE=""
 
 
 
@@ -71,14 +81,11 @@ shell_cli_parse_sjson_to_assoc() {
 
 
   # Reset global associative array cleanly
+  SHELL_CLI_PARSE_SJSON_TO_ASSOC_STRING=""
+  SHELL_CLI_PARSE_SJSON_TO_ASSOC_NAME=""
   SHELL_CLI_PARSE_SJSON_TO_ASSOC=()
   SHELL_CLI_PARSE_SJSON_TO_ASSOC_ORDER=()
-  SHELL_CLI_PARSE_SJSON_TO_ASSOC_STRING=""
 
-
-  local invalidJSON="0"
-  local invalidJSONMsg=""
-  local stringifiedJSON=""
 
   # empty value
   if [ "$value" == "" ]; then
@@ -89,13 +96,23 @@ shell_cli_parse_sjson_to_assoc() {
   # pointer to assoc array
   if shell_cli_utils_array_is_assoc "$value"; then
     local -n tmp_assoc="$value"
+    local v=""
+
+    local stringifiedJSON+="{"
     for k in "${!tmp_assoc[@]}"; do 
-      local v="${tmp_assoc[$k]}"
+      v="${tmp_assoc[$k]}"
       SHELL_CLI_PARSE_SJSON_TO_ASSOC["$k"]="$v"
       SHELL_CLI_PARSE_SJSON_TO_ASSOC_ORDER+=("$k")
+
+      if [ "$stringifiedJSON" != "{" ]; then
+        stringifiedJSON+=","
+      fi
+      stringifiedJSON+="\"$k\":\"$v\""
     done
+    stringifiedJSON+="}"
     
-    SHELL_CLI_PARSE_SJSON_TO_ASSOC_STRING="$value"
+    SHELL_CLI_PARSE_SJSON_TO_ASSOC_STRING="$stringifiedJSON"
+    SHELL_CLI_PARSE_SJSON_TO_ASSOC_NAME="$value"
     return 0
   fi
 
@@ -107,217 +124,201 @@ shell_cli_parse_sjson_to_assoc() {
 
   # invalid object
   if [ "${value:0:1}" != "{" ] || [ "${value: -1}" != "}" ]; then
-    invalidJSON="1"
-    invalidJSONMsg="invalid syntax; loss of curly brackets."
+    SHELL_CLI_PARSE_SJSON_TO_ASSOC_ERR_MESSAGE="invalid syntax; loss of curly brackets."
+    return 1
   fi
 
 
-  if [ "$invalidJSON" = "0" ]; then
-    local inner="${value#?}"
-    inner="${inner%?}"
 
-    local nl=$'\n'
-    
-    local idx="0"
-    local len=${#inner}
-    local lastCharIndex=$((len - 1))
-    local char=""
-    local previousChar=""
-    local reading="key" # 'key' ; ':' ; 'value' ; ','
-    
-    # key
-    local openkey="0"
-    local currentkey=""
-    local openkeywith=""
-    local -a arr_tmp_keys=()
+  local inner="${value#?}"
+  inner="${inner%?}"
 
-    # value
-    local openvalue="0"
-    local currentvalue=""
-    local openvaluewith=""
-    local -a arr_tmp_values=()
+  local nl=$'\n'
+  
+  local idx="0"
+  local len=${#inner}
+  local lastCharIndex=$((len - 1))
+  local char=""
+  local previousChar=""
+  local reading="key" # 'key' ; ':' ; 'value' ; ','
+  
+  # key
+  local openkey="0"
+  local currentkey=""
+  local openkeywith=""
+  local -a arr_tmp_keys=()
+
+  # value
+  local openvalue="0"
+  local currentvalue=""
+  local openvaluewith=""
+  local -a arr_tmp_values=()
 
 
-    while [ "$idx" -lt "$len" ]; do
-      char="${inner:$idx:1}"
 
-      if [ "$reading" = "key" ]; then
-        if [ "$openkey" = "0" ]; then
-          if [ "$char" = "'" ] || [ "$char" = '"' ]; then
-            openkey="1"
-            currentkey=""
-            openkeywith="$char"
-          fi
-        elif [ "$openkey" = "1" ]; then
-          if [ "$char" != "$openkeywith" ]; then
-            if [ "$char" = "$nl" ]; then
-              invalidJSON="1"
-              invalidJSONMsg="invalid syntax; found \\n char in key name."
-              break
-            fi
-            currentkey+="$char"
-          else
-            if [ "$currentkey" = "" ]; then
-              invalidJSON="1"
-              invalidJSONMsg="invalid syntax; unexpected empty key."
-              break
-            fi
+  while [ "$idx" -lt "$len" ]; do
+    char="${inner:$idx:1}"
 
-            reading=":"
-            arr_tmp_keys+=("$currentkey")
-
-            openkey="0"
-            currentkey=""
-            openkeywith=""
-          fi
+    if [ "$reading" = "key" ]; then
+      if [ "$openkey" = "0" ]; then
+        if [ "$char" = "'" ] || [ "$char" = '"' ]; then
+          openkey="1"
+          currentkey=""
+          openkeywith="$char"
         fi
-      elif [ "$reading" = ":" ]; then
-        if [ "$char" != " " ] && [ "$char" != "$nl" ]; then
-          if [ "$char" != ":" ]; then
-            invalidArray="1"
-            invalidArrayMsg="invalid syntax; char '$char' in invalid position [ idx: $idx ]."
-            break
-          else
-            reading="value"
+      elif [ "$openkey" = "1" ]; then
+        if [ "$char" != "$openkeywith" ]; then
+          if [ "$char" = "$nl" ]; then
+            SHELL_CLI_PARSE_SJSON_TO_ASSOC_ERR_MESSAGE="invalid syntax; found \\n char in key name."
+            return 1
+          fi
+          currentkey+="$char"
+        else
+          if [ "$currentkey" = "" ]; then
+            SHELL_CLI_PARSE_SJSON_TO_ASSOC_ERR_MESSAGE="invalid syntax; unexpected empty key."
+            return 1
+          fi
 
-            openvalue="0"
+          reading=":"
+          arr_tmp_keys+=("$currentkey")
+
+          openkey="0"
+          currentkey=""
+          openkeywith=""
+        fi
+      fi
+    elif [ "$reading" = ":" ]; then
+      if [ "$char" != " " ] && [ "$char" != "$nl" ]; then
+        if [ "$char" != ":" ]; then
+          SHELL_CLI_PARSE_SJSON_TO_ASSOC_ERR_MESSAGE="invalid syntax; char '$char' in invalid position [ idx: $idx ]."
+          return 1
+        else
+          reading="value"
+
+          openvalue="0"
+          currentvalue=""
+          openvaluewith=""
+        fi
+      fi
+    elif [ "$reading" = "value" ]; then
+      if [ "$openvalue" = "0" ]; then
+        if [ "$char" != " " ] && [ "$char" != "$nl" ]; then
+          if [[ "$char" =~ ^[0-9A-Za-z\'\".]+$ ]]; then
+
+            openvalue="1"
             currentvalue=""
             openvaluewith=""
+
+            if [ "$char" = "'" ] || [ "$char" = '"' ]; then
+              openvaluewith="$char"
+            else 
+              currentvalue="$char"
+            fi
+
+          else
+            SHELL_CLI_PARSE_SJSON_TO_ASSOC_ERR_MESSAGE="invalid syntax; char '$char' in invalid position [ idx: $idx ]."
+            return 1
           fi
         fi
-      elif [ "$reading" = "value" ]; then
-        if [ "$openvalue" = "0" ]; then
-          if [ "$char" != " " ] && [ "$char" != "$nl" ]; then
-            if [[ "$char" =~ ^[0-9A-Za-z\'\".]+$ ]]; then
+      elif [ "$openvalue" = "1" ]; then
+        local stopread="0"
 
-              openvalue="1"
-              currentvalue=""
-              openvaluewith=""
-
-              if [ "$char" = "'" ] || [ "$char" = '"' ]; then
-                openvaluewith="$char"
-              else 
-                currentvalue="$char"
-              fi
-
-            else
-              invalidJSON="1"
-              invalidJSONMsg="invalid syntax; char '$char' in invalid position [ idx: $idx ]."
-              break
-            fi
+        if [ "$openvaluewith" = "" ]; then
+          if [ "$char" = " " ] || [ "$char" = "," ] || [ "$char" = "$nl" ]; then
+            stopread="1"
+          elif [ "$char" = "'" ] || [ "$char" = '"' ] || [[ ! "$char" =~ ^[0-9A-Za-z.]+$ ]]; then
+            SHELL_CLI_PARSE_SJSON_TO_ASSOC_ERR_MESSAGE="invalid syntax; char '$char' in invalid position [ idx: $idx ]."
+            return 1
           fi
-        elif [ "$openvalue" = "1" ]; then
-          local stopread="0"
 
-          if [ "$openvaluewith" = "" ]; then
-            if [ "$char" = " " ] || [ "$char" = "," ] || [ "$char" = "$nl" ]; then
-              stopread="1"
-            elif [ "$char" = "'" ] || [ "$char" = '"' ] || [[ ! "$char" =~ ^[0-9A-Za-z.]+$ ]]; then
-              invalidJSON="1"
-              invalidJSONMsg="invalid syntax; char '$char' in invalid position [ idx: $idx ]."
-              break
-            fi
-
-            if [ "$idx" = "$lastCharIndex" ]; then
-              stopread="1"
-              currentvalue+="$char"
-            fi
-          elif [ "$openvaluewith" != "" ]; then
-            if [ "$char" = "$openvaluewith" ]; then
-              if [ "$previousChar" != "\\" ]; then
-                stopread="1"
-              else
-                if [ "$idx" = "$lastCharIndex" ]; then
-                  stopread="1"
-                  currentvalue+="$char"
-                fi
-              fi
-            fi
-          fi
-          
-          if [ "$stopread" = "0" ]; then
+          if [ "$idx" = "$lastCharIndex" ]; then
+            stopread="1"
             currentvalue+="$char"
-          else
-            reading=","
-            arr_tmp_values+=("$currentvalue")
-
-            openvalue="0"
-            currentvalue=""
-            openvaluewith=""
-
-            if [ "$char" = "," ]; then
-              reading="key"
+          fi
+        elif [ "$openvaluewith" != "" ]; then
+          if [ "$char" = "$openvaluewith" ]; then
+            if [ "$previousChar" != "\\" ]; then
+              stopread="1"
+            else
+              if [ "$idx" = "$lastCharIndex" ]; then
+                stopread="1"
+                currentvalue+="$char"
+              fi
             fi
           fi
         fi
-      elif [ "$reading" = "," ]; then
-        if [ "$char" != " " ] && [ "$char" != "$nl" ]; then
-          if [ "$char" != "," ]; then
-            invalidArray="1"
-            invalidArrayMsg="invalid syntax; char '$char' in invalid position [ idx: $idx ]."
-            break
-          else
+        
+        if [ "$stopread" = "0" ]; then
+          currentvalue+="$char"
+        else
+          reading=","
+          arr_tmp_values+=("$currentvalue")
+
+          openvalue="0"
+          currentvalue=""
+          openvaluewith=""
+
+          if [ "$char" = "," ]; then
             reading="key"
           fi
         fi
       fi
-      
-      idx=$((idx + 1))
-      previousChar="$char"
-    done
-
-
-    if [ "$invalidJSON" = "0" ]; then
-      local klen="${#arr_tmp_keys[@]}"
-      local vlen="${#arr_tmp_values[@]}"
-      if [ "$klen" != "$vlen" ]; then
-        invalidJSON="1"
-        invalidJSONMsg="invalid parse; found '$klen' keys to '$vlen' values."
-      else
-        local k=""
-        local -A arr_duplicated=()
-        for k in "${arr_tmp_keys[@]}"; do
-          if [ "${arr_duplicated["$k"]}" = "" ]; then
-            arr_duplicated["$k"]="1"
-            continue
-          fi
-
-          invalidJSON="1"
-          invalidJSONMsg="invalid object; duplicated key '$k'."
-          break
-        done
+    elif [ "$reading" = "," ]; then
+      if [ "$char" != " " ] && [ "$char" != "$nl" ]; then
+        if [ "$char" != "," ]; then
+          SHELL_CLI_PARSE_SJSON_TO_ASSOC_ERR_MESSAGE="invalid syntax; char '$char' in invalid position [ idx: $idx ]."
+          return 1
+        else
+          reading="key"
+        fi
       fi
     fi
+    
+    idx=$((idx + 1))
+    previousChar="$char"
+  done
 
 
-    if [ "$invalidJSON" = "0" ]; then
-      local i=""
-      local k=""
-      local v=""
-      stringifiedJSON+="{"
-      for i in "${!arr_tmp_keys[@]}"; do
-        if [ "$i" -gt "0" ]; then
-          stringifiedJSON+=","
-        fi
 
-        k="${arr_tmp_keys[$i]}"
-        v="${arr_tmp_values[$i]}"
+  local klen="${#arr_tmp_keys[@]}"
+  local vlen="${#arr_tmp_values[@]}"
+  if [ "$klen" != "$vlen" ]; then
+    SHELL_CLI_PARSE_SJSON_TO_ASSOC_ERR_MESSAGE="invalid parse; found '$klen' keys to '$vlen' values."
+    return 1
+  else
+    local k=""
+    local -A arr_duplicated=()
+    for k in "${arr_tmp_keys[@]}"; do
+      if [ "${arr_duplicated["$k"]}" = "" ]; then
+        arr_duplicated["$k"]="1"
+        continue
+      fi
 
-        SHELL_CLI_PARSE_SJSON_TO_ASSOC["$k"]="${v}"
-        SHELL_CLI_PARSE_SJSON_TO_ASSOC_ORDER+=("$k")
-        stringifiedJSON+="\"$k\":\"$v\""
-      done
-      stringifiedJSON+="}"
+      SHELL_CLI_PARSE_SJSON_TO_ASSOC_ERR_MESSAGE="invalid object; duplicated key '$k'."
+      return 1
+    done
+  fi
+
+
+
+  local i=""
+  local k=""
+  local v=""
+  
+  local stringifiedJSON+="{"
+  for i in "${!arr_tmp_keys[@]}"; do
+    if [ "$i" -gt "0" ]; then
+      stringifiedJSON+=","
     fi
 
-  fi
+    k="${arr_tmp_keys[$i]}"
+    v="${arr_tmp_values[$i]}"
 
-
-  if [ "$invalidJSON" = "1" ]; then
-    SHELL_CLI_PARSE_SJSON_TO_ASSOC["0"]="${invalidJSONMsg}"
-    SHELL_CLI_PARSE_SJSON_TO_ASSOC_STRING="$value"
-    return 1
-  fi
+    SHELL_CLI_PARSE_SJSON_TO_ASSOC["$k"]="${v}"
+    SHELL_CLI_PARSE_SJSON_TO_ASSOC_ORDER+=("$k")
+    stringifiedJSON+="\"$k\":\"$v\""
+  done
+  stringifiedJSON+="}"
 
   SHELL_CLI_PARSE_SJSON_TO_ASSOC_STRING="$stringifiedJSON"
   return 0

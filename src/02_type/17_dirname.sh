@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# SCRIPT: 02_type/15_relativepath.sh
+# SCRIPT: 02_type/17_dirname.sh
 # DESCRIPTION: 
 # ==============================================================================
 
-# shell_cli_type_normalize_relativepath normalize 'relativepath' value.
+# shell_cli_type_normalize_dirname normalize 'dirname' value.
 #
 # Arguments:
 # - value: raw value.
@@ -13,13 +13,13 @@
 # Returns:
 # - Outputs normalizated value.
 #   or the original string otherwise.
-shell_cli_type_normalize_relativepath() {
+shell_cli_type_normalize_dirname() {
   shell_cli_type_normalize_string "${1}"
 }
 
 
 
-# shell_cli_type_validate_relativepath validate 'relativepath'.
+# shell_cli_type_validate_dirname validate 'dirname'.
 #
 # Arguments:
 # - value: non empty normalizated value.
@@ -29,7 +29,7 @@ shell_cli_type_normalize_relativepath() {
 # - 0: if the value is a valid representative of this type
 # - 1: if the value is not a valid representative of this type.
 # - 10: if the value contains any control characters.
-shell_cli_type_validate_relativepath() {
+shell_cli_type_validate_dirname() {
   local value="$1"
   local aux="$2"
 
@@ -38,13 +38,8 @@ shell_cli_type_validate_relativepath() {
     return 10
   fi
 
-  # Leverage core validation rules for general character checking first
-  if ! shell_cli_type_validate_path "$value"; then
-    return 1
-  fi
-
-  # Reject absolute Unix roots or Windows drive letters prefix structures
-  if [[ "$value" =~ ^\/ ]] || [[ "$value" =~ ^[A-Za-z]:\\ ]] || [[ "$value" =~ ^[A-Za-z]:\/ ]]; then
+  # Reuses individual filename structural constraints as rules match exactly
+  if ! shell_cli_type_validate_filename "$value"; then
     return 1
   fi
 
