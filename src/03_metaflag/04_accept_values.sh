@@ -52,24 +52,13 @@ shell_cli_metaflag_property_validate_accept_values() {
   local fassoc="$2"
   SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE=""
 
-  local -n __assoc="${fassoc}"
-  local _type="${__assoc["type"]}"
+  if [ "$fval" = "" ]; then
+    return 0
+  fi
 
-  if [ "$_type" != "accept_values" ]; then
-    if [ "$fval" != "" ]; then
-      SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="cannot define 'accept_values' for a non 'type=$_type' flag."
-      return 1
-    fi
-  else
-    if [ "$fval" = "" ]; then
-      SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="flags with 'type=accept_values' must declare 'accept_values' property."
-      return 1
-    fi
-
-    if ! shell_cli_utils_array_is_assoc "$fval"; then
-      SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="pointer '$fval' must be an associative array (declare -A)."
-      return 1
-    fi
+  if ! shell_cli_utils_array_is_assoc "$fval"; then
+    SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="pointer '$fval' must be an associative array (declare -A)."
+    return 1
   fi
 
   return 0

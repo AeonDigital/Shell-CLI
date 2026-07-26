@@ -80,7 +80,7 @@ shell_cli_parse_sjson_to_assoc() {
   value="${value%"${value##*[![:space:]]}"}" # trim R
 
 
-  # Reset global associative array cleanly
+  # Reset external control variables
   SHELL_CLI_PARSE_SJSON_TO_ASSOC_STRING=""
   SHELL_CLI_PARSE_SJSON_TO_ASSOC_NAME=""
   SHELL_CLI_PARSE_SJSON_TO_ASSOC=()
@@ -89,13 +89,13 @@ shell_cli_parse_sjson_to_assoc() {
 
   # empty value
   if [ "$value" == "" ]; then
-    SHELL_CLI_PARSE_SJSON_TO_ASSOC_STRING=""
     return 0
   fi
 
   # pointer to assoc array
   if shell_cli_utils_array_is_assoc "$value"; then
     local -n tmp_assoc="$value"
+    local k=""
     local v=""
 
     local stringifiedJSON+="{"

@@ -102,7 +102,7 @@ shell_cli_metaflag_property_cross_validate_min_array_max_array() {
     return 0
   fi
 
-  local _array="${__assoc["array"]}"
+  local _array="${__assoc["is_array"]}"
   local _min_array="${__assoc["min_array"]}"
   local _max_array="${__assoc["max_array"]}"
 

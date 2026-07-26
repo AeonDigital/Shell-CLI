@@ -214,7 +214,7 @@ shell_cli_type_validate_value() {
   fi
 
   # 2. Direct data routing evaluation according to array layout configurations
-  if [ "${_vval_rules["array"]}" = "1" ]; then
+  if [ "${_vval_rules["is_array"]}" = "1" ]; then
     if ! shell_cli_type_validate_array "$value"; then
       VALIDATION_ERROR_MSG="[ x ] [ ${l_name} ] :: must be a valid array collection []."
       return 1
@@ -261,7 +261,7 @@ shell_cli_type_validate_value() {
     SHELL_CLI_VALIDATED_VALUE="$serialized_array"
 
   # 3. Direct data routing evaluation according to map dictionary layouts
-  elif [ "${_vval_rules["assoc"]}" = "1" ]; then
+  elif [ "${_vval_rules["is_ssoc"]}" = "1" ]; then
     if ! shell_cli_type_validate_json "$value"; then
       VALIDATION_ERROR_MSG="[ x ] [ ${l_name} ] :: must be a valid json string."
       return 1

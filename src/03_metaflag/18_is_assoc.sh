@@ -7,7 +7,7 @@
 # ==============================================================================
 
 declare -gA METAFLAG_is_assoc=()
-METAFLAG_is_assoc["long"]="assoc"
+METAFLAG_is_assoc["long"]="is_assoc"
 METAFLAG_is_assoc["short"]=""
 METAFLAG_is_assoc["type"]="bool"
 METAFLAG_is_assoc["accept_values"]=""

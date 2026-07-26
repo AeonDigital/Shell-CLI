@@ -53,10 +53,10 @@ shell_cli_metaflag_property_validate_min_array() {
   SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE=""
 
   local -n __assoc="${fassoc}"
-  local _array="${__assoc["array"]}"
+  local _array="${__assoc["is_array"]}"
 
   if [ "$_array" = "0" ] &&  [ "$fval" != "" ]; then
-    SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="cannot define 'min_array' for a 'array=false' flag."
+    SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="cannot define 'min_array' for a 'is_array=false' flag."
     return 1
   fi
 

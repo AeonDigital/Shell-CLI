@@ -53,7 +53,7 @@ shell_cli_metaflag_property_validate_required_keys() {
   SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE=""
 
   local -n __assoc="${fassoc}"
-  local _assoc="${__assoc["assoc"]}"
+  local _assoc="${__assoc["is_assoc"]}"
 
   if [ "$_assoc" = "0" ]; then
     if [ "$fval" != "" ]; then

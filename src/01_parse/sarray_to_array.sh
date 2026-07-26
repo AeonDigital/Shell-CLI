@@ -5,12 +5,24 @@
 # DESCRIPTION: 
 # ==============================================================================
 
-# Holds all values extracted from the input.
+# Normalized JSON string reconstructed from the object/string originally 
+# provided.
+declare SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING=""
+
+# Name of the object originally provided if it is already an indexed 
+# array.
+declare SHELL_CLI_PARSE_SARRAY_TO_ARRAY_NAME=""
+
+# Values ​​obtained from the extraction performed on the object/string 
+# originally provided.
 declare -ga SHELL_CLI_PARSE_SARRAY_TO_ARRAY=()
 
-# Holds the normalized string result (array name or reconstructed array).
-# On error, contains the original raw string.
-declare SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING=""
+
+
+# Parser error message.
+declare SHELL_CLI_PARSE_SARRAY_TO_ARRAY_ERR_MESSAGE=""
+
+
 
 
 
@@ -60,28 +72,39 @@ shell_cli_parse_sarray_to_array() {
   value="${value%"${value##*[![:space:]]}"}" # trim R
 
 
-  # Reset global associative array cleanly
-  SHELL_CLI_PARSE_SARRAY_TO_ARRAY=()
+  # Reset external control variables
   SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING=""
+  SHELL_CLI_PARSE_SARRAY_TO_ARRAY_NAME=""
+  SHELL_CLI_PARSE_SARRAY_TO_ARRAY=()
+  SHELL_CLI_PARSE_SARRAY_TO_ARRAY_ERR_MESSAGE=""
 
-  local invalidArray="0"
-  local invalidArrayMsg=""
-  local stringifiedArray=""
 
   # empty value
   if [ "$value" == "" ]; then
-    SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING=""
     return 0
   fi
 
   # pointer to indexed array
   if shell_cli_utils_array_is_indexed "$value"; then
-    local -n tmp_assoc="$value"
-    for v in "${tmp_assoc[@]}"; do 
+    local -n tmp_array="$value"
+    local i=""
+    local v=""
+
+    local stringifiedArray="["
+    for i in "${!tmp_array[@]}"; do 
+      v="${tmp_array[$i]}"
       SHELL_CLI_PARSE_SARRAY_TO_ARRAY+=("$v")
+
+
+      if [ "$i" -gt "0" ]; then
+        stringifiedArray+=","
+      fi
+      stringifiedArray+="\"$v\""
     done
+    stringifiedArray="]"
     
-    SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING="$value"
+    SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING="$stringifiedArray"
+    SHELL_CLI_PARSE_SARRAY_TO_ARRAY_NAME="$value"
     return 0
   fi
 
@@ -93,142 +116,130 @@ shell_cli_parse_sarray_to_array() {
 
   # invalid object
   if [ "${value:0:1}" != "[" ] || [ "${value: -1}" != "]" ]; then
-    invalidArray="1"
-    invalidArrayMsg="invalid syntax; loss of square brackets."
+    SHELL_CLI_PARSE_SARRAY_TO_ARRAY_ERR_MESSAGE="invalid syntax; loss of square brackets."
+    return 1
   fi
 
 
-  if [ "$invalidArray" = "0" ]; then
-    local inner="${value#?}"
-    inner="${inner%?}"
 
-    local nl=$'\n'
-    
-    local idx="0"
-    local len=${#inner}
-    local lastCharIndex=$((len - 1))
-    local char=""
-    local previousChar=""
-    local reading="value" # 'value' ; ','
-    
-    # value
-    local openvalue="0"
-    local currentvalue=""
-    local openvaluewith=""
-    local -a arr_tmp_values=()
+  local inner="${value#?}"
+  inner="${inner%?}"
+
+  local nl=$'\n'
+  
+  local idx="0"
+  local len=${#inner}
+  local lastCharIndex=$((len - 1))
+  local char=""
+  local previousChar=""
+  local reading="value" # 'value' ; ','
+  
+  # value
+  local openvalue="0"
+  local currentvalue=""
+  local openvaluewith=""
+  local -a arr_tmp_values=()
 
 
-    while [ "$idx" -lt "$len" ]; do
-      char="${inner:$idx:1}"
 
-      if [ "$reading" = "value" ]; then
-        if [ "$openvalue" = "0" ]; then
-          if [ "$char" != " " ] && [ "$char" != "$nl" ]; then
-            if [[ "$char" =~ ^[0-9A-Za-z\'\".]+$ ]]; then
+  while [ "$idx" -lt "$len" ]; do
+    char="${inner:$idx:1}"
 
-              openvalue="1"
-              currentvalue=""
-              openvaluewith=""
+    if [ "$reading" = "value" ]; then
+      if [ "$openvalue" = "0" ]; then
+        if [ "$char" != " " ] && [ "$char" != "$nl" ]; then
+          if [[ "$char" =~ ^[0-9A-Za-z\'\".]+$ ]]; then
 
-              if [ "$char" = "'" ] || [ "$char" = '"' ]; then
-                openvaluewith="$char"
-              else 
-                currentvalue="$char"
-              fi
-
-            else
-              invalidArray="1"
-              invalidArrayMsg="invalid syntax; char '$char' in invalid position [ idx: $idx ]."
-              break
-            fi
-          fi
-        elif [ "$openvalue" = "1" ]; then
-          local stopread="0"
-
-          if [ "$openvaluewith" = "" ]; then
-            if [ "$char" = " " ] || [ "$char" = "," ] || [ "$char" = "$nl" ]; then
-              stopread="1"
-            elif [ "$char" = "'" ] || [ "$char" = '"' ] || [[ ! "$char" =~ ^[0-9A-Za-z.]+$ ]]; then
-              invalidArray="1"
-              invalidArrayMsg="invalid syntax; char '$char' in invalid position [ idx: $idx ]."
-              break
-            fi
-
-            if [ "$idx" = "$lastCharIndex" ]; then
-              stopread="1"
-              currentvalue+="$char"
-            fi
-          elif [ "$openvaluewith" != "" ]; then
-            if [ "$char" = "$openvaluewith" ]; then
-              if [ "$previousChar" != "\\" ]; then
-                stopread="1"
-              else
-                if [ "$idx" = "$lastCharIndex" ]; then
-                  stopread="1"
-                  currentvalue+="$char"
-                fi
-              fi
-            fi
-          fi
-          
-          if [ "$stopread" = "0" ]; then
-            currentvalue+="$char"
-          else
-            reading=","
-            arr_tmp_values+=("$currentvalue")
-
-            openvalue="0"
+            openvalue="1"
             currentvalue=""
             openvaluewith=""
 
-            if [ "$char" = "," ]; then
-              reading="value"
+            if [ "$char" = "'" ] || [ "$char" = '"' ]; then
+              openvaluewith="$char"
+            else 
+              currentvalue="$char"
+            fi
+
+          else
+            SHELL_CLI_PARSE_SARRAY_TO_ARRAY_ERR_MESSAGE="invalid syntax; char '$char' in invalid position [ idx: $idx ]."
+            return 1
+          fi
+        fi
+      elif [ "$openvalue" = "1" ]; then
+        local stopread="0"
+
+        if [ "$openvaluewith" = "" ]; then
+          if [ "$char" = " " ] || [ "$char" = "," ] || [ "$char" = "$nl" ]; then
+            stopread="1"
+          elif [ "$char" = "'" ] || [ "$char" = '"' ] || [[ ! "$char" =~ ^[0-9A-Za-z.]+$ ]]; then
+            SHELL_CLI_PARSE_SARRAY_TO_ARRAY_ERR_MESSAGE="invalid syntax; char '$char' in invalid position [ idx: $idx ]."
+            return 1
+          fi
+
+          if [ "$idx" = "$lastCharIndex" ]; then
+            stopread="1"
+            currentvalue+="$char"
+          fi
+        elif [ "$openvaluewith" != "" ]; then
+          if [ "$char" = "$openvaluewith" ]; then
+            if [ "$previousChar" != "\\" ]; then
+              stopread="1"
+            else
+              if [ "$idx" = "$lastCharIndex" ]; then
+                stopread="1"
+                currentvalue+="$char"
+              fi
             fi
           fi
         fi
-      elif [ "$reading" = "," ]; then
-        if [ "$char" != " " ] && [ "$char" != "$nl" ]; then
-          if [ "$char" != "," ]; then
-            invalidArray="1"
-            invalidArrayMsg="invalid syntax; char '$char' in invalid position [ idx: $idx ]."
-            break
-          else
+        
+        if [ "$stopread" = "0" ]; then
+          currentvalue+="$char"
+        else
+          reading=","
+          arr_tmp_values+=("$currentvalue")
+
+          openvalue="0"
+          currentvalue=""
+          openvaluewith=""
+
+          if [ "$char" = "," ]; then
             reading="value"
           fi
         fi
       fi
-      
-      idx=$((idx + 1))
-      previousChar="$char"
-    done
-
-
-    if [ "$invalidArray" = "0" ]; then
-      local i=""
-      local v=""
-      stringifiedArray+="["
-      for i in "${!arr_tmp_values[@]}"; do
-        if [ "$i" -gt "0" ]; then
-          stringifiedArray+=","
+    elif [ "$reading" = "," ]; then
+      if [ "$char" != " " ] && [ "$char" != "$nl" ]; then
+        if [ "$char" != "," ]; then
+          SHELL_CLI_PARSE_SARRAY_TO_ARRAY_ERR_MESSAGE="invalid syntax; char '$char' in invalid position [ idx: $idx ]."
+          return 1
+        else
+          reading="value"
         fi
-
-        v="${arr_tmp_values[$i]}"
-
-        SHELL_CLI_PARSE_SARRAY_TO_ARRAY+=("${v}")
-        stringifiedArray+="\"$v\""
-      done
-      stringifiedArray+="]"
+      fi
     fi
+    
+    idx=$((idx + 1))
+    previousChar="$char"
+  done
 
-  fi
 
 
-  if [ "$invalidArray" = "1" ]; then
-    SHELL_CLI_PARSE_SARRAY_TO_ARRAY+=("$invalidArrayMsg")
-    SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING="$value"
-    return 1
-  fi
+  local i=""
+  local v=""
+  local stringifiedArray="["
+  for i in "${!arr_tmp_values[@]}"; do 
+    v="${arr_tmp_values[$i]}"
+    SHELL_CLI_PARSE_SARRAY_TO_ARRAY+=("$v")
 
+
+    if [ "$i" -gt "0" ]; then
+      stringifiedArray+=","
+    fi
+    stringifiedArray+="\"$v\""
+  done
+  stringifiedArray="]"
+  
   SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING="$stringifiedArray"
   return 0
 }

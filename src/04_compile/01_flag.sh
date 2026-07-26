@@ -67,7 +67,6 @@ shell_cli_compile_flag() {
   local flagPropName=""
   local flagPropValue=""
   local flagPropDefault=""
-  local flagPropEnum=""
 
   for flagPropName in "${SHELL_CLI_METAFLAG_DEFAULT_ORDER[@]}"; do
     flagPropValue="${flagAssocDefinition["${flagPropName}"]}"
@@ -85,44 +84,27 @@ shell_cli_compile_flag() {
   # For each property with a defined value (i.e., not empty), it invokes the normalizer and 
   # validator for the corresponding type, ensuring that the defined value is a valid 
   # representative of that expected type.
-  # 
-  # Throughout this process, type conversions are performed where applicable—such as 
-  # converting 'true/false' to '1/0' and create array/assoc objects where is needed.
   for flagPropName in "${SHELL_CLI_METAFLAG_DEFAULT_ORDER[@]}"; do
     flagPropValue="${flagAssocDefinition["${flagPropName}"]}"
 
-    
     if [ "${flagPropValue}" != "" ]; then
       local -n metaFlag="METAFLAG_${flagPropName}"
       local metaFlagType="${metaFlag["type"]}"
-      local flagTypeNormalizeFN="shell_cli_type_normalize_${metaFlagType}"
-      local flagTypeValidateFN="shell_cli_type_validate_${metaFlagType}"
 
 
       #
       # Normalize raw value; 
-      local useRawValue="$flagPropValue"
-      local useValidateAux=""
-      local useValidateErrMsg=""
-      if [ "${metaFlagType}" = "enum" ]; then
-        useValidateAux=$("${flagTypeNormalizeFN}" ${metaFlag["enum"]})
-        useValidateErrMsg="not a valid 'enum' member"
-      else
-        flagPropValue=$("${flagTypeNormalizeFN}" "$flagPropValue")
-        useValidateErrMsg="not a valid '${metaFlagType}' type"
-      fi
+      local flagTypeNormalizeFN="shell_cli_type_normalize_${metaFlagType}"
+      flagPropValue=$("${flagTypeNormalizeFN}" "$flagPropValue")
 
 
       #
       # Validate value after normalization
-      local validateStatus=$("${flagTypeValidateFN}" "$flagPropValue" "$useValidateAux"; echo $?)
+      local flagTypeValidateFN="shell_cli_type_validate_${metaFlagType}"
+      local validateStatus=$("${flagTypeValidateFN}" "$flagPropValue"; echo $?)
       if [ "$validateStatus" != "0" ]; then
         errPrefix+="[ prop: ${flagPropName} ]"
-        SHELL_CLI_FLAG_COMPILE_ERR_MESSAGE="${errPrefix} :: ${useValidateErrMsg}; ( value: '${flagPropValue}' )"
-
-        if [ "${metaFlagType}" = "enum" ]; then
-          SHELL_CLI_FLAG_COMPILE_ERR_MESSAGE+="; ( map: '$useValidateAux' )"
-        fi
+        SHELL_CLI_FLAG_COMPILE_ERR_MESSAGE="${errPrefix} :: not a valid '${metaFlagType}' type; ( value: '${flagPropValue}' )"
 
         if [ "${validateStatus}" = "10" ]; then
           SHELL_CLI_FLAG_COMPILE_ERR_MESSAGE+="; ( remove control characters )"
@@ -133,19 +115,50 @@ shell_cli_compile_flag() {
 
 
       #
-      # If is a valid enum, generate the compiled flag for it
-      if [ "${metaFlagType}" = "enum" ]; then
-        local compiledFlagAssocName="${flagVarName}_${flagPropName}_enum"
+      # Normalize array or assoc values
+      local metaFlagArrayType=""
+      local compiledObjectName=""
+      local normalizatedObjectName=""
 
-        shell_cli_utils_array_assoc_clone "${useValidateAux}" "${compiledFlagAssocName}"
-        if [ "$?" != 0 ]; then
-          errPrefix+="[ prop: ${flagPropName} ]"
-          SHELL_CLI_FLAG_COMPILE_ERR_MESSAGE="${errPrefix} :: cannot clone the assoc array '${useValidateAux}' to new '${compiledFlagAssocName}' object."
-          return 1
-        fi
-
-        flagAssocDefinition["enum"]="${compiledFlagAssocName}"
+      # The tests below were intentionally designed to have no effect if both the 'is_array' and 
+      # 'is_assoc' properties are set to 'true'. Since this configuration is invalid, it will 
+      # trigger an error during the validation stage.
+      if [ "${metaFlag["is_array"]}" = "1" ] || [ "${metaFlag["is_array"]}" = "true" ]; then
+        metaFlagArrayType+="array"
+        compiledObjectName="${flagVarName}_${flagPropName}_array"
       fi
+      if [ "${metaFlag["is_assoc"]}" = "1" ] || [ "${metaFlag["is_assoc"]}" = "true" ]; then
+        metaFlagArrayType+="assoc"
+        compiledObjectName="${flagVarName}_${flagPropName}_assoc"
+      fi
+
+      #
+      # Normalizes 'array' or 'assoc' values ​​by converting them into a dedicated object to serve 
+      # as a reference for this property of this flag.
+      case "$metaFlagArrayType" in
+        array)
+          normalizatedObjectName=$(shell_cli_type_normalize_main_array_types "${flagPropValue}")
+          shell_cli_utils_array_indexed_clone "${normalizatedObjectName}" "${compiledObjectName}"
+          if [ "$?" != 0 ]; then
+            errPrefix+="[ prop: ${flagPropName} ]"
+            SHELL_CLI_FLAG_COMPILE_ERR_MESSAGE="${errPrefix} :: cannot clone the indexed array '${normalizatedObjectName}' to new '${compiledObjectName}' object."
+            return 1
+          fi
+          flagPropValue="${compiledObjectName}"
+          ;;
+
+        assoc)
+          normalizatedObjectName=$(shell_cli_type_normalize_main_assoc_types "${flagPropValue}")
+          shell_cli_utils_array_assoc_clone "${normalizatedObjectName}" "${compiledObjectName}"
+          if [ "$?" != 0 ]; then
+            errPrefix+="[ prop: ${flagPropName} ]"
+            SHELL_CLI_FLAG_COMPILE_ERR_MESSAGE="${errPrefix} :: cannot clone the assoc array '${normalizatedObjectName}' to new '${compiledObjectName}' object."
+            return 1
+          fi
+          flagPropValue="${compiledObjectName}"
+          ;;
+      esac
+
 
       flagAssocDefinition["${flagPropName}"]="$flagPropValue"
       unset -n metaFlag
@@ -154,7 +167,6 @@ shell_cli_compile_flag() {
 
 
 
-  # @ VALIDAR ESTA PARTE
   #
   # STEP 3
   # For each properly normalized flag property value, a final validation is performed based on 

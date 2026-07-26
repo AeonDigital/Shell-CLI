@@ -110,8 +110,8 @@ shell_cli_help_render_contextual() {
 
       # Extract array and assoc structural identifiers for high-density typing info
       local structural_type="${_f_h_rules["type"]}"
-      [ "${_f_h_rules["array"]}" = "1" ] && structural_type="array<${structural_type}>"
-      [ "${_f_h_rules["assoc"]}" = "1" ] && structural_type="map<string,${structural_type}>"
+      [ "${_f_h_rules["is_array"]}" = "1" ] && structural_type="array<${structural_type}>"
+      [ "${_f_h_rules["is_ssoc"]}" = "1" ] && structural_type="map<string,${structural_type}>"
 
       # Render the primary compiled specification parameter line block
       printf "  %-25s %-18s %s\n" "${display_flag}" "${structural_type}" "${meta_status}"

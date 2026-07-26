@@ -7,7 +7,7 @@
 # ==============================================================================
 
 declare -gA METAFLAG_is_array=()
-METAFLAG_is_array["long"]="array"
+METAFLAG_is_array["long"]="is_array"
 METAFLAG_is_array["short"]=""
 METAFLAG_is_array["type"]="bool"
 METAFLAG_is_array["accept_values"]=""

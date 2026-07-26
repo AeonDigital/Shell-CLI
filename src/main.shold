@@ -126,7 +126,7 @@ _shell_cli_runtime_compile_single_flag() {
   local -n _c_flag="$runtime_flag_array_name"
   local f_label="[ flag_meta: ${runtime_flag_array_name} ]"
 
-  if [ "${_c_flag["array"]}" = "1" ] && [ "${_c_flag["assoc"]}" = "1" ]; then
+  if [ "${_c_flag["is_array"]}" = "1" ] && [ "${_c_flag["is_ssoc"]}" = "1" ]; then
     VALIDATION_ERROR_MSG="[ERR] ${f_label} :: structural conflict. A parameter cannot be declared as 'array' and 'assoc' simultaneously."
     return 1
   fi

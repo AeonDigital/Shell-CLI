@@ -74,7 +74,7 @@ shell_cli_flag_check_value() {
 
   #
   # Check Array
-  shell_cli_metaflag_check_input_array "${rawValue}" "${flagType}" "${flagAssocDefinition["array"]}"
+  shell_cli_metaflag_check_input_array "${rawValue}" "${flagType}" "${flagAssocDefinition["is_array"]}"
   if [ "$?" != "0" ]; then
     SHELL_CLI_FLAG_CHECK_VALUE_ERR_MESSAGE="${errPrefix} :: ${SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE}"
     return 1
@@ -108,7 +108,7 @@ shell_cli_flag_check_value() {
 
   #
   # Check Assoc
-  shell_cli_metaflag_check_input_assoc "${rawValue}" "${flagType}" "${flagAssocDefinition["assoc"]}"
+  shell_cli_metaflag_check_input_assoc "${rawValue}" "${flagType}" "${flagAssocDefinition["is_ssoc"]}"
   if [ "$?" != "0" ]; then
     SHELL_CLI_FLAG_CHECK_VALUE_ERR_MESSAGE="${errPrefix} :: ${SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE}"
     return 1
