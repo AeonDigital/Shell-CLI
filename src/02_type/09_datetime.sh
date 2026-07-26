@@ -5,57 +5,87 @@
 # DESCRIPTION: 
 # ==============================================================================
 
-# shell_cli_type_normalize_datetime normalize 'datetime' value.
+# shell_cli_type_normalize_datetime — normalize 'datetime' values.
 #
 # Arguments:
-# - value: raw value.
+# - value: raw input string.
+#
+# Behavior:
+# - Applies string normalization using 'shell_cli_type_normalize_string'.
+# - Splits the input into date and time parts:
+#   * If the input contains whitespace, the first part is treated as date,
+#     the second as time.
+#   * If the input contains ':' but no whitespace, assumes only time and
+#     prepends "0001-01-01" as the date.
+#   * Otherwise, assumes only date and appends "00:00:00" as the time.
+# - Normalizes each part separately using 'shell_cli_type_normalize_date'
+#   and 'shell_cli_type_normalize_time'.
+# - Concatenates the normalized parts into "YYYY-MM-DD HH:MM:SS".
+# - Does not guarantee that the resulting string is a valid datetime;
+#   only ensures a consistent format when possible.
 #
 # Returns:
-# - Outputs normalizated value.
-#   date in YYYY-MM-DD HH:MM:SS format
-#   or the original string otherwise.
+# - Outputs the normalized string to stdout.
+# - If the input does not match expected patterns, the original string is echoed.
 shell_cli_type_normalize_datetime() {
   local value=$(shell_cli_type_normalize_string "${1}")
   local date_part=""
   local time_part=""
 
-  if [[ "$value" == *[[:space:]]* ]]; then
+  if [[ "${value}" == *[[:space:]]* ]]; then
     date_part="${value%% *}"
     time_part="${value#* }"
   else
-    if [[ "$value" == *:* ]]; then
+    if [[ "${value}" == *:* ]]; then
       date_part="0001-01-01"
-      time_part="$value"
+      time_part="${value}"
     else
-      date_part="$value"
+      date_part="${value}"
       time_part="00:00:00"
     fi
   fi
 
-  local clean_date=$(shell_cli_type_normalize_date "$date_part")
-  local clean_time=$(shell_cli_type_normalize_time "$time_part")
+  local clean_date=$(shell_cli_type_normalize_date "${date_part}")
+  local clean_time=$(shell_cli_type_normalize_time "${time_part}")
 
   echo "${clean_date} ${clean_time}"
 }
 
 
 
-# shell_cli_type_validate_datetime validate 'datetime' (YYYY-MM-DD HH:MM:SS).
+# shell_cli_type_validate_datetime — validate 'datetime' values (YYYY-MM-DD HH:MM:SS).
 #
 # Arguments:
-# - value: non empty normalizated value.
-# - aux: optional auxiliary configuration.
+# - value: non‑empty normalized string to validate.
+# - aux: optional auxiliary configuration (not used in current implementation).
+#
+# Behavior:
+# - First enforces strict string safety using 'shell_cli_type_validate_string'.
+# - Requires the input to have exactly 19 characters ("YYYY-MM-DD HH:MM:SS").
+# - Uses a regex to check structural validity:
+#   * Year: 4 digits.
+#   * Month: 01–12.
+#   * Day: 01–31 (basic check, not calendar‑aware).
+#   * Hour: 00–23.
+#   * Minute: 00–59.
+#   * Second: 00–59.
+# - Uses system 'date' command to parse the value:
+#   * On Linux: 'date -d'.
+#   * On BSD/macOS: 'date -j -f "%Y-%m-%d %H:%M:%S"'.
+# - Converts the parsed timestamp back to "YYYY-MM-DD HH:MM:SS" and compares
+#   with the original input to ensure structural and semantic validity.
+# - If parsing fails or the comparison does not match, the value is invalid.
 #
 # Returns:
-# - 0: if the value is a valid representative of this type
-# - 1: if the value is not a valid representative of this type.
-# - 10: if the value contains any control characters.
+# - 0: validation success (value is a valid datetime).
+# - 1: value is not a valid representative of this type.
+# - 10: invalid control characters detected.
 shell_cli_type_validate_datetime() {
-  local value="$1"
-  local aux="$2"
+  local value="${1}"
+  local aux="${2}"
 
   # Enforce strict terminal and structural string safety first
-  if ! shell_cli_type_validate_string "$value"; then
+  if ! shell_cli_type_validate_string "${value}"; then
     return 10
   fi
 
@@ -63,14 +93,14 @@ shell_cli_type_validate_datetime() {
     return 1
   fi
 
-  if [[ ! "$value" =~ ^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[0-9]|3)[[:space:]]([0-1][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$ ]]; then
+  if [[ ! "${value}" =~ ^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[0-9]|3)[[:space:]]([0-1][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$ ]]; then
     return 1
   fi
 
-  local ts=$(date -d "$value" +%s 2>/dev/null || date -j -f "%Y-%m-%d %H:%M:%S" "$value" +%s 2>/dev/null)
-  local check_val=$(date -d "@$ts" "+%Y-%m-%d %H:%M:%S" 2>/dev/null || date -j -r "$ts" "+%Y-%m-%d %H:%M:%S" 2>/dev/null)
+  local ts=$(date -d "${value}" +%s 2>/dev/null || date -j -f "%Y-%m-%d %H:%M:%S" "${value}" +%s 2>/dev/null)
+  local check_val=$(date -d "@${ts}" "+%Y-%m-%d %H:%M:%S" 2>/dev/null || date -j -r "${ts}" "+%Y-%m-%d %H:%M:%S" 2>/dev/null)
 
-  if [ -z "$ts" ] || [ "$value" != "$check_val" ]; then
+  if [ -z "${ts}" ] || [ "${value}" != "${check_val}" ]; then
     return 1
   fi
 

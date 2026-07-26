@@ -5,29 +5,37 @@
 # DESCRIPTION: 
 # ==============================================================================
 
-# shell_cli_type_normalize_code normalize 'code' value.
+# shell_cli_type_normalize_code — normalize 'code' values.
 #
 # Arguments:
-# - value: raw value.
+# - value: raw input string.
+#
+# Behavior:
+# - No normalization is performed.
+# - The input string is returned exactly as received.
 #
 # Returns:
-# - Outputs normalizated value.
+# - Outputs the original string to stdout.
 shell_cli_type_normalize_code() {
-  echo "$1"
+  echo "${1}"
 }
 
 
 
-# shell_cli_type_validate_code validate 'code'.
+# shell_cli_type_validate_code — validate 'code' values.
 #
 # Arguments:
-# - value: non empty normalizated value.
-# - aux: optional auxiliary configuration.
+# - value: non‑empty normalized string to validate.
+# - aux: optional auxiliary configuration (not used in current implementation).
+#
+# Behavior:
+# - All values are considered valid representatives of this type.
+# - No checks for control characters or formatting are performed.
 #
 # Returns:
-# - 0: if the value is a valid representative of this type
-# - 1: if the value is not a valid representative of this type.
-# - 10: if the value contains any invalid control characters.
+# - 0: validation success (always).
+# - 1: reserved/not used in current implementation.
+# - 10: reserved/not used in current implementation.
 shell_cli_type_validate_code() {
   return 0
 }

@@ -5,35 +5,41 @@
 # DESCRIPTION: 
 # ==============================================================================
 
-# shell_cli_type_normalize_string normalize 'string' value.
-# - remove ALL control characters (except \n, \r, and \t)
-# - remove text control characters (\n, \r, and \t)
-# - performa a trim
+# shell_cli_type_normalize_string — normalize 'string' values.
 #
 # Arguments:
-# - value: raw value.
+# - value: raw input string.
+#
+# Behavior:
+# - Removes all code control characters (except '\n', '\r', and '\t').
+# - Removes text control characters ('\n', '\r', and '\t').
+# - Trims leading and trailing whitespace, including spaces, tabs,
+#   and boundary '\n' and '\r'.
 #
 # Returns:
-# - Outputs normalizated value.
+# - Outputs the normalized string to stdout.
 shell_cli_type_normalize_string() {
-  shell_cli_type_normalize_main "$1" "1" "1" "1"
+  shell_cli_type_normalize_main "${1}" "1" "1" "1"
 }
 
 
 
-# shell_cli_type_validate_string validate 'string'.
-# - invalidate if found ANY control characters (except \n, \r, and \t)
-# - invalidate if found ANY text control characters (\n, \r, and \t)
+# shell_cli_type_validate_string — validate 'string' values.
 #
 # Arguments:
-# - value: non empty normalizated value.
-# - aux: optional auxiliary configuration.
+# - value: non‑empty normalized string to validate.
+# - aux: optional auxiliary configuration (not used in current implementation).
+#
+# Behavior:
+# - Invalidates if any code control characters are found (except '\n', '\r', and '\t').
+# - Invalidates if any text control characters are found ('\n', '\r', and '\t').
+# - Delegates validation to 'shell_cli_type_validate_main'.
 #
 # Returns:
-# - 0: if the value is a valid representative of this type
-# - 1: if the value is not a valid representative of this type.
-# - 10: if the value contains any invalid control characters.
+# - 0: validation success.
+# - 1: reserved/not used in current implementation.
+# - 10: invalid control characters detected.
 shell_cli_type_validate_string() {
-  local status=$(shell_cli_type_validate_main "$1" "1" "1"; echo $?)
-  return "$status"
+  local status=$(shell_cli_type_validate_main "${1}" "1" "1"; echo $?)
+  return "${status}"
 }
