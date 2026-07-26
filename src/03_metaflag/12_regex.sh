@@ -36,28 +36,33 @@ METAFLAG_regex["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_regex metaflag 'regex'.
+# shell_cli_metaflag_property_validate_regex — validate metaflag 'regex'.
 #
 # Arguments:
-# - fval: value (normalizated and validate by type).
+# - fval: value (normalized and validated by type).
 # - fassoc: name of associative array with all flag definitions.
 #
+# Behavior:
+# - Ensures that the 'regex' property, if defined, is a valid regular expression.
+# - Accepts empty values (since 'regex' is optional).
+# - Performs a test match against an empty string to verify regex syntax.
+# - If the regex is invalid, stores an error message in
+#   'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'.
+#
 # Returns:
-# - 0: if the value can be used in this flag.
-# - 1: if the value cannot be used in this flag.
-#      In this case, an error message will be stored in 
-#      'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'
+# - 0: validation success (regex is empty or valid).
+# - 1: validation failure (regex syntax invalid).
 shell_cli_metaflag_property_validate_regex() {
-  local fval="$1"
-  local fassoc="$2"
+  local fval="${1}"
+  local fassoc="${2}"
   SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE=""
 
-  if [ "$fval" != "" ]; then
-    ( [[ "" =~ $fval ]] ) 2>/dev/null
+  if [ "${fval}" != "" ]; then
+    ( [[ "" =~ ${fval} ]] ) 2>/dev/null
     local exit_status=$?
 
-    if [ $exit_status -eq 2 ]; then
-      SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="invalid regular expression ( regex='$fval' )."
+    if [ ${exit_status} -eq 2 ]; then
+      SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="invalid regular expression ( regex='${fval}' )."
       return 1
     fi
   fi
@@ -67,25 +72,28 @@ shell_cli_metaflag_property_validate_regex() {
 
 
 
-# shell_cli_metaflag_check_input_regex checks whether the input flag 
-# value matches the configuration of this property.
+# shell_cli_metaflag_check_input_regex — check input for metaflag 'regex'.
 #
 # Arguments:
-# - inputVal: value inputed (normalizated and validate by type).
+# - inputVal: value provided by user input (normalized and validated by type).
 # - typeVal: type of value.
-# - ruleVal: current value of this property.
+# - ruleVal: current value of this property (regex pattern).
+#
+# Behavior:
+# - Validates whether the user-provided input matches the regex pattern.
+# - If 'ruleVal' is empty, no validation is applied.
+# - If input does not match the regex, stores an error message in
+#   'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'.
+# - On success, stores the validated input in
+#   'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'.
 #
 # Returns:
-# - 0: if valid.
-#      The new value after check will be stored in
-#      'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'
-# - 1: if invalid.
-#      In this case, an error message will be stored in 
-#      'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'
+# - 0: validation success (input matches regex or regex not defined).
+# - 1: validation failure (input does not match regex).
 shell_cli_metaflag_check_input_regex() {
-  local inputVal="$1"
-  local typeVal="$2"
-  local ruleVal="$3"
+  local inputVal="${1}"
+  local typeVal="${2}"
+  local ruleVal="${3}"
   SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE=""
   SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE=""
 

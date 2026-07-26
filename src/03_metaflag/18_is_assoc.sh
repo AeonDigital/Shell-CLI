@@ -36,23 +36,28 @@ METAFLAG_is_assoc["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_is_assoc metaflag 'is_assoc'.
+# shell_cli_metaflag_property_validate_is_assoc — validate metaflag 'is_assoc'.
 #
 # Arguments:
-# - fval: value (normalizated and validate by type).
+# - fval: value (normalized and validated by type).
 # - fassoc: name of associative array with all flag definitions.
 #
+# Behavior:
+# - Ensures that the 'is_assoc' property is explicitly defined (cannot be empty).
+# - Checks consistency with 'is_array':
+#   * If 'is_assoc=true' and 'is_array=true' simultaneously, validation fails.
+# - On failure, stores an error message in
+#   'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'.
+#
 # Returns:
-# - 0: if the value can be used in this flag.
-# - 1: if the value cannot be used in this flag.
-#      In this case, an error message will be stored in 
-#      'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'
+# - 0: validation success (value non-empty and consistent with 'is_array').
+# - 1: validation failure (empty or conflicting configuration).
 shell_cli_metaflag_property_validate_is_assoc() {
-  local fval="$1"
-  local fassoc="$2"
+  local fval="${1}"
+  local fassoc="${2}"
   SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE=""
 
-  if [ "$fval" = "" ]; then
+  if [ "${fval}" = "" ]; then
     SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="cannot be empty"
     return 1
   fi
@@ -60,7 +65,7 @@ shell_cli_metaflag_property_validate_is_assoc() {
   local -n __assoc="${fassoc}"
   local _array="${__assoc["is_array"]}"
 
-  if [ "$fval" = "1" ] && [ "$_array" = "1" ]; then
+  if [ "${fval}" = "1" ] && [ "${_array}" = "1" ]; then
     SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="cannot declare 'is_assoc=true' and 'is_array=true' simultaneously."
     return 1
   fi
@@ -70,44 +75,51 @@ shell_cli_metaflag_property_validate_is_assoc() {
 
 
 
-# shell_cli_metaflag_check_input_is_assoc checks whether the input flag 
-# value matches the configuration of this property.
+# shell_cli_metaflag_check_input_is_assoc — check input for metaflag 'is_assoc'.
 #
 # Arguments:
-# - inputVal: value inputed.
+# - inputVal: value provided by user input.
 # - typeVal: type of value.
-# - ruleVal: current value of this property.
+# - ruleVal: current value of this property (boolean indicator).
+#
+# Behavior:
+# - Validates whether the input should be treated as an associative map.
+# - If input is empty or 'ruleVal' is empty, no validation is applied.
+# - If input is already an associative array, passes through unchanged.
+# - Otherwise, attempts to parse the input string as a serialized JSON-like
+#   structure using 'shell_cli_parse_sjson_to_assoc'.
+# - On parse failure, stores the parser's error message in
+#   'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'.
+# - On success:
+#   * Stores the re-serialized associative map string in
+#     'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'.
+#   * Stores the deserialized key-value pairs in
+#     'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ASSOC'.
+#   * Preserves the declaration order of keys in
+#     'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ASSOC_ORDER'.
 #
 # Returns:
-# - 0: if valid.
-#      If the provided value is a string compatible with the assoc type, it 
-#      will be deserialized and stored in 'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ASSOC'; 
-#      at the same time, its re-serialized value will be stored in 
-#      'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'. Furthermore, the declaration 
-#      order of the associative array keys will be preserved in 
-#      'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ASSOC_ORDER'.
-# - 1: if invalid.
-#      In this case, an error message will be stored in 
-#      'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'
+# - 0: validation success (input accepted as associative map).
+# - 1: validation failure (input not compatible with associative format).
 shell_cli_metaflag_check_input_is_assoc() {
-  local inputVal="$1"
-  local typeVal="$2"
-  local ruleVal="$3"
+  local inputVal="${1}"
+  local typeVal="${2}"
+  local ruleVal="${3}"
   SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE=""
   SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE=""
   SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ASSOC=()
   SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ASSOC_ORDER=()
 
-  if [ "$inputVal" = "" ] || [ "$ruleVal" = "" ]; then
+  if [ "${inputVal}" = "" ] || [ "${ruleVal}" = "" ]; then
     return 0
   fi
 
-  if shell_cli_utils_array_is_assoc "$inputVal"; then
-    SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE="$inputVal"
+  if shell_cli_utils_array_is_assoc "${inputVal}"; then
+    SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE="${inputVal}"
     return 0
   fi
 
-  shell_cli_parse_sjson_to_assoc "$inputVal"
+  shell_cli_parse_sjson_to_assoc "${inputVal}"
   if [ "$?" != "0" ]; then
     SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE="${SHELL_CLI_PARSE_SJSON_TO_ASSOC[0]}"
     return 1
@@ -117,8 +129,8 @@ shell_cli_metaflag_check_input_is_assoc() {
     local k=""
     local v=""
     for k in "${!SHELL_CLI_PARSE_SJSON_TO_ASSOC[@]}"; do
-      v="${SHELL_CLI_PARSE_SJSON_TO_ASSOC[$k]}"
-      SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ASSOC["$k"]="$v"
+      v="${SHELL_CLI_PARSE_SJSON_TO_ASSOC[${k}]}"
+      SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ASSOC["${k}"]="${v}"
     done
 
     SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ASSOC_ORDER=("${SHELL_CLI_PARSE_SJSON_TO_ASSOC_ORDER[@]}")

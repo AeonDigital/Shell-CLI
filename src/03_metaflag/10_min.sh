@@ -102,14 +102,14 @@ shell_cli_metaflag_check_input_min() {
   case "${typeVal}" in
     int)
       if [ "${inputVal}" -lt "${ruleVal}" ]; then
-        SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE="violate minimum allowed '"${typeVal}"'; ( min: '${ruleVal}' )"
+        SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE="violate minimum allowed '${typeVal}'; ( min: '${ruleVal}' )"
         return 1
       fi
       ;;
 
     float)
       if ! shell_cli_utils_math_is_greater_or_equal "${inputVal}" "${ruleVal}" "0"; then
-        SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE="violate minimum allowed '"${typeVal}"'; ( min: '${ruleVal}' )"
+        SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE="violate minimum allowed '${typeVal}'; ( min: '${ruleVal}' )"
         return 1
       fi
       ;;
@@ -120,7 +120,7 @@ shell_cli_metaflag_check_input_min() {
       local minTS=$(date -d "${ruleVal}" +%s 2>/dev/null || date -j -f "%Y-%m-%d" "${ruleVal}" +%s 2>/dev/null)
 
       if [ "${valTS}" -lt "${minTS}" ]; then
-        SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE="value violates minimum allowed '"${typeVal}"'; ( min: '${ruleVal}' )"
+        SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE="value violates minimum allowed '${typeVal}'; ( min: '${ruleVal}' )"
         return 1
       fi
       ;;
