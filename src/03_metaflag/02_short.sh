@@ -36,27 +36,33 @@ METAFLAG_short["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_short metaflag 'short'.
+# shell_cli_metaflag_property_validate_short — validate metaflag 'short'.
 #
 # Arguments:
-# - fval: value (normalizated and validate by type).
+# - fval: value (normalized and validated by type).
 # - fassoc: name of associative array with all flag definitions.
 #
+# Behavior:
+# - Ensures that the short alias for a flag is structurally valid.
+# - Accepts empty values (since 'short' is optional).
+# - Rejects reserved names: "h" and "itr".
+# - Rejects values that are identical to the 'long' name of the same flag.
+# - On failure, stores an error message in
+#   'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'.
+#
 # Returns:
-# - 0: if the value can be used in this flag.
-# - 1: if the value cannot be used in this flag.
-#      In this case, an error message will be stored in 
-#      'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'
+# - 0: validation success (value can be used as short flag alias).
+# - 1: validation failure (value cannot be used).
 shell_cli_metaflag_property_validate_short() {
-  local fval="$1"
-  local fassoc="$2"
+  local fval="${1}"
+  local fassoc="${2}"
   SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE=""
 
-  if [ "$fval" = "" ]; then
+  if [ "${fval}" = "" ]; then
     return 0
   fi
 
-  if [[ "$fval" =~ ^(h|itr)$ ]]; then
+  if [[ "${fval}" =~ ^(h|itr)$ ]]; then
     SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="names 'h' and 'itr' are reserved."
     return 1
   fi
@@ -64,8 +70,8 @@ shell_cli_metaflag_property_validate_short() {
   local -n __assoc="${fassoc}"
   local _long="${__assoc["long"]}"
 
-  if [ "$fval" = "$_long" ]; then
-    SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="cannot be the same as 'long' ( short='$fval' )."
+  if [ "${fval}" = "${_long}" ]; then
+    SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="cannot be the same as 'long' ( short='${fval}' )."
     return 1
   fi
 
@@ -74,27 +80,27 @@ shell_cli_metaflag_property_validate_short() {
 
 
 
-# shell_cli_metaflag_check_input_short checks whether the input flag 
-# value matches the configuration of this property.
+# shell_cli_metaflag_check_input_short — check input for metaflag 'short'.
 #
 # Arguments:
-# - inputVal: value inputed.
+# - inputVal: value provided by user input.
 # - typeVal: type of value.
 # - ruleVal: current value of this property.
 #
+# Behavior:
+# - This function is a placeholder only; the 'short' metaflag does not accept
+#   user input at runtime.
+# - If invoked, it always fails with an error message indicating that
+#   validation is inapplicable.
+# - Stores the error message in 'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'.
+# - Stores a sentinel value "!ERR" in 'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'.
+#
 # Returns:
-# - 0: if valid.
-#      The new value after check will be stored in
-#      'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'
-# - 1: if invalid.
-#      In this case, an error message will be stored in 
-#      'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'
+# - 1: always invalid (inapplicable check).
 shell_cli_metaflag_check_input_short() {
-  # This check should never be performed.
-  # It is included here solely as a placeholder.
-  local inputVal="$1"
-  local typeVal="$2"
-  local ruleVal="$3"
+  local inputVal="${1}"
+  local typeVal="${2}"
+  local ruleVal="${3}"
   SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE="inapplicable validation of 'short'"
   SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE="!ERR"
   return 1

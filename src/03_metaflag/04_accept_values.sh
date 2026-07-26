@@ -36,28 +36,34 @@ METAFLAG_accept_values["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_accept_values metaflag 'accept_values'.
+# shell_cli_metaflag_property_validate_accept_values — validate metaflag 'accept_values'.
 #
 # Arguments:
-# - fval: value (normalizated and validate by type).
+# - fval: value (normalized and validated by type).
 # - fassoc: name of associative array with all flag definitions.
 #
+# Behavior:
+# - Ensures that the property 'accept_values' points to a valid associative array.
+# - Accepts empty values (since 'accept_values' is optional).
+# - Uses 'shell_cli_utils_array_is_assoc' to confirm that the pointer refers to
+#   an associative array (declare -A).
+# - On failure, stores an error message in
+#   'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'.
+#
 # Returns:
-# - 0: if the value can be used in this flag.
-# - 1: if the value cannot be used in this flag.
-#      In this case, an error message will be stored in 
-#      'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'
+# - 0: validation success (value is empty or a valid assoc pointer).
+# - 1: validation failure (value is not an assoc).
 shell_cli_metaflag_property_validate_accept_values() {
-  local fval="$1"
-  local fassoc="$2"
+  local fval="${1}"
+  local fassoc="${2}"
   SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE=""
 
-  if [ "$fval" = "" ]; then
+  if [ "${fval}" = "" ]; then
     return 0
   fi
 
-  if ! shell_cli_utils_array_is_assoc "$fval"; then
-    SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="pointer '$fval' must be an associative array (declare -A)."
+  if ! shell_cli_utils_array_is_assoc "${fval}"; then
+    SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="pointer '${fval}' must be an associative array (declare -A)."
     return 1
   fi
 
@@ -66,25 +72,31 @@ shell_cli_metaflag_property_validate_accept_values() {
 
 
 
-# shell_cli_metaflag_check_input_accept_values checks whether the input flag 
-# value matches the configuration of this property.
+# shell_cli_metaflag_check_input_accept_values — check input for metaflag 'accept_values'.
 #
 # Arguments:
-# - inputVal: value inputed (normalizated and validate by type).
+# - inputVal: value provided by user input (normalized and validated by type).
 # - typeVal: type of value.
-# - ruleVal: current value of this property.
+# - ruleVal: current value of this property (pointer to assoc array).
+#
+# Behavior:
+# - Validates whether the user-provided input matches one of the accepted values
+#   defined in the assoc array referenced by 'ruleVal'.
+# - Iterates through the assoc array:
+#   * Keys represent canonical values.
+#   * Values represent aliases.
+# - If input matches either a key or a value, the canonical key is stored in
+#   'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'.
+# - If no match is found, stores an error message in
+#   'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'.
 #
 # Returns:
-# - 0: if valid.
-#      The new value after check will be stored in
-#      'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'
-# - 1: if invalid.
-#      In this case, an error message will be stored in 
-#      'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'
+# - 0: validation success (input matches one of the accepted values).
+# - 1: validation failure (input not found in collection).
 shell_cli_metaflag_check_input_accept_values() {
-  local inputVal="$1"
-  local typeVal="$2"
-  local ruleVal="$3"
+  local inputVal="${1}"
+  local typeVal="${2}"
+  local ruleVal="${3}"
   SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE=""
   SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE=""
 
@@ -96,14 +108,14 @@ shell_cli_metaflag_check_input_accept_values() {
   local k=""
   local v=""
   for k in "${!flagEnum[@]}"; do
-    v="${flagEnum[$k]}"
+    v="${flagEnum[${k}]}"
 
-    if [ "$inputVal" = "$k" ] || [ "$inputVal" = "$v" ]; then
-      SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE="$k"
+    if [ "${inputVal}" = "${k}" ] || [ "${inputVal}" = "${v}" ]; then
+      SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE="${k}"
       return 0
     fi
   done
 
-  SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE="expected one of '$ruleVal' collection member; ( value: '$inputVal' )"
+  SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE="expected one of '${ruleVal}' collection member; ( value: '${inputVal}' )"
   return 1
 }

@@ -36,21 +36,27 @@ METAFLAG_min["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_min metaflag 'min'.
+# shell_cli_metaflag_property_validate_min — validate metaflag 'min'.
 #
 # Arguments:
-# - fval: value (normalizated and validate by type).
+# - fval: value (normalized and validated by type).
 # - fassoc: name of associative array with all flag definitions.
 #
+# Behavior:
+# - Ensures that the 'min' property is consistent with the paired 'max' property.
+# - Delegates validation to 'shell_cli_metaflag_property_cross_validate_min_max',
+#   which checks logical consistency between minimum and maximum boundaries.
+# - Clears any previous error message before validation.
+# - On failure, stores the error message in
+#   'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'.
+#
 # Returns:
-# - 0: if the value can be used in this flag.
-# - 1: if the value cannot be used in this flag.
-#      In this case, an error message will be stored in 
-#      'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'
+# - 0: validation success (min/max boundaries consistent).
+# - 1: validation failure (cross-validation failed).
 shell_cli_metaflag_property_validate_min() {
   SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE=""
   
-  if ! shell_cli_metaflag_property_cross_validate_min_max "$1" "$2"; then
+  if ! shell_cli_metaflag_property_cross_validate_min_max "${1}" "${2}"; then
     return 1
   fi
 
@@ -59,25 +65,33 @@ shell_cli_metaflag_property_validate_min() {
 
 
 
-# shell_cli_metaflag_check_input_min checks whether the input flag 
-# value matches the configuration of this property.
+# shell_cli_metaflag_check_input_min — check input for metaflag 'min'.
 #
 # Arguments:
-# - inputVal: value inputed (normalizated and validate by type).
-# - typeVal: type of value.
-# - ruleVal: current value of this property.
+# - inputVal: value provided by user input (normalized and validated by type).
+# - typeVal: type of value (e.g., int, float, date, time, datetime, string).
+# - ruleVal: current value of this property (minimum boundary).
+#
+# Behavior:
+# - Validates whether the input respects the minimum boundary defined by 'ruleVal'.
+# - If 'ruleVal' is empty, no validation is applied.
+# - Type-specific checks:
+#   * int: input must be >= min.
+#   * float: input must be >= min (using math utility for precision).
+#   * date/time/datetime: input timestamp must be >= min timestamp.
+#   * string/other: input length must be >= min.
+# - On violation, stores an error message in
+#   'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'.
+# - On success, stores the validated input in
+#   'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'.
 #
 # Returns:
-# - 0: if valid.
-#      The new value after check will be stored in
-#      'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'
-# - 1: if invalid.
-#      In this case, an error message will be stored in 
-#      'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'
+# - 0: validation success (input meets minimum boundary).
+# - 1: validation failure (input violates minimum boundary).
 shell_cli_metaflag_check_input_min() {
-  local inputVal="$1"
-  local typeVal="$2"
-  local ruleVal="$3"
+  local inputVal="${1}"
+  local typeVal="${2}"
+  local ruleVal="${3}"
   SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE=""
   SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE=""
 
@@ -87,14 +101,14 @@ shell_cli_metaflag_check_input_min() {
 
   case "${typeVal}" in
     int)
-      if [ "$inputVal" -lt "${ruleVal}" ]; then
+      if [ "${inputVal}" -lt "${ruleVal}" ]; then
         SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE="violate minimum allowed '"${typeVal}"'; ( min: '${ruleVal}' )"
         return 1
       fi
       ;;
 
     float)
-      if ! shell_cli_utils_math_is_greater_or_equal "$inputVal" "${ruleVal}" "0"; then
+      if ! shell_cli_utils_math_is_greater_or_equal "${inputVal}" "${ruleVal}" "0"; then
         SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE="violate minimum allowed '"${typeVal}"'; ( min: '${ruleVal}' )"
         return 1
       fi
@@ -102,10 +116,10 @@ shell_cli_metaflag_check_input_min() {
 
     date|time|datetime)
       # Chronological epoch timestamp processing alignment via system tools
-      local valTS=$(date -d "$inputVal" +%s 2>/dev/null || date -j -f "%Y-%m-%d %H:%M:%S" "$inputVal" +%s 2>/dev/null)
+      local valTS=$(date -d "${inputVal}" +%s 2>/dev/null || date -j -f "%Y-%m-%d %H:%M:%S" "${inputVal}" +%s 2>/dev/null)
       local minTS=$(date -d "${ruleVal}" +%s 2>/dev/null || date -j -f "%Y-%m-%d" "${ruleVal}" +%s 2>/dev/null)
 
-      if [ "$valTS" -lt "$minTS" ]; then
+      if [ "${valTS}" -lt "${minTS}" ]; then
         SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE="value violates minimum allowed '"${typeVal}"'; ( min: '${ruleVal}' )"
         return 1
       fi

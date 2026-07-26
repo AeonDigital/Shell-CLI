@@ -36,32 +36,33 @@ METAFLAG_long["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_long metaflag 'long'.
+# shell_cli_metaflag_property_validate_long — validate metaflag 'long'.
 #
 # Arguments:
-# - fval: value (normalizated and validate by type).
+# - fval: value (normalized and validated by type).
 # - fassoc: name of associative array with all flag definitions.
 #
-# Note:
-# If validation is successful, it adds a '__cross_min_max' key indicating that 
-# this validation has already been performed.
+# Behavior:
+# - Ensures that the canonical long name of a flag is structurally valid.
+# - Rejects empty values.
+# - Rejects reserved names: "help" and "interactive".
+# - On failure, stores an error message in
+#   'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'.
 #
 # Returns:
-# - 0: if the value can be used in this flag.
-# - 1: if the value cannot be used in this flag.
-#      In this case, an error message will be stored in 
-#      'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'
+# - 0: validation success (value can be used as long flag name).
+# - 1: validation failure (value cannot be used).
 shell_cli_metaflag_property_validate_long() {
-  local fval="$1"
-  local fassoc="$2"
+  local fval="${1}"
+  local fassoc="${2}"
   SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE=""
 
-  if [ "$fval" = "" ]; then
+  if [ "${fval}" = "" ]; then
     SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="cannot be empty"
     return 1
   fi
 
-  if [[ "$fval" =~ ^(help|interactive)$ ]]; then
+  if [[ "${fval}" =~ ^(help|interactive)$ ]]; then
     SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="names 'help' and 'interactive' are reserved."
     return 1
   fi
@@ -71,27 +72,27 @@ shell_cli_metaflag_property_validate_long() {
 
 
 
-# shell_cli_metaflag_check_input_long checks whether the input flag 
-# value matches the configuration of this property.
+# shell_cli_metaflag_check_input_long — check input for metaflag 'long'.
 #
 # Arguments:
-# - inputVal: value inputed.
+# - inputVal: value provided by user input.
 # - typeVal: type of value.
 # - ruleVal: current value of this property.
 #
+# Behavior:
+# - This function is a placeholder only; the 'long' metaflag does not accept
+#   user input at runtime.
+# - If invoked, it always fails with an error message indicating that
+#   validation is inapplicable.
+# - Stores the error message in 'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'.
+# - Stores a sentinel value "!ERR" in 'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'.
+#
 # Returns:
-# - 0: if valid.
-#      The new value after check will be stored in
-#      'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'
-# - 1: if invalid.
-#      In this case, an error message will be stored in 
-#      'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'
+# - 1: always invalid (inapplicable check).
 shell_cli_metaflag_check_input_long() {
-  # This check should never be performed.
-  # It is included here solely as a placeholder.
-  local inputVal="$1"
-  local typeVal="$2"
-  local ruleVal="$3"
+  local inputVal="${1}"
+  local typeVal="${2}"
+  local ruleVal="${3}"
   SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE="inapplicable validation of 'long'"
   SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE="!ERR"
   return 1

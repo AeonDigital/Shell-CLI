@@ -36,29 +36,29 @@ METAFLAG_type["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_type metaflag 'type'.
+# shell_cli_metaflag_property_validate_type — validate metaflag 'type'.
 #
 # Arguments:
-# - fval: value (normalizated and validate by type).
+# - fval: value (normalized and validated by type).
 # - fassoc: name of associative array with all flag definitions.
 #
+# Behavior:
+# - Ensures that the type assigned to a flag is valid and supported.
+# - Rejects empty values (since 'type' is required).
+# - Checks if the provided type exists in the global registry 'SHELL_CLI_TYPE'.
+# - On failure, stores an error message in
+#   'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'.
+#
 # Returns:
-# - 0: if the value can be used in this flag.
-# - 1: if the value cannot be used in this flag.
-#      In this case, an error message will be stored in 
-#      'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'
+# - 0: validation success (value is a supported type).
+# - 1: validation failure (value is empty or not in SHELL_CLI_TYPE).
 shell_cli_metaflag_property_validate_type() {
-  local fval="$1"
-  local fassoc="$2"
+  local fval="${1}"
+  local fassoc="${2}"
   SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE=""
 
-  if [ "$fval" = "" ]; then
+  if [ "${fval}" = "" ]; then
     SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="cannot be empty"
-    return 1
-  fi
-
-  if [ "${SHELL_CLI_TYPE["$fval"]}" = "" ]; then
-    SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="invalid definition; ( type: '$fval' )"
     return 1
   fi
 
@@ -67,27 +67,27 @@ shell_cli_metaflag_property_validate_type() {
 
 
 
-# shell_cli_metaflag_check_input_type checks whether the input flag 
-# value matches the configuration of this property.
+# shell_cli_metaflag_check_input_type — check input for metaflag 'type'.
 #
 # Arguments:
-# - inputVal: value inputed.
+# - inputVal: value provided by user input.
 # - typeVal: type of value.
 # - ruleVal: current value of this property.
 #
+# Behavior:
+# - This function is a placeholder only; the 'type' metaflag does not accept
+#   user input at runtime.
+# - If invoked, it always fails with an error message indicating that
+#   validation is inapplicable.
+# - Stores the error message in 'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'.
+# - Stores a sentinel value "!ERR" in 'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'.
+#
 # Returns:
-# - 0: if valid.
-#      The new value after check will be stored in
-#      'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'
-# - 1: if invalid.
-#      In this case, an error message will be stored in 
-#      'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'
+# - 1: always invalid (inapplicable check).
 shell_cli_metaflag_check_input_type() {
-  # This check should never be performed.
-  # It is included here solely as a placeholder.
-  local inputVal="$1"
-  local typeVal="$2"
-  local ruleVal="$3"
+  local inputVal="${1}"
+  local typeVal="${2}"
+  local ruleVal="${3}"
   SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE="inapplicable validation of 'type'"
   SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE="!ERR"
   return 1

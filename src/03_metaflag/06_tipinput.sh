@@ -36,17 +36,20 @@ METAFLAG_tipinput["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_tipinput metaflag 'tipinput'.
+# shell_cli_metaflag_property_validate_tipinput — validate metaflag 'tipinput'.
 #
 # Arguments:
-# - fval: value (normalizated and validate by type).
+# - fval: value (normalized and validated by type).
 # - fassoc: name of associative array with all flag definitions.
 #
+# Behavior:
+# - Always accepts the value; no structural or semantic validation is applied.
+# - This property is optional and can be empty.
+# - Used only as a descriptive phrase to guide interactive prompts.
+# - Clears any previous error message before returning.
+#
 # Returns:
-# - 0: if the value can be used in this flag.
-# - 1: if the value cannot be used in this flag.
-#      In this case, an error message will be stored in 
-#      'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'
+# - 0: always valid.
 shell_cli_metaflag_property_validate_tipinput() {
   SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE=""
   return 0
@@ -54,27 +57,27 @@ shell_cli_metaflag_property_validate_tipinput() {
 
 
 
-# shell_cli_metaflag_check_input_tipinput checks whether the input flag 
-# value matches the configuration of this property.
+# shell_cli_metaflag_check_input_tipinput — check input for metaflag 'tipinput'.
 #
 # Arguments:
-# - inputVal: value inputed.
+# - inputVal: value provided by user input.
 # - typeVal: type of value.
 # - ruleVal: current value of this property.
 #
+# Behavior:
+# - This function is a placeholder only; the 'tipinput' metaflag does not
+#   accept user input at runtime.
+# - If invoked, it always fails with an error message indicating that
+#   validation is inapplicable.
+# - Stores the error message in 'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'.
+# - Stores a sentinel value "!ERR" in 'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'.
+#
 # Returns:
-# - 0: if valid.
-#      The new value after check will be stored in
-#      'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'
-# - 1: if invalid.
-#      In this case, an error message will be stored in 
-#      'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'
+# - 1: always invalid (inapplicable check).
 shell_cli_metaflag_check_input_tipinput() {
-  # This check should never be performed.
-  # It is included here solely as a placeholder.
-  local inputVal="$1"
-  local typeVal="$2"
-  local ruleVal="$3"
+  local inputVal="${1}"
+  local typeVal="${2}"
+  local ruleVal="${3}"
   SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE="inapplicable validation of 'tipinput'"
   SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE="!ERR"
   return 1

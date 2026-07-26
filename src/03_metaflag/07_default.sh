@@ -36,30 +36,36 @@ METAFLAG_default["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_default metaflag 'default'.
+# shell_cli_metaflag_property_validate_default — validate metaflag 'default'.
 #
 # Arguments:
-# - fval: value (normalizated and validate by type).
+# - fval: value (normalized and validated by type).
 # - fassoc: name of associative array with all flag definitions.
 #
+# Behavior:
+# - Ensures that the 'default' property is consistent with other flag rules.
+# - Accepts empty values (since 'default' is optional).
+# - If a default value is provided while 'required=true', validation fails,
+#   because a required flag cannot have a fallback.
+# - On failure, stores an error message in
+#   'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'.
+#
 # Returns:
-# - 0: if the value can be used in this flag.
-# - 1: if the value cannot be used in this flag.
-#      In this case, an error message will be stored in 
-#      'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'
+# - 0: validation success (value is empty or consistent with 'required').
+# - 1: validation failure (default provided while required=true).
 shell_cli_metaflag_property_validate_default() {
-  local fval="$1"
-  local fassoc="$2"
+  local fval="${1}"
+  local fassoc="${2}"
   SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE=""
 
-  if [ "$fval" = "" ]; then
+  if [ "${fval}" = "" ]; then
     return 0
   fi
 
   local -n __assoc="${fassoc}"
   local _required="${__assoc["required"]}"
 
-  if [ "$fval" != "" ] && [ "$_required" = "1" ]; then
+  if [ "${fval}" != "" ] && [ "${_required}" = "1" ]; then
     SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="cannot provision a 'default' assignment if 'required=true'."
     return 1
   fi
@@ -69,30 +75,31 @@ shell_cli_metaflag_property_validate_default() {
 
 
 
-# shell_cli_metaflag_check_input_default checks whether the input flag 
-# value matches the configuration of this property.
+# shell_cli_metaflag_check_input_default — check input for metaflag 'default'.
 #
 # Arguments:
-# - inputVal: value inputed.
+# - inputVal: value provided by user input.
 # - typeVal: type of value.
-# - ruleVal: current value of this property.
+# - ruleVal: current value of this property (default assignment).
+#
+# Behavior:
+# - Applies the default value if the user omitted the flag.
+# - If 'inputVal' is empty and 'ruleVal' is non-empty, assigns 'ruleVal'
+#   as the new value.
+# - Stores the new value in 'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'.
+# - Clears any previous error message.
 #
 # Returns:
-# - 0: if valid.
-#      The new value after check will be stored in
-#      'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'
-# - 1: if invalid.
-#      In this case, an error message will be stored in 
-#      'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'
+# - 0: always valid (default applied if needed).
 shell_cli_metaflag_check_input_default() {
-  local inputVal="$1"
-  local typeVal="$2"
-  local ruleVal="$3"
+  local inputVal="${1}"
+  local typeVal="${2}"
+  local ruleVal="${3}"
   SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE=""
   SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE=""
 
-  if [ "$inputVal" = "" ] && [ "$ruleVal" != "" ]; then
-    SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE="$ruleVal"
+  if [ "${inputVal}" = "" ] && [ "${ruleVal}" != "" ]; then
+    SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE="${ruleVal}"
   fi
 
   return 0
