@@ -15,6 +15,13 @@
 #
 # Returns:
 # - 0: Always terminates with success echoing the formatted paragraphs.
+#
+# Behavioral Details:
+# - Dynamic terminal adaptation: Automatically detects terminal width via tput(1).
+#     If terminal width is smaller than max_width, adapts to terminal width.
+# - Hard ceiling constraint: Maximum output width capped at 120 characters,
+#     regardless of terminal width or max_width parameter value.
+# - Terminal minimum: Requires terminal width >= 20 characters for adaptation.
 shell_cli_utils_string_wrap() {
   local raw_text="${1}"
   local target_width="${2:-80}"
