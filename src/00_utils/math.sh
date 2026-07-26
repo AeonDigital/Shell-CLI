@@ -18,32 +18,56 @@
 # - 0: If val1 is strictly greater than val2 (or equal when strict_mode=0).
 # - 1: If val1 is less than val2 (or equal when strict_mode=1).
 shell_cli_utils_math_compare_float() {
-  local val1="$1"
-  local val2="$2"
+  local val1="${1}"
+  local val2="${2}"
   local strict="${3:-0}"
 
+  # 1. Handle signs explicitly to support negative floats natively
+  local sign1="+"
+  local sign2="+"
+  [[ "${val1}" =~ ^- ]] && sign1="-"
+  [[ "${val2}" =~ ^- ]] && sign2="-"
+
+  # Strip signs for absolute processing later
+  local abs1="${val1#-}"
+  local abs2="${val2#-}"
+
   # Extract integer and decimal components using native pattern stripping
-  local int1="${val1%%.*}"
-  local int2="${val2%%.*}"
-  local dec1="${val1#*.}"
-  local dec2="${val2#*.}"
+  local int1="${abs1%%.*}"
+  local int2="${abs2%%.*}"
+  local dec1="${abs1#*.}"
+  local dec2="${abs2#*.}"
 
   # Fallback to zero if no decimal point exists in the string sequence
-  [[ "$val1" != *.* ]] && dec1="0"
-  [[ "$val2" != *.* ]] && dec2="0"
+  [[ "${abs1}" != *.* ]] && dec1="0"
+  [[ "${abs2}" != *.* ]] && dec2="0"
 
-  # Normalize negative zero string alignments natively (-0 -> 0)
-  [ "$int1" = "-0" ] && int1="0"
-  [ "$int2" = "-0" ] && int2="0"
+  # Normalize empty integers (e.g. .5 -> 0.5)
+  [[ -z "${int1}" ]] && int1="0"
+  [[ -z "${int2}" ]] && int2="0"
 
-  # 1. Coordinate primary integer comparison logic
-  if (( int1 > int2 )); then
-    return 0
-  elif (( int1 < int2 )); then
-    return 1
+  # If signs are different, the positive one is always greater
+  if [[ "${sign1}" != "${sign2}" ]]; then
+    if [[ "${sign1}" == "+" && ( "${int1}" -ne 0 || "${dec1}" -ne 0 ) ]]; then
+      return 0
+    elif [[ "${sign2}" == "+" && ( "${int2}" -ne 0 || "${dec2}" -ne 0 ) ]]; then
+      return 1
+    fi
+    # If both evaluate mathematically to 0 (e.g. -0.0 vs 0.0), proceed to equality check
   fi
 
-  # 2. Integer components are equal: normalize decimal length matrices (Zero padding)
+  # Determine if we need to invert the comparison logic (when both are negative)
+  local invert=0
+  [[ "${sign1}" == "-" && "${sign2}" == "-" ]] && invert=1
+
+  # 2. Coordinate primary integer comparison logic
+  if (( int1 > int2 )); then
+    [[ "${invert}" -eq 1 ]] && return 1 || return 0
+  elif (( int1 < int2 )); then
+    [[ "${invert}" -eq 1 ]] && return 0 || return 1
+  fi
+
+  # 3. Integer components are equal: normalize decimal length matrices (Zero padding)
   local len1=${#dec1}
   local len2=${#dec2}
 
@@ -53,47 +77,52 @@ shell_cli_utils_math_compare_float() {
     while (( ${#dec2} < len1 )); do dec2="${dec2}0"; done
   fi
 
-  # 3. Coordinate secondary fractional comparison logic
+  # Remove leading zeros inside arithmetic context to prevent octal parsing errors
+  dec1=$((10#${dec1}))
+  dec2=$((10#${dec2}))
+
+  # 4. Coordinate secondary fractional comparison logic
   if (( dec1 > dec2 )); then
-    return 0
+    [[ "${invert}" -eq 1 ]] && return 1 || return 0
   elif (( dec1 < dec2 )); then
-    return 1
+    [[ "${invert}" -eq 1 ]] && return 0 || return 1
   fi
 
-  # 4. Values are mathematically identical: evaluate strict operational parameters
-  if [ "$strict" = "1" ]; then
+  # 5. Values are mathematically identical: evaluate strict operational parameters
+  if [ "${strict}" = "1" ]; then
     return 1 # Rejected as inclusive equality was disabled
   fi
 
   return 0
 }
 
-# shell_cli_utils_math_is_greater_or_equal asserts if val1 is higher/equal than val2 bounds.
+# shell_cli_utils_math_is_greater_or_equal asserts if val1 is higher or equal 
+# than val2 bounds.
 #
 # Arguments:
-# - val1: The user input float payload value string.
-# - val2: The baseline lower minimum configuration limit threshold string.
-# - strict: If active (1), checks strictly greater than (>), rejecting equal.
+# - val1: The first string decimal number to compare.
+# - val2: The second string decimal number acting as the boundary threshold.
 #
 # Returns:
 # - 0: If the verification condition is perfectly satisfied.
 # - 1: If the input falls short of the expected boundary range.
 shell_cli_utils_math_is_greater_or_equal() {
-  shell_cli_utils_math_compare_float "$1" "$2" "$3"
+  shell_cli_utils_math_compare_float "${1}" "${2}" "0"
   return $?
 }
 
-# shell_cli_utils_math_is_less_or_equal asserts if val1 is lower/equal than val2 bounds.
+# shell_cli_utils_math_is_less_or_equal asserts if val1 is lower or equal 
+# than val2 bounds.
 #
 # Arguments:
-# - val1: The user input float payload value string.
-# - val2: The baseline upper maximum configuration limit threshold string.
+# - val1: The first string decimal number to compare.
+# - val2: The second string decimal number acting as the boundary threshold.
 # - strict: If active (1), checks strictly less than (<), rejecting equal.
 #
 # Returns:
 # - 0: If the verification condition is perfectly satisfied.
 # - 1: If the input exceeds the expected boundary range.
 shell_cli_utils_math_is_less_or_equal() {
-  shell_cli_utils_math_compare_float "$2" "$1" "$3"
+  shell_cli_utils_math_compare_float "${1}" "${2}" "0"
   return $?
 }
