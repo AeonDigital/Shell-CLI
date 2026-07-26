@@ -5,50 +5,61 @@
 # DESCRIPTION: 
 # ==============================================================================
 
-# Normalized JSON string reconstructed from the object/string originally 
-# provided.
+# JSON‑like string reconstructed from the input (e.g. ["v1","v2"]).
+# In case of error, contains the original string.
 declare SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING=""
 
-# Name of the object originally provided if it is already an indexed 
-# array.
+# Stores the name of the original array when the input is a reference
+# to an existing indexed array. Empty otherwise.
 declare SHELL_CLI_PARSE_SARRAY_TO_ARRAY_NAME=""
 
-# Values ​​obtained from the extraction performed on the object/string 
-# originally provided.
+# Indexed array holding the values extracted from the input.
+# Always reset at the beginning of the function
 declare -ga SHELL_CLI_PARSE_SARRAY_TO_ARRAY=()
 
-
-
-# Parser error message.
+# Holds the parser error message when a failure occurs.
+# Empty on success.
 declare SHELL_CLI_PARSE_SARRAY_TO_ARRAY_ERR_MESSAGE=""
 
 
 
 
 
-
-
-# shell_cli_parse_sarray_to_array — parse a JSON‑like array string to indexed array.
+# shell_cli_parse_sarray_to_array parse a JSON‑like array string to 
+# indexed array.
+#
+# Arguments:
+# - value: indexed array name or array string.
 #
 # Accepted input:
 # - The name of an existing indexed array.
 # - A string representing a single‑level JSON‑like array.
+# - An empty string (special case).
 #
 # Behavior:
 # - If the input is the name of an indexed array:
 #   * All values are copied into 'SHELL_CLI_PARSE_SARRAY_TO_ARRAY'.
-#   * 'SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING' is set to the array name.
+#   * 'SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING' is set to the reconstructed 
+#      JSON‑like string (e.g. ["v1","v2"]).
+#   * 'SHELL_CLI_PARSE_SARRAY_TO_ARRAY_NAME' is set to the array name.
 #
 # - If the input is an array string:
 #   * Empty arrays "[]" or "[   ]" set
 #     'SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING' to "[]".
 #   * Valid single‑level arrays are parsed and populate
 #     'SHELL_CLI_PARSE_SARRAY_TO_ARRAY' with each value.
-#   * 'SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING' is set to the reconstructed array.
+#   * 'SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING' is set to the 
+#     reconstructed array.
+#
+# - If the input is an empty string:
+#   * Function returns with status 0.
+#   * No global variables are populated.
 #
 # - If the string is malformed:
-#   * 'SHELL_CLI_PARSE_SARRAY_TO_ARRAY' will contain a single element
-#     with the error message.
+#   * 'SHELL_CLI_PARSE_SARRAY_TO_ARRAY' will contain a single element with the 
+#     error message.
+#   * 'SHELL_CLI_PARSE_SARRAY_TO_ARRAY_ERR_MESSAGE' is set with the 
+#     error message.
 #   * 'SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING' is set to the original string.
 #   * Function returns with status 1.
 #
@@ -56,14 +67,26 @@ declare SHELL_CLI_PARSE_SARRAY_TO_ARRAY_ERR_MESSAGE=""
 # - Only single‑level arrays are supported.
 # - Accepted values: simple strings (quoted with ' or "),
 #   numbers, booleans, and alphanumeric tokens including '.'.
+# - Unquoted values cannot contain spaces.
+# - Spaces are only supported inside quoted strings. 
+# - Escapes are limited: only \" or \' inside quoted strings are accepted.
 # - Nested arrays, objects, and complex escape sequences are not supported.
 #
-# Arguments:
-# - value: indexed array name or array string.
+# Error cases:
+# - Missing opening or closing square brackets produces the message
+#   "invalid syntax; loss of square brackets."
+# - Any invalid character in unexpected position produces a descriptive
+#   error message stored in 'SHELL_CLI_PARSE_SARRAY_TO_ARRAY_ERR_MESSAGE'.
 #
 # Returns:
-# - Exit status 0 on success, 1 on error.
-# - Populates the three global variables as described above.
+# - 0: on success
+# - 1: on error
+#
+# - Populates the four global variables as described above:
+#   * SHELL_CLI_PARSE_SARRAY_TO_ARRAY
+#   * SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING
+#   * SHELL_CLI_PARSE_SARRAY_TO_ARRAY_NAME
+#   * SHELL_CLI_PARSE_SARRAY_TO_ARRAY_ERR_MESSAGE
 shell_cli_parse_sarray_to_array() {
   # clean json string
   local value="${1}"
