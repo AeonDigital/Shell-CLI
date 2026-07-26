@@ -5,46 +5,66 @@
 # DESCRIPTION: 
 # ==============================================================================
 
-# shell_cli_type_normalize_path normalize 'path' value.
+# shell_cli_type_normalize_path — normalize 'path' values.
 #
 # Arguments:
-# - value: raw value.
+# - value: raw input string.
+#
+# Behavior:
+# - Applies string normalization using 'shell_cli_type_normalize_string'.
+# - Removes control characters (including '\n', '\r', and '\t').
+# - Trims leading and trailing whitespace.
+# - Does not guarantee that the resulting string corresponds to a valid
+#   filesystem path; only ensures a safe and clean format.
 #
 # Returns:
-# - Outputs normalizated value.
-#   or the original string otherwise.
+# - Outputs the normalized string to stdout.
+# - If the input is not a valid path, the original string is echoed.
 shell_cli_type_normalize_path() {
   shell_cli_type_normalize_string "${1}"
 }
 
 
 
-# shell_cli_type_validate_path validate 'path'.
+# shell_cli_type_validate_path — validate 'path' values.
 #
 # Arguments:
-# - value: non empty normalizated value.
-# - aux: optional auxiliary configuration.
+# - value: non‑empty normalized string to validate.
+# - aux: optional auxiliary configuration (not used in current implementation).
+#
+# Behavior:
+# - First enforces strict string safety using 'shell_cli_type_validate_string'.
+# - Rejects unsafe characters commonly invalid in paths:
+#   * Wildcards (?, *).
+#   * HTML boundaries (<, >).
+#   * Quotes (").
+#   * Pipe (|).
+# - Performs a cross‑platform check for Windows drive letters:
+#   * Accepts values like "C:" or "D:\folder".
+#   * Rejects strings containing ':' that do not match the drive letter pattern.
+# - Does not check for actual existence of the path in the filesystem,
+#   only structural correctness and safety.
 #
 # Returns:
-# - 0: if the value is a valid representative of this type
-# - 1: if the value is not a valid representative of this type.
-# - 10: if the value contains any control characters.
+# - 0: validation success (value is structurally valid as a path).
+# - 1: value is not a valid representative of this type.
+# - 10: invalid control characters detected.
 shell_cli_type_validate_path() {
-  local value="$1"
-  local aux="$2"
+  local value="${1}"
+  local aux="${2}"
 
   # Enforce strict terminal and structural string safety first
-  if ! shell_cli_type_validate_string "$value"; then
+  if ! shell_cli_type_validate_string "${value}"; then
     return 10
   fi
 
   # 1. Rejects wildcards (?, *), html boundaries (<, >), quotes (") and pipe (|)
-  if [[ "$value" =~ [\*\?\"\<\>\|] ]]; then
+  if [[ "${value}" =~ [\*\?\"\<\>\|] ]]; then
     return 1
   fi
 
   # Cross-Platform check for Windows drive letters (e.g., C:)
-  if [[ "$value" =~ : ]] && [[ ! "$value" =~ ^[A-Za-z]: ]]; then
+  if [[ "${value}" =~ : ]] && [[ ! "${value}" =~ ^[A-Za-z]: ]]; then
     return 1
   fi
 

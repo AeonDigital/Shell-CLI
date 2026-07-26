@@ -5,39 +5,53 @@
 # DESCRIPTION: 
 # ==============================================================================
 
-# shell_cli_type_normalize_function normalize 'function' value.
+# shell_cli_type_normalize_function — normalize 'function' values.
 #
 # Arguments:
-# - value: raw value.
+# - value: raw input string.
+#
+# Behavior:
+# - Applies string normalization using 'shell_cli_type_normalize_string'.
+# - Removes control characters (including '\n', '\r', and '\t').
+# - Trims leading and trailing whitespace.
+# - Does not guarantee that the resulting string corresponds to an actual
+#   function defined in the shell; only ensures a safe and clean format.
 #
 # Returns:
-# - Outputs normalizated value.
-#   or the original string otherwise.
+# - Outputs the normalized string to stdout.
+# - If the input is not a valid function name, the original string is echoed.
 shell_cli_type_normalize_function() {
   shell_cli_type_normalize_string "${1}"
 }
 
 
 
-# shell_cli_type_validate_function validate 'function'.
+# shell_cli_type_validate_function — validate 'function' values.
 #
 # Arguments:
-# - value: non empty normalizated value.
-# - aux: optional auxiliary configuration.
+# - value: non‑empty normalized string to validate.
+# - aux: optional auxiliary configuration (not used in current implementation).
+#
+# Behavior:
+# - First enforces strict string safety using 'shell_cli_type_validate_string'.
+# - Uses 'declare -f' to check if a function with the given name exists
+#   in the current shell environment.
+# - If the function is defined, the value is considered valid.
+# - If not, the value is considered invalid.
 #
 # Returns:
-# - 0: if the value is a valid representative of this type
-# - 1: if the value is not a valid representative of this type.
-# - 10: if the value contains any control characters.
+# - 0: validation success (function exists).
+# - 1: value is not a valid representative of this type (function not found).
+# - 10: invalid control characters detected.
 shell_cli_type_validate_function() {
-  local value="$1"
-  local aux="$2"
+  local value="${1}"
+  local aux="${2}"
 
-  if ! shell_cli_type_validate_string "$value"; then
+  if ! shell_cli_type_validate_string "${value}"; then
     return 10
   fi
 
-  if declare -f "$value" >/dev/null; then
+  if declare -f "${value}" >/dev/null; then
     return 0
   fi
 
