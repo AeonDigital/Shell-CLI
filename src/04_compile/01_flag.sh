@@ -5,43 +5,43 @@
 # DESCRIPTION: 
 # ==============================================================================
 
-# shell_cli_compile_flag compiles the raw properties of the provided flag. This 
-# process normalizes values ​​by type and validates them against each property's 
-# rules.
-#
-# The validations performed here are "low-level—meaning" they merely verify 
-# whether the received values ​​are valid representations for the respective 
-# properties, without checking for violations of advanced rules such as 
-# "min/max" constraints or "regex" patterns.
-#
-# Any error at this stage must completely halt the CLI's execution.
-#
-# Certain types, such as 'bool', 'array', and 'assoc', can be substituted 
-# according to their 'normalization' specifications.
-# In the case of 'bool', they can accept 'true' or 'false', but normalization 
-# converts them to '1' or '0'. As for 'array' and 'assoc', if defined as a valid 
-# string, they are replaced by the name of an array of the corresponding type 
-# containing the provided values.
-#
-# Upon successful completion, the compiled flag's associative array is assigned 
-# the key "__checked" with the value "1" to prevent it from being reprocessed 
-# during the same session.
+# shell_cli_compile_flag — compile flag definition.
 #
 # Arguments:
 # - flagVarName: name of the associative array representing the flag to be checked.
 #
+# Behavior:
+# - Validates that the flag definition is an associative array (declare -A).
+# - Skips processing if the flag has already been compiled (__checked=1).
+# - STEP 1: Populates missing properties with defaults from SHELL_CLI_METAFLAG_DEFAULT.
+# - STEP 2: For each property with a value:
+#   * Normalizes the raw value according to its type (shell_cli_type_normalize_*).
+#   * Validates the normalized value against its type (shell_cli_type_validate_*).
+#   * If the property is marked as array or assoc, normalizes into a dedicated object
+#     (indexed or associative array) for reference.
+# - STEP 3: Invokes the property-specific validator (shell_cli_metaflag_property_validate_*)
+#   for each property, including cross-validations (e.g., min/max, min_array/max_array).
+# - On any error, stores a descriptive message in SHELL_CLI_FLAG_COMPILE_ERR_MESSAGE
+#   and halts compilation immediately.
+# - On success, marks the flag as compiled (__checked=1) to prevent reprocessing.
+#
+# Notes:
+# - Errors at this stage are fatal: CLI execution must stop.
+# - Boolean values may be accepted as "1"/"0" or "true"/"false" before normalization.
+# - Array/assoc values can be provided as strings; if valid, they are converted into
+#   dedicated array objects for consistent handling.
+#
 # Returns:
-# - 0: If the flag can be compiled correctly.
-# - 1: In the event of any compilation error.
-#      In this case, an error message will be stored in 
-#      'SHELL_CLI_FLAG_COMPILE_ERR_MESSAGE'
+# - 0: compilation success (flag normalized and validated).
+# - 1+: compilation failure (invalid type, normalization error, or property rule violation).
+#       In this case, an error message will be stored in SHELL_CLI_FLAG_COMPILE_ERR_MESSAGE.
 shell_cli_compile_flag() {
-  local flagVarName="$1"
+  local flagVarName="${1}"
   local errPrefix="[ERR][ ${flagVarName} ]"
   SHELL_CLI_FLAG_COMPILE_ERR_MESSAGE=""
 
 
-  if ! shell_cli_utils_array_is_assoc "$flagVarName"; then
+  if ! shell_cli_utils_array_is_assoc "${flagVarName}"; then
     SHELL_CLI_FLAG_COMPILE_ERR_MESSAGE="${errPrefix} :: invalid definition; must be an associative array (declare -A)."
     return 1
   fi
@@ -95,14 +95,16 @@ shell_cli_compile_flag() {
       #
       # Normalize raw value; 
       local flagTypeNormalizeFN="shell_cli_type_normalize_${metaFlagType}"
-      flagPropValue=$("${flagTypeNormalizeFN}" "$flagPropValue")
+      flagPropValue=$("${flagTypeNormalizeFN}" "${flagPropValue}")
 
 
       #
       # Validate value after normalization
       local flagTypeValidateFN="shell_cli_type_validate_${metaFlagType}"
-      local validateStatus=$("${flagTypeValidateFN}" "$flagPropValue"; echo $?)
-      if [ "$validateStatus" != "0" ]; then
+      "${flagTypeValidateFN}" "${flagPropValue}"
+      local validateStatus=$?
+
+      if [ "${validateStatus}" != "0" ]; then
         errPrefix+="[ prop: ${flagPropName} ]"
         SHELL_CLI_FLAG_COMPILE_ERR_MESSAGE="${errPrefix} :: not a valid '${metaFlagType}' type; ( value: '${flagPropValue}' )"
 
@@ -110,7 +112,7 @@ shell_cli_compile_flag() {
           SHELL_CLI_FLAG_COMPILE_ERR_MESSAGE+="; ( remove control characters )"
         fi
 
-        return "$validateStatus"
+        return "${validateStatus}"
       fi
 
 
@@ -135,11 +137,11 @@ shell_cli_compile_flag() {
       #
       # Normalizes 'array' or 'assoc' values ​​by converting them into a dedicated object to serve 
       # as a reference for this property of this flag.
-      case "$metaFlagArrayType" in
+      case "${metaFlagArrayType}" in
         array)
           normalizatedObjectName=$(shell_cli_type_normalize_main_array_types "${flagPropValue}")
           shell_cli_utils_array_indexed_clone "${normalizatedObjectName}" "${compiledObjectName}"
-          if [ "$?" != 0 ]; then
+          if [ "$?" != "0" ]; then
             errPrefix+="[ prop: ${flagPropName} ]"
             SHELL_CLI_FLAG_COMPILE_ERR_MESSAGE="${errPrefix} :: cannot clone the indexed array '${normalizatedObjectName}' to new '${compiledObjectName}' object."
             return 1
@@ -150,7 +152,7 @@ shell_cli_compile_flag() {
         assoc)
           normalizatedObjectName=$(shell_cli_type_normalize_main_assoc_types "${flagPropValue}")
           shell_cli_utils_array_assoc_clone "${normalizatedObjectName}" "${compiledObjectName}"
-          if [ "$?" != 0 ]; then
+          if [ "$?" != "0" ]; then
             errPrefix+="[ prop: ${flagPropName} ]"
             SHELL_CLI_FLAG_COMPILE_ERR_MESSAGE="${errPrefix} :: cannot clone the assoc array '${normalizatedObjectName}' to new '${compiledObjectName}' object."
             return 1
@@ -178,12 +180,12 @@ shell_cli_compile_flag() {
     local metaflagPropertyValidateFN="shell_cli_metaflag_property_validate_${flagPropName}"
     local metaFlagPropertyValidateStatus=""
 
-    "$metaflagPropertyValidateFN" "$flagPropValue" "$flagVarName"
+    "${metaflagPropertyValidateFN}" "${flagPropValue}" "${flagVarName}"
     metaFlagPropertyValidateStatus="$?"
     if [ "${metaFlagPropertyValidateStatus}" != "0" ]; then
       errPrefix+="[ prop: ${flagPropName} ]"
       SHELL_CLI_FLAG_COMPILE_ERR_MESSAGE="${errPrefix} :: ${SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE}"
-      return "$metaFlagPropertyValidateStatus"
+      return "${metaFlagPropertyValidateStatus}"
     fi
   done
 
