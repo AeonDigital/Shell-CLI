@@ -31,7 +31,7 @@ declare SHELL_CLI_PARSE_SJSON_TO_ASSOC_ERR_MESSAGE=""
 
 
 
-# shell_cli_parse_sjson_to_assoc parse a JSON‑like object string to 
+# shell_cli_parse_sjson_to_assoc — parse a JSON‑like object string to 
 # associative array.
 #
 # Arguments:

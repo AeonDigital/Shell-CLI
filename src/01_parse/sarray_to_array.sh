@@ -25,7 +25,7 @@ declare SHELL_CLI_PARSE_SARRAY_TO_ARRAY_ERR_MESSAGE=""
 
 
 
-# shell_cli_parse_sarray_to_array parse a JSON‑like array string to 
+# shell_cli_parse_sarray_to_array — parse a JSON‑like array string to 
 # indexed array.
 #
 # Arguments:

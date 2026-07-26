@@ -6,7 +6,7 @@
 #              decimal and float comparison boundaries in pure Bash.
 # ==============================================================================
 
-# shell_cli_utils_math_compare_float compares two string-formatted decimal numbers.
+# shell_cli_utils_math_compare_float — compares two string-formatted decimal numbers.
 #
 # Arguments:
 # - val1: The first string decimal number to compare. Supports negative decimals
@@ -103,7 +103,7 @@ shell_cli_utils_math_compare_float() {
   return 0
 }
 
-# shell_cli_utils_math_is_greater_or_equal asserts if val1 is higher or equal 
+# shell_cli_utils_math_is_greater_or_equal — asserts if val1 is higher or equal 
 # than val2 bounds.
 #
 # Arguments:
@@ -118,7 +118,7 @@ shell_cli_utils_math_is_greater_or_equal() {
   return $?
 }
 
-# shell_cli_utils_math_is_less_or_equal asserts if val1 is lower or equal 
+# shell_cli_utils_math_is_less_or_equal — asserts if val1 is lower or equal 
 # than val2 bounds.
 #
 # Arguments:
@@ -133,7 +133,7 @@ shell_cli_utils_math_is_less_or_equal() {
   return $?
 }
 
-# shell_cli_utils_math_is_greater_than asserts if val1 is strictly greater 
+# shell_cli_utils_math_is_greater_than — asserts if val1 is strictly greater 
 # than val2 bounds.
 #
 # Arguments:
@@ -148,7 +148,7 @@ shell_cli_utils_math_is_greater_than() {
   return $?
 }
 
-# shell_cli_utils_math_is_less_than asserts if val1 is strictly less 
+# shell_cli_utils_math_is_less_than — asserts if val1 is strictly less 
 # than val2 bounds.
 #
 # Arguments:

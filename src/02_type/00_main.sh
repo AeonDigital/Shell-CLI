@@ -68,7 +68,7 @@ shell_cli_type_normalize_main() {
 
 
 
-# shell_cli_type_validate_main validate string values.
+# shell_cli_type_validate_main — validate string values.
 #
 # Arguments:
 # - value: non‑empty normalized string to validate.
@@ -161,7 +161,7 @@ declare -g SHELL_CLI_TYPE_NORMALIZE_TMP_ARRAY_ERR_MESSAGE=""
 
 
 
-# shell_cli_type_normalize_main_array normalize indexed array values.
+# shell_cli_type_normalize_main_array — normalize indexed array values.
 #
 # Arguments:
 # - value: a string containing the name of an indexed array, or a JSON
@@ -194,7 +194,7 @@ shell_cli_type_normalize_main_array() {
   return "${parseStatus}"
 }
 
-# shell_cli_type_normalize_main_array_types general‑purpose normalization 
+# shell_cli_type_normalize_main_array_types — general‑purpose normalization 
 # function for any type that uses an indexed array as value.
 #
 # Arguments:
@@ -251,7 +251,7 @@ declare -g SHELL_CLI_TYPE_VALIDATE_TMP_SELECTED_ARRAY_VALUE=""
 
 
 
-# shell_cli_type_validate_main_array_types general validation function 
+# shell_cli_type_validate_main_array_types — general validation function 
 # for any type that uses an indexed array as value.
 #
 # Arguments:
@@ -345,7 +345,7 @@ declare -g SHELL_CLI_TYPE_NORMALIZE_TMP_ASSOC_ERR_MESSAGE=""
 
 
 
-# shell_cli_type_normalize_main_assoc normalize associative array values.
+# shell_cli_type_normalize_main_assoc — normalize associative array values.
 #
 # Arguments:
 # - value: a string containing the name of an associative array, or a JSON
@@ -386,7 +386,7 @@ shell_cli_type_normalize_main_assoc() {
   return "${parseStatus}"
 }
 
-# shell_cli_type_normalize_main_assoc_types general‑purpose normalization 
+# shell_cli_type_normalize_main_assoc_types — general‑purpose normalization 
 # function for any type that uses an associative array as value.
 #
 # Arguments:
@@ -443,7 +443,7 @@ declare -g SHELL_CLI_TYPE_VALIDATE_TMP_SELECTED_ASSOC_VALUE=""
 
 
 
-# shell_cli_type_validate_main_assoc_types general validation function 
+# shell_cli_type_validate_main_assoc_types — general validation function 
 # for any type that uses an associative array as value.
 #
 # Arguments:

@@ -6,7 +6,7 @@
 #              and dynamic terminal geometry line adjustments.
 # ==============================================================================
 
-# shell_cli_utils_string_wrap formats long paragraphs into word-wrapped lines.
+# shell_cli_utils_string_wrap — formats long paragraphs into word-wrapped lines.
 #
 # Arguments:
 # - text: The comprehensive raw text string sentence to be wrapped.

@@ -5,7 +5,7 @@
 # DESCRIPTION: General-purpose functions for arrays.
 # ==============================================================================
 
-# shell_cli_utils_array_is_indexed checks if it is an indexed array.
+# shell_cli_utils_array_is_indexed — checks if it is an indexed array.
 #
 # Arguments:
 # - arrName: name of the array to check
@@ -21,7 +21,7 @@ shell_cli_utils_array_is_indexed() {
   return 1
 }
 
-# shell_cli_utils_array_is_assoc checks if it is an associative array.
+# shell_cli_utils_array_is_assoc — checks if it is an associative array.
 #
 # Arguments:
 # - arrName: name of the array to check
@@ -37,7 +37,7 @@ shell_cli_utils_array_is_assoc() {
   return 1
 }
 
-# shell_cli_utils_array_indexed_clone clones the specified indexed 
+# shell_cli_utils_array_indexed_clone — clones the specified indexed 
 # array into a new indexed array with the provided name.
 #
 # Arguments:
@@ -70,7 +70,7 @@ shell_cli_utils_array_indexed_clone() {
   return 0
 }
 
-# shell_cli_utils_array_assoc_clone clones the specified associative 
+# shell_cli_utils_array_assoc_clone — clones the specified associative 
 # array into a new associative array with the provided name.
 #
 # Arguments:
