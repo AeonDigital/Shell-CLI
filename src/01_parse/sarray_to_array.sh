@@ -66,8 +66,8 @@ declare SHELL_CLI_PARSE_SARRAY_TO_ARRAY_ERR_MESSAGE=""
 # - Populates the three global variables as described above.
 shell_cli_parse_sarray_to_array() {
   # clean json string
-  local value="$1"
-  value=$(printf "%s" "$value" | tr -d '\000-\010\013\014\016-\037\177')
+  local value="${1}"
+  value=$(printf "%s" "${value}" | tr -d '\000-\010\013\014\016-\037\177')
   value="${value#"${value%%[![:space:]]*}"}" # trim L
   value="${value%"${value##*[![:space:]]}"}" # trim R
 
@@ -80,36 +80,36 @@ shell_cli_parse_sarray_to_array() {
 
 
   # empty value
-  if [ "$value" == "" ]; then
+  if [ "${value}" == "" ]; then
     return 0
   fi
 
   # pointer to indexed array
-  if shell_cli_utils_array_is_indexed "$value"; then
-    local -n tmp_array="$value"
+  if shell_cli_utils_array_is_indexed "${value}"; then
+    local -n tmp_array="${value}"
     local i=""
     local v=""
 
     local stringifiedArray="["
     for i in "${!tmp_array[@]}"; do 
-      v="${tmp_array[$i]}"
-      SHELL_CLI_PARSE_SARRAY_TO_ARRAY+=("$v")
+      v="${tmp_array[${i}]}"
+      SHELL_CLI_PARSE_SARRAY_TO_ARRAY+=("${v}")
 
 
-      if [ "$i" -gt "0" ]; then
+      if [ "${i}" -gt "0" ]; then
         stringifiedArray+=","
       fi
-      stringifiedArray+="\"$v\""
+      stringifiedArray+="\"${v}\""
     done
     stringifiedArray="]"
     
-    SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING="$stringifiedArray"
-    SHELL_CLI_PARSE_SARRAY_TO_ARRAY_NAME="$value"
+    SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING="${stringifiedArray}"
+    SHELL_CLI_PARSE_SARRAY_TO_ARRAY_NAME="${value}"
     return 0
   fi
 
   # empty object
-  if [[ "$value" =~ ^\[[[:space:]]*\]$ ]]; then
+  if [[ "${value}" =~ ^\[[[:space:]]*\]$ ]]; then
     SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING="[]"
     return 0
   fi
@@ -129,7 +129,7 @@ shell_cli_parse_sarray_to_array() {
   
   local idx="0"
   local len=${#inner}
-  local lastCharIndex=$((len - 1))
+  local lastCharIndex=$((${len} - 1))
   local char=""
   local previousChar=""
   local reading="value" # 'value' ; ','
@@ -142,76 +142,76 @@ shell_cli_parse_sarray_to_array() {
 
 
 
-  while [ "$idx" -lt "$len" ]; do
-    char="${inner:$idx:1}"
+  while [ "${idx}" -lt "${len}" ]; do
+    char="${inner:${idx}:1}"
 
-    if [ "$reading" = "value" ]; then
-      if [ "$openvalue" = "0" ]; then
-        if [ "$char" != " " ] && [ "$char" != "$nl" ]; then
-          if [[ "$char" =~ ^[0-9A-Za-z\'\".]+$ ]]; then
+    if [ "${reading}" = "value" ]; then
+      if [ "${openvalue}" = "0" ]; then
+        if [ "${char}" != " " ] && [ "${char}" != "${nl}" ]; then
+          if [[ "${char}" =~ ^[0-9A-Za-z\'\".]+$ ]]; then
 
             openvalue="1"
             currentvalue=""
             openvaluewith=""
 
-            if [ "$char" = "'" ] || [ "$char" = '"' ]; then
-              openvaluewith="$char"
+            if [ "${char}" = "'" ] || [ "${char}" = '"' ]; then
+              openvaluewith="${char}"
             else 
-              currentvalue="$char"
+              currentvalue="${char}"
             fi
 
           else
-            SHELL_CLI_PARSE_SARRAY_TO_ARRAY_ERR_MESSAGE="invalid syntax; char '$char' in invalid position [ idx: $idx ]."
+            SHELL_CLI_PARSE_SARRAY_TO_ARRAY_ERR_MESSAGE="invalid syntax; char '${char}' in invalid position [ idx: ${idx} ]."
             return 1
           fi
         fi
-      elif [ "$openvalue" = "1" ]; then
+      elif [ "${openvalue}" = "1" ]; then
         local stopread="0"
 
-        if [ "$openvaluewith" = "" ]; then
-          if [ "$char" = " " ] || [ "$char" = "," ] || [ "$char" = "$nl" ]; then
+        if [ "${openvaluewith}" = "" ]; then
+          if [ "${char}" = " " ] || [ "${char}" = "," ] || [ "${char}" = "${nl}" ]; then
             stopread="1"
-          elif [ "$char" = "'" ] || [ "$char" = '"' ] || [[ ! "$char" =~ ^[0-9A-Za-z.]+$ ]]; then
-            SHELL_CLI_PARSE_SARRAY_TO_ARRAY_ERR_MESSAGE="invalid syntax; char '$char' in invalid position [ idx: $idx ]."
+          elif [ "${char}" = "'" ] || [ "${char}" = '"' ] || [[ ! "${char}" =~ ^[0-9A-Za-z.]+$ ]]; then
+            SHELL_CLI_PARSE_SARRAY_TO_ARRAY_ERR_MESSAGE="invalid syntax; char '${char}' in invalid position [ idx: ${idx} ]."
             return 1
           fi
 
-          if [ "$idx" = "$lastCharIndex" ]; then
+          if [ "${idx}" = "${lastCharIndex}" ]; then
             stopread="1"
-            currentvalue+="$char"
+            currentvalue+="${char}"
           fi
-        elif [ "$openvaluewith" != "" ]; then
-          if [ "$char" = "$openvaluewith" ]; then
-            if [ "$previousChar" != "\\" ]; then
+        elif [ "${openvaluewith}" != "" ]; then
+          if [ "${char}" = "${openvaluewith}" ]; then
+            if [ "${previousChar}" != "\\" ]; then
               stopread="1"
             else
-              if [ "$idx" = "$lastCharIndex" ]; then
+              if [ "${idx}" = "${lastCharIndex}" ]; then
                 stopread="1"
-                currentvalue+="$char"
+                currentvalue+="${char}"
               fi
             fi
           fi
         fi
         
-        if [ "$stopread" = "0" ]; then
-          currentvalue+="$char"
+        if [ "${stopread}" = "0" ]; then
+          currentvalue+="${char}"
         else
           reading=","
-          arr_tmp_values+=("$currentvalue")
+          arr_tmp_values+=("${currentvalue}")
 
           openvalue="0"
           currentvalue=""
           openvaluewith=""
 
-          if [ "$char" = "," ]; then
+          if [ "${char}" = "," ]; then
             reading="value"
           fi
         fi
       fi
-    elif [ "$reading" = "," ]; then
-      if [ "$char" != " " ] && [ "$char" != "$nl" ]; then
-        if [ "$char" != "," ]; then
-          SHELL_CLI_PARSE_SARRAY_TO_ARRAY_ERR_MESSAGE="invalid syntax; char '$char' in invalid position [ idx: $idx ]."
+    elif [ "${reading}" = "," ]; then
+      if [ "${char}" != " " ] && [ "${char}" != "${nl}" ]; then
+        if [ "${char}" != "," ]; then
+          SHELL_CLI_PARSE_SARRAY_TO_ARRAY_ERR_MESSAGE="invalid syntax; char '${char}' in invalid position [ idx: ${idx} ]."
           return 1
         else
           reading="value"
@@ -219,8 +219,8 @@ shell_cli_parse_sarray_to_array() {
       fi
     fi
     
-    idx=$((idx + 1))
-    previousChar="$char"
+    idx=$((${idx} + 1))
+    previousChar="${char}"
   done
 
 
@@ -229,17 +229,17 @@ shell_cli_parse_sarray_to_array() {
   local v=""
   local stringifiedArray="["
   for i in "${!arr_tmp_values[@]}"; do 
-    v="${arr_tmp_values[$i]}"
-    SHELL_CLI_PARSE_SARRAY_TO_ARRAY+=("$v")
+    v="${arr_tmp_values[${i}]}"
+    SHELL_CLI_PARSE_SARRAY_TO_ARRAY+=("${v}")
 
 
-    if [ "$i" -gt "0" ]; then
+    if [ "${i}" -gt "0" ]; then
       stringifiedArray+=","
     fi
-    stringifiedArray+="\"$v\""
+    stringifiedArray+="\"${v}\""
   done
   stringifiedArray="]"
   
-  SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING="$stringifiedArray"
+  SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING="${stringifiedArray}"
   return 0
 }
