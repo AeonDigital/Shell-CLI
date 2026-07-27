@@ -35,12 +35,12 @@ echo "LOAD SOURCES"
 
 
 
-shell_cli_compile_flag "METAFLAG_type"
+shell_cli_compile_flag_family "METAFLAG" "SHELL_CLI_METAFLAG_DEFAULT_ORDER"
 if [ "$?" != "0" ]; then
   echo "${SHELL_CLI_FLAG_COMPILE_ERR_MESSAGE}"
   exit 1
 fi
 
 dumpArray "METAFLAG_type"
-
+echo "${!SHELL_CLI_FLAG_COMPILED_FAMILY[@]}"
 echo "FIM"

@@ -107,8 +107,7 @@ shell_cli_metaflag_check_input_normalize() {
     return 0
   fi
 
-  local newVal=""
-  newVal="$("${ruleVal}" "${inputVal}")"
+  local newVal=$("${ruleVal}" "${inputVal}")
   local exitCode=$?
 
   if [ ${exitCode} = "0" ]; then
