@@ -25,6 +25,7 @@ declare -ga SHELL_CLI_PARSE_SJSON_TO_ASSOC_ORDER=()
 
 # Holds the parser error message when a failure occurs.
 # Empty on success.
+# Always reset at the beginning of the function.
 declare SHELL_CLI_PARSE_SJSON_TO_ASSOC_ERR_MESSAGE=""
 
 
@@ -115,6 +116,7 @@ shell_cli_parse_sjson_to_assoc() {
   SHELL_CLI_PARSE_SJSON_TO_ASSOC_NAME=""
   SHELL_CLI_PARSE_SJSON_TO_ASSOC=()
   SHELL_CLI_PARSE_SJSON_TO_ASSOC_ORDER=()
+  SHELL_CLI_PARSE_SJSON_TO_ASSOC_ERR_MESSAGE=""
 
 
   # empty value

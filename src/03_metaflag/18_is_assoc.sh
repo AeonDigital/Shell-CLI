@@ -84,19 +84,20 @@ shell_cli_metaflag_property_validate_is_assoc() {
 #
 # Behavior:
 # - Validates whether the input should be treated as an associative map.
-# - If input is empty or 'ruleVal' is empty, no validation is applied.
-# - If input is already an associative array, passes through unchanged.
-# - Otherwise, attempts to parse the input string as a serialized JSON-like
+# - If 'ruleVal=0' (false) or input is empty, no validation is applied.
+# - If input is already an associative array, passes through unchanged and
+#   stores its name in SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE.
+# - Otherwise, attempts to parse the input string as a serialized JSON‑like
 #   structure using 'shell_cli_parse_sjson_to_assoc'.
 # - On parse failure, stores the parser's error message in
-#   'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'.
+#   SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE.
 # - On success:
-#   * Stores the re-serialized associative map string in
-#     'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'.
-#   * Stores the deserialized key-value pairs in
-#     'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ASSOC'.
+#   * Stores the name of the internal parsed assoc object
+#     ('SHELL_CLI_PARSE_SJSON_TO_ASSOC') in SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE.
+#   * Stores the deserialized key‑value pairs in
+#     SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ASSOC.
 #   * Preserves the declaration order of keys in
-#     'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ASSOC_ORDER'.
+#     SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ASSOC_ORDER.
 #
 # Returns:
 # - 0: validation success (input accepted as associative map).
@@ -110,7 +111,7 @@ shell_cli_metaflag_check_input_is_assoc() {
   SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ASSOC=()
   SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ASSOC_ORDER=()
 
-  if [ "${inputVal}" = "" ] || [ "${ruleVal}" = "" ]; then
+  if [ "${inputVal}" = "" ] || [ "${ruleVal}" = "0" ]; then
     return 0
   fi
 
@@ -121,10 +122,11 @@ shell_cli_metaflag_check_input_is_assoc() {
 
   shell_cli_parse_sjson_to_assoc "${inputVal}"
   if [ "$?" != "0" ]; then
-    SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE="${SHELL_CLI_PARSE_SJSON_TO_ASSOC[0]}"
+    SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE="${SHELL_CLI_PARSE_SJSON_TO_ASSOC_ERR_MESSAGE}"
     return 1
   else
-    SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE="${SHELL_CLI_PARSE_SJSON_TO_ASSOC_STRING}"
+    SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE="SHELL_CLI_PARSE_SJSON_TO_ASSOC"
+    SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ASSOC_ORDER=("${SHELL_CLI_PARSE_SJSON_TO_ASSOC_ORDER[@]}")
 
     local k=""
     local v=""
@@ -132,8 +134,6 @@ shell_cli_metaflag_check_input_is_assoc() {
       v="${SHELL_CLI_PARSE_SJSON_TO_ASSOC[${k}]}"
       SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ASSOC["${k}"]="${v}"
     done
-
-    SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ASSOC_ORDER=("${SHELL_CLI_PARSE_SJSON_TO_ASSOC_ORDER[@]}")
   fi
 
   return 0

@@ -30,7 +30,7 @@
 #     - time, date, datetime
 #
 #   GROUP 03 : Structured
-#     - email, json, function
+#     - email, array, json, function
 #
 #   GROUP 04 : System Paths and URLs
 #     - path, relativepath
@@ -71,7 +71,8 @@ declare -gA SHELL_CLI_TYPE=(
   # GROUP 03 : Structured
 
   ["email"]="email" 
-  ["json"]="json" 
+  ["array"]="array"
+  ["json"]="json"
   ["function"]="function"
 
 

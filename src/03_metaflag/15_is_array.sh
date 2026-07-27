@@ -85,16 +85,17 @@ shell_cli_metaflag_property_validate_is_array() {
 # Behavior:
 # - Validates whether the input should be treated as an array.
 # - If 'ruleVal=0' (false) or input is empty, no validation is applied.
-# - If input is already an indexed array, passes through unchanged.
+# - If input is already an indexed array, passes through unchanged and stores
+#   its name in SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE.
 # - Otherwise, attempts to parse the input string as a serialized array
-#   (e.g., JSON-like format) using 'shell_cli_parse_sarray_to_array'.
+#   (e.g., JSON‑like format) using 'shell_cli_parse_sarray_to_array'.
 # - On parse failure, stores the parser's error message in
-#   'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'.
+#   SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE.
 # - On success:
-#   * Stores the re-serialized array string in
-#     'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'.
+#   * Stores the name of the internal parsed array object
+#     ('SHELL_CLI_PARSE_SARRAY_TO_ARRAY') in SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE.
 #   * Stores the deserialized array elements in
-#     'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ARRAY'.
+#     SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ARRAY.
 #
 # Returns:
 # - 0: validation success (input accepted as array).
@@ -118,10 +119,10 @@ shell_cli_metaflag_check_input_is_array() {
 
   shell_cli_parse_sarray_to_array "${inputVal}"
   if [ "$?" != "0" ]; then
-    SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE="${SHELL_CLI_PARSE_SARRAY_TO_ARRAY[0]}"
+    SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE="${SHELL_CLI_PARSE_SARRAY_TO_ARRAY_ERR_MESSAGE}"
     return 1
   else
-    SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE="${SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING}"
+    SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE="SHELL_CLI_PARSE_SARRAY_TO_ARRAY"
     SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ARRAY=("${SHELL_CLI_PARSE_SARRAY_TO_ARRAY[@]}")
   fi
 

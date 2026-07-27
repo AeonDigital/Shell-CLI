@@ -89,7 +89,7 @@ shell_cli_metaflag_property_validate_required_keys() {
 #
 # Behavior:
 # - Validates whether the input associative array contains all required keys.
-# - If input is empty or 'ruleVal' is empty, no validation is applied.
+# - If 'ruleVal=0' (false) or input is empty, no validation is applied.
 # - Otherwise, dereferences both the associative array and the required keys array.
 # - Iterates through the required keys:
 #   * If a key is missing in the associative array, adds it to a list of lost keys.
@@ -109,7 +109,7 @@ shell_cli_metaflag_check_input_required_keys() {
   SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE=""
   SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE=""
 
-  if [ "${inputVal}" = "" ] || [ "${ruleVal}" = "" ]; then
+  if [ "${inputVal}" = "" ] || [ "${ruleVal}" = "0" ]; then
     return 0
   fi
 
@@ -119,7 +119,7 @@ shell_cli_metaflag_check_input_required_keys() {
 
   local k=""
   for k in "${requiredKeys[@]}"; do
-    if [[ -v "${inputAssocValues[$k]}" ]]; then
+    if [[ -v "${inputAssocValues[${k}]}" ]]; then
       continue
     fi
     lostAssocKeys+=("${k}")
