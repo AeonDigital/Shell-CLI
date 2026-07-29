@@ -5,6 +5,13 @@
 # DESCRIPTION: 
 # ==============================================================================
 
+
+declare -g SHELL_CLI_HANDLER_HELP_SEPARATOR="================================================================================"
+
+
+
+
+
 # shell_cli_handler_help intercepts execution to render manuals.
 #
 # Arguments:
@@ -17,157 +24,182 @@
 # Error & Panic Natures:
 #   - Return Errors: None. Pure structural routing interceptor routine.
 shell_cli_handler_help() {
-  if [ "${SHELL_CLI_COMMAND_TREE}" = "" ] || [ "$SHELL_CLI_COMMAND_TREE" = "${SHELL_CLI_COMMAND_NAME}" ]; then
+  if [ "${SHELL_CLI_COMMAND_TREE}" = "" ] || [ "${SHELL_CLI_COMMAND_TREE}" = "${SHELL_CLI_COMMAND_NAME}" ]; then
     shell_cli_handler_help_global
   else
-    shell_cli_help_render_contextual
+    shell_cli_handler_help_contextual
   fi
 
   return 0
 }
 
 
-# shell_cli_handler_help_global renders the root CLI guidance and command directory.
-#
-# Arguments:
-#   None. Uses the active SHELL_CLI_RUNTIME_PKG context register directly.
-#
-# Returns:
-#   - 0: Always terminates successfully after rendering the console layout.
+
+shell_cli_handler_help_render_header() {
+  local -n assocCmdRegistry="${SHELL_CLI_CMD_MAIN_REGISTRY}"
+  local cmdName="${assocCmdRegistry["cmd"]}"
+  local cmdSummary="${assocCmdRegistry["summary"]}"
+  local cmdDescription="${assocCmdRegistry["description"]}"
+
+  local isMainCmd="${1:-0}"
+  if [ "${2}" != "" ]; then
+    cmdName="${2}"
+  fi
+
+
+  if [ "${isMainCmd}" = "1" ]; then
+    echo "  ${cmdName} - ${cmdSummary}"
+  else
+    echo "COMMAND: ${cmdName}"
+    echo "SUMMARY: ${cmdSummary}"
+    if [ "${cmdDescription}" != "" ]; then
+      echo "DESCRIPTION:"
+      shell_cli_utils_string_wrap "${cmdDescription}" "120"
+    fi
+  fi
+}
+
+
+shell_cli_handler_help_render_subcmd() {
+  local -n arrayMainRegistryOrder="${SHELL_CLI_COMMAND_NAME}_SUBCOMMAND_ORDER"
+  if [ "${#arrayMainRegistryOrder[@]}" = "0" ]; then
+    return 0
+  fi
+
+  echo "Available Operational Command Tree:"
+  local subCmdName=""
+  local subCmdRegistryPrefix="${SHELL_CLI_CMD_MAIN_REGISTRY}"
+  for subCmdName in "${arrayMainRegistryOrder[@]}"; do
+    local -n subCmdFlagAssoc="${subCmdRegistryPrefix}_${subCmdName}"
+    printf "  %-20s %s\n" "${subCmdName}" "${subCmdFlagAssoc["summary"]}"
+  done
+}
+
+
 shell_cli_handler_help_global() {
   local cmdName="${SHELL_CLI_COMMAND_NAME}"
 
-  echo "================================================================================"
-  echo "  ${cmdName} - Enterprise Shell Command Automation Utility"
-  echo "================================================================================"
+  echo ""
+  echo "${SHELL_CLI_HANDLER_HELP_SEPARATOR}"
+  shell_cli_handler_help_render_header "1"
+  echo "${SHELL_CLI_HANDLER_HELP_SEPARATOR}"
+
   echo ""
   echo "Usage:"
   echo "  ./${cmdName}.sh <action> [flags]"
   echo "  ./${cmdName}.sh <resource> <action> [flags]"
+
   echo ""
   echo "Global System Flags:"
   echo "  -h, --help          Display documentation and metadata definitions."
   echo "  -itr, --interactive Starts user interaction prompt mode."
+
   echo ""
-  echo "Available Operational Command Tree:"
+  shell_cli_handler_help_render_subcmd
+  echo "${SHELL_CLI_HANDLER_HELP_SEPARATOR}"
 
-  
-  local subCMD=""
-  for subCMD in "${SHELL_CLI_COMMAND_SUBCOMMAND_ORDER[@]}"; do
-    # Skip metadata sub-arrays like FLAG_ORDER or OVERRIDE to isolate root commands
-    if [[ "$subCMD" == *_FLAG_* ]] || [[ "$subCMD" == *_INPUT ]]; then
-      continue
-    fi
-
-    local -n _g_cmd="$subCMD"
-    # Extract the clean tree identifier layout from the variable nomenclature string
-    local raw_tree="${subCMD#"CMD_${cmdName}_"}"
-    
-    # Standardize the print layout: convert underscore structures back into command spacing
-    local print_cmd="${raw_tree//_/ }"
-    if [[ "$print_cmd" =~ ^ores[[:space:]] ]]; then
-      print_cmd="${print_cmd#ores }"
-    fi
-
-    printf "  %-20s %s\n" "$print_cmd" "${_g_cmd["summary"]:-No summary documented.}"
-  done
-  echo "================================================================================"
   return 0
 }
 
-# shell_cli_help_render_contextual builds a dynamic manual for a specific command tree.
-#
-# Arguments:
-#   None. Uses compiled SHELL_CLI_RUNTIME_* sandbox registers directly.
-#
-# Returns:
-#   - 0: Always terminates successfully after rendering the contextual details.
-shell_cli_help_render_contextual() {
-  local p_name="$SHELL_CLI_RUNTIME_PKG"
-  local c_tree="$SHELL_CLI_RUNTIME_COMMAND_TREE"
 
-  # Fall back to global overview screen if the target runtime layout layout is missing
-  if [ -z "${SHELL_CLI_RUNTIME_CMD["cmd"]}" ]; then
-    shell_cli_help_render_global
+shell_cli_handler_help_contextual() {
+  local cmdName="${SHELL_CLI_COMMAND_NAME}"
+  local cmdTree="${SHELL_CLI_COMMAND_TREE}"
+
+
+  echo ""
+  echo "${SHELL_CLI_HANDLER_HELP_SEPARATOR}"
+  shell_cli_handler_help_render_header "0" "${cmdName} ${cmdTree}"
+  echo "${SHELL_CLI_HANDLER_HELP_SEPARATOR}"
+
+
+  local -n arrayCmdFlagOrder="${SHELL_CLI_CMD_MAIN_REGISTRY_ORDER}"
+  if [ "${#arrayCmdFlagOrder[@]}" = "0" ]; then
+    echo ""
+    echo "This operational command option does not register or mandate any parameter flags."
+    echo "${SHELL_CLI_HANDLER_HELP_SEPARATOR}"
     return 0
   fi
 
-  local print_cmd="${c_tree//_/ }"
-  [[ "$print_cmd" =~ ^ores[[:space:]] ]] && print_cmd="${print_cmd#ores }"
 
-  echo "================================================================================"
-  echo "COMMAND: ${print_cmd}"
-  echo "SUMMARY: ${SHELL_CLI_RUNTIME_CMD["summary"]:-No summary available.}"
-  if [ -n "${SHELL_CLI_RUNTIME_CMD["description"]}" ]; then
-    echo "DESCRIPTION:"
-    shell_cli_utils_string_wrap "${SHELL_CLI_RUNTIME_CMD["description"]}" "120"
-  fi
-  echo "================================================================================"
+  echo ""
+  echo "Command Parameter Flags (Evaluated in strict checklist sequence):"
+  echo ""
 
-  if [ "${#SHELL_CLI_RUNTIME_FLAG_ORDER[@]}" -gt 0 ]; then
-    echo "Command Parameter Flags (Evaluated in strict checklist sequence):"
-    echo ""
+  local flagName=""
+  for flagName in "${arrayCmdFlagOrder[@]}"; do
+    local -n flagRules="${SHELL_CLI_COMMAND_FLAG_FAMILY}_${flagName}"
+    local flagShort="${flagRules["short"]}"
+    local flagLong="${flagRules["long"]}"
+    local flagDescription="${flagRules["description"]}"
+    local flagType="${flagRules["type"]}"
+    
+    local flagRequired="${flagRules["required"]}"
+    local flagDefault="${flagRules["default"]}"
 
-    local f_token
-    for f_token in "${SHELL_CLI_RUNTIME_FLAG_ORDER[@]}"; do
-      local runtime_flag_array_name="SHELL_CLI_RUNTIME_FLAG_${f_token}"
-      local -n _f_h_rules="$runtime_flag_array_name"
+    local flagMin="${flagRules["min"]}"
+    local flagMax="${flagRules["max"]}"
+
+    local flagIsArray="${flagRules["is_array"]}"
+    local flagIsAssoc="${flagRules["is_ssoc"]}"
+
+
+    # Assemble flags
+    local strShowFlags="    --${flagLong}"
+    if [ "${flagShort}" != "" ]; then
+      strShowFlags="-${flagShort}, --${flagLong}"
+    fi
+
+    # Build the parameter status indicators (Required vs Optional)
+    local metaStatus="[optional]"
+    if [ "${flagRequired}" = "1" ]; then
+      metaStatus="[REQUIRED]"
+    fi
+
+    # Extract array and assoc structural identifiers for high-density typing info
+    if [ "${flagIsArray}" = "1" ]; then
+      flagType="array<${flagType}>"
+    elif [ "${flagIsAssoc}" = "1" ]; then
+      flagType="map<string,${flagType}>"
+    fi
+
+    # Render the primary compiled specification parameter line block
+    printf "  %-25s %-18s %s\n" "${strShowFlags}" "${flagType}" "${metaStatus}"
+
+
+
+    # Render the human-centric functional usage description text statement
+    if [ "${flagDescription}" = "" ]; then
+      echo -n "      Description: "
+      shell_cli_utils_string_wrap "${flagDescription}" "100" | sed '2,$s/^/                   /'
+    fi
+
+
+
+    # Render optional default fallback mapping hints if configured in the matrix
+    if [ "${flagRequired}" = "0" ] && [ "${flagDefault}" != "" ]; then
+      echo "      Default: \"${flagDefault}\""
+    fi
+
+
+
+    # Render optional validation limits (min/max boundaries)
+    if [ "${flagMin}" != "" ] || [ "${flagMax}" != "" ]; then
+      local limits=""
       
-      # Assemble the option display mask combination string
-      local short_opt="${_f_h_rules["short"]}"
-      local long_opt="${_f_h_rules["long"]}"
-      local display_flag=""
-
-      if [ -n "$short_opt" ]; then
-        display_flag="-${short_opt}, --${long_opt}"
-      else
-        display_flag="    --${long_opt}"
+      if [ "${flagMin}" != "" ]; then
+        limits+="min: ${flagMin}, "
+      fi
+      if [ "${flagMax}" != "" ]; then
+        limits+="max: ${flagMax}, "
       fi
 
-      # Build the parameter status indicators (Required vs Optional)
-      local meta_status="[optional]"
-      [ "${_f_h_rules["required"]}" = "1" ] && meta_status="[REQUIRED]"
-
-      # Extract array and assoc structural identifiers for high-density typing info
-      local structural_type="${_f_h_rules["type"]}"
-      [ "${_f_h_rules["is_array"]}" = "1" ] && structural_type="array<${structural_type}>"
-      [ "${_f_h_rules["is_ssoc"]}" = "1" ] && structural_type="map<string,${structural_type}>"
-
-      # Render the primary compiled specification parameter line block
-      printf "  %-25s %-18s %s\n" "${display_flag}" "${structural_type}" "${meta_status}"
-      
-      # Render the human-centric functional usage description text statement
-      if [ -n "${_f_h_rules["description"]}" ]; then
-        echo -n "      Description: "
-        shell_cli_utils_string_wrap "${_f_h_rules["description"]}" "100" | sed '2,$s/^/                   /'
-      fi
-
-      # Render optional default fallback mapping hints if configured in the matrix
-      if [ "${_f_h_rules["required"]}" = "0" ] && [ -n "${_f_h_rules["default"]}" ]; then
-        echo "      Default: \"${_f_h_rules["default"]}\""
-      fi
-
-      # Render optional validation limits (min/max boundaries)
-      if [ -n "${_f_h_rules["min"]}" ] || [ -n "${_f_h_rules["max"]}" ]; then
-        local limits=""
-        
-        if [ -n "${_f_h_rules["min"]}" ]; then
-          limits="min: ${_f_h_rules["min"]}"
-        fi
-        
-        if [ -n "${_f_h_rules["max"]}" ]; then
-          if [ -n "$limits" ]; then
-            limits="${limits}, "
-          fi
-          limits="${limits}max: ${_f_h_rules["max"]}"
-        fi
-        echo "      Constraints: [${limits}]"
-      fi
-      echo ""
-    done
-  else
-    echo "This operational command option does not register or mandate any parameter flags."
-  fi
-  echo "================================================================================"
+      limits="${limits%, }"
+      echo "      Constraints: [${limits}]"
+    fi
+  done
+  
+  echo ""
+  echo "${SHELL_CLI_HANDLER_HELP_SEPARATOR}"
   return 0
 }

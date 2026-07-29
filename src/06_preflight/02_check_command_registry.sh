@@ -14,8 +14,9 @@
 # - Verifies that the given array exists and is associative.
 # - If the array has already been checked (special key '__checked' set to "1"),
 #   returns success immediately to avoid redundant validation.
-# - Ensures that the required keys 'cmd', 'summary', and 'description' exist
+# - Ensures that the required keys 'cmd' and 'summary' exist
 #   and are populated with non-empty values.
+# - The 'description' key is optional.
 # - Marks the array as validated by setting '__checked' to "1".
 #
 # Returns:
@@ -34,7 +35,7 @@ shell_cli_preflight_check_command_registry() {
     return 0
   fi
 
-  local requiredKeys=("cmd" "summary" "description")
+  local requiredKeys=("cmd" "summary")
   local k=""
   local kRef=""
   local kVal=""
