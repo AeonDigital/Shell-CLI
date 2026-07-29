@@ -5,48 +5,12 @@
 # DESCRIPTION: 
 # ==============================================================================
 
-# SHELL_CLI_COMMAND_TRIGGER_HELP — global flag indicating help mode.
-#
-# - "1" when the command was invoked with "help", "--help" or "-h".
-# - Used to short-circuit execution and display usage information.
-declare -g SHELL_CLI_COMMAND_TRIGGER_HELP="0"
-
-# SHELL_CLI_COMMAND_TRIGGER_INTERACTIVE — global flag indicating interactive mode.
-#
-# - "1" when the command was invoked with "interactive" or "--interactive"/"-itr".
-# - Used to trigger interactive execution flow instead of standard batch mode.
-declare -g SHELL_CLI_COMMAND_TRIGGER_INTERACTIVE="0"
-
-# SHELL_CLI_COMMAND_POSIT_FLAG_RAW_INPUT — global indexed array storing raw flags.
-#
-# - Contains all flags exactly as typed by the user (e.g., "--opt=value").
-# - Populated during input parsing before normalization.
-declare -ga SHELL_CLI_COMMAND_POSIT_FLAG_RAW_INPUT=()
-
-# SHELL_CLI_COMMAND_ASSOC_FLAG_RAW_INPUT — global associative array mapping flags to values.
-#
-# - Keys: canonical long flag names.
-# - Values: raw values provided by the user (or "1" for boolean flags).
-# - Populated after validation of existence and duplication.
-declare -gA SHELL_CLI_COMMAND_ASSOC_FLAG_RAW_INPUT=()
-
-# SHELL_CLI_COMMAND_ARRAY_FLAG_RAW_INPUT_ORDER — global indexed array preserving flag order.
-#
-# - Stores the sequence of flags as they were provided by the user.
-# - Ensures deterministic iteration and validation order.
-declare -ga SHELL_CLI_COMMAND_ARRAY_FLAG_RAW_INPUT_ORDER=()
-
-
-
-
-
 # shell_cli_preflight_prepare_input — parse and validate raw CLI input flags.
 #
 # Arguments:
 # - $@: user-provided CLI arguments (flags and values).
 #
 # Behavior:
-# - Initializes all input-related global variables.
 # - Detects reserved modes ("help" and "interactive") and sets triggers accordingly.
 # - Collects raw flags into SHELL_CLI_COMMAND_POSIT_FLAG_RAW_INPUT.
 # - Splits flags into key-value pairs, treating flags without values as booleans.
@@ -61,13 +25,6 @@ declare -ga SHELL_CLI_COMMAND_ARRAY_FLAG_RAW_INPUT_ORDER=()
 # - 0: success (flags parsed and globals populated).
 # - 1: failure (syntax error, unknown flag, or duplicate flag).
 shell_cli_preflight_prepare_input() {
-  SHELL_CLI_COMMAND_TRIGGER_HELP="0"
-  SHELL_CLI_COMMAND_TRIGGER_INTERACTIVE="0"
-  SHELL_CLI_COMMAND_POSIT_FLAG_RAW_INPUT=()
-  SHELL_CLI_COMMAND_ASSOC_FLAG_RAW_INPUT=()
-  SHELL_CLI_COMMAND_ARRAY_FLAG_RAW_INPUT_ORDER=()
-
-
   #
   # 1. Extracts each flag passed via the CLI based on its absolute position and 
   #    identifies the invocation of modes such as 'help' or 'interactive'.

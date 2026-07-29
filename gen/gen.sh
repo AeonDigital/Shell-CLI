@@ -38,15 +38,37 @@ declare -g SHELL_CLI_LOCAL_LOAD_MAIN_PKG_SRC="1"
 shell_cli_execute_command() {
   shell_cli_get_core_package
   shell_cli_preflight_load_core_engine "$@"
-  shell_cli_preflight_process_lock
 
-  local rootPath="$(cd "$(dirname "${BASH_SOURCE}")" && pwd)"
-  if shell_cli_preflight_prepare_command "${rootPath}" "$@"; then
-    if shell_cli_preflight_prepare_input "$@"; then
-      shell_cli_run
-    fi
+  #
+  # Avoid nested shell CLI processes; 
+  # use a subshell if necessary.
+  if ! shell_cli_preflight_process_lock; then
+    return 1
   fi
 
+  #
+  # Loads the CLI shell engine and all dependencies for the command to be activated. 
+  local rootPath="$(cd "$(dirname "${BASH_SOURCE}")" && pwd)"
+  if ! shell_cli_preflight_prepare_command "${rootPath}" "$@"; then
+    return 1
+  fi
+
+  #
+  # Prepare and compile flags for the current sub-command
+  if ! shell_cli_preflight_prepare_command_flags; then
+    return 1
+  fi
+
+  #
+  # Extracts the flags and their values ​​entered by the user.
+  if ! shell_cli_preflight_prepare_input "$@"; then
+    return 1
+  fi
+
+  #
+  # Executes the CLI and, upon completion, unlocks the current process.
+  # Important: never use 'exit' in your scripts, otherwise the process might get stuck.
+  shell_cli_run
   shell_cli_preflight_process_unlock
 }
 

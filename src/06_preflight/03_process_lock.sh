@@ -5,23 +5,6 @@
 # DESCRIPTION: 
 # ==============================================================================
 
-# SHELL_CLI_PROCESS_LOCK_PID - global variable storing the process identifier (PID).
-#
-# - Updated when a process lock is activated.
-# - Used to detect nested executions sharing the same memory stack frame.
-declare -g SHELL_CLI_PROCESS_LOCK_PID=""
-
-
-# SHELL_CLI_PROCESS_LOCK_ACTIVE — global variable acting as a boolean flag.
-#
-# - "1" indicates that a process lock is active for the current pipeline.
-# - "0" indicates no active lock.
-declare -g SHELL_CLI_PROCESS_LOCK_ACTIVE="0"
-
-
-
-
-
 # shell_cli_preflight_process_lock — enforce process sandboxing.
 #
 # Arguments:
@@ -47,22 +30,4 @@ shell_cli_preflight_process_lock() {
   # Activate the process locks for the current pipeline instance context
   SHELL_CLI_PROCESS_LOCK_PID="${BASHPID}"
   SHELL_CLI_PROCESS_LOCK_ACTIVE="1"
-}
-
-
-
-# shell_cli_preflight_process_unlock — release process sandboxing lock.
-#
-# Arguments:
-# - None.
-#
-# Behavior:
-# - Clears the process lock by resetting SHELL_CLI_PROCESS_LOCK_PID and
-#   SHELL_CLI_PROCESS_LOCK_ACTIVE to default values.
-#
-# Returns:
-# - 0: always succeeds (lock released).
-shell_cli_preflight_process_unlock() {
-  SHELL_CLI_PROCESS_LOCK_PID=""
-  SHELL_CLI_PROCESS_LOCK_ACTIVE="0"
 }
