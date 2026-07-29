@@ -17,6 +17,6 @@
 # Returns:
 # - 0: always succeeds (lock released).
 shell_cli_preflight_process_unlock() {
-  SHELL_CLI_PROCESS_LOCK_PID=""
+  SHELL_CLI_PROCESS_LOCK_PID="-"
   SHELL_CLI_PROCESS_LOCK_ACTIVE="0"
 }

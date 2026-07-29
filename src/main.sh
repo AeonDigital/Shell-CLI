@@ -7,15 +7,68 @@
 # ==============================================================================
 
 shell_cli_run() {
+  local rootPath="${1}"; shift
+
+  # echo "${rootPath}"
+  # echo "--- ARGUMENT DUMP (Total: $#) ---"
+  # for arg in "$@"; do
+  #   printf "  Arg [%d]: '%s'\n" "$i" "$arg"
+  #   ((i++))
+  # done
+  # echo "--------------------------------"
+
 
   #
-  # 1. If help triggers are pulled, render manuals and die immediately with safety
+  # Avoid nested shell CLI processes; 
+  # use a subshell if necessary.
+  if ! shell_cli_preflight_process_lock; then
+    return 1
+  fi
+  echo "exit"
+  exit
+  #
+  # Loads the CLI shell engine and all dependencies for the command to be activated. 
+  if ! shell_cli_preflight_prepare_command "${rootPath}" "$@"; then
+    shell_cli_preflight_process_unlock
+    return 1
+  fi
+  
+  #
+  # Prepare and compile flags for the current sub-command
+  if ! shell_cli_preflight_prepare_command_flags; then
+    shell_cli_preflight_process_unlock
+    return 1
+  fi
+
+  #
+  # Extracts the flags and their values ​​entered by the user.
+  if ! shell_cli_preflight_prepare_input "$@"; then
+    shell_cli_preflight_process_unlock
+    return 1
+  fi
+
+
+  #
+  # 1. If help triggers are pulled, render it
   if [ "${SHELL_CLI_COMMAND_TRIGGER_HELP}" = "1" ]; then
     shell_cli_handler_help
+    shell_cli_preflight_process_unlock
+    return 0
+  fi
+
+  #
+  # 2. If interactive triggers, starts it handler
+  if [ "${SHELL_CLI_COMMAND_TRIGGER_INTERACTIVE}" = "1" ]; then
+    shell_cli_handler_interactive
+    shell_cli_preflight_process_unlock
     return 0
   fi
 
 
+
+  shell_cli_preflight_reset
+  shell_cli_preflight_process_unlock
+  return 0
 
   # # ----------------------------------------------------------------------------
   # # STEP 2.2: ORCHESTRATE INTERACTIVE RUNTIME STEP-BY-STEP QUESTIONNAIRE

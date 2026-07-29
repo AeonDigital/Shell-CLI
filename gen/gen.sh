@@ -36,45 +36,41 @@ declare -g SHELL_CLI_LOCAL_LOAD_MAIN_PKG_SRC="1"
 # - 0: success (command prepared).
 # - 1: failure (invalid context or missing assets).
 shell_cli_execute_command() {
-  shell_cli_get_core_package
-  shell_cli_preflight_load_core_engine "$@"
+  shell_cli_client_start_engine "$@"
 
-  #
-  # Avoid nested shell CLI processes; 
-  # use a subshell if necessary.
-  if ! shell_cli_preflight_process_lock; then
-    return 1
-  fi
-
-  #
-  # Loads the CLI shell engine and all dependencies for the command to be activated. 
   local rootPath="$(cd "$(dirname "${BASH_SOURCE}")" && pwd)"
-  if ! shell_cli_preflight_prepare_command "${rootPath}" "$@"; then
-    return 1
-  fi
-
-  #
-  # Prepare and compile flags for the current sub-command
-  if ! shell_cli_preflight_prepare_command_flags; then
-    return 1
-  fi
-
-  #
-  # Extracts the flags and their values ​​entered by the user.
-  if ! shell_cli_preflight_prepare_input "$@"; then
-    return 1
-  fi
 
   #
   # Executes the CLI and, upon completion, unlocks the current process.
   # Important: never use 'exit' in your scripts, otherwise the process might get stuck.
-  shell_cli_run
-  shell_cli_preflight_process_unlock
+  shell_cli_run "${rootPath}" "$@"
+  return $?
+}
+
+
+shell_cli_client_start_engine() {
+  if [ "${SHELL_CLI_LOCAL_LOAD_MAIN_PKG_SRC}" = "1" ]; then
+    local pathtoMainPkgSRC="$(cd "$(dirname "${BASH_SOURCE}")/../src" && pwd)"
+    local arrMainPkgSRCFiles=($(find "${pathtoMainPkgSRC}" -type f -name "*.sh" | sort))
+
+    for file in "${arrMainPkgSRCFiles[@]}"; do
+      if [[ "${file}" == *_test.sh ]]; then
+        continue
+      fi
+      . "${file}"
+    done
+
+    SHELL_CLI_CORE_LOAD="1"
+    return 0
+  fi
+
+  shell_cli_client_load_core_engine
+  shell_cli_preflight_load_core_engine "$@"
 }
 
 
 
-# shell_cli_get_core_package — ensure Shell-CLI package availability.
+# shell_cli_client_load_core_engine — ensure Shell-CLI package availability.
 #
 # Arguments:
 # - None (uses global state and environment variables).
@@ -90,10 +86,11 @@ shell_cli_execute_command() {
 # Returns:
 # - 0: success (engine package verified and loaded).
 # - 1: failure (download error or missing package).
-shell_cli_get_core_package() {
+shell_cli_client_load_core_engine() {
   if [ "${SHELL_CLI_CORE_LOAD}" -ge "0" ]; then
-    return
+    return 0
   fi
+
   SHELL_CLI_CORE_LOAD="-1"
 
   local xdgDataHome="${XDG_DATA_HOME:-${HOME}/.local/share}"

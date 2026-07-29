@@ -24,25 +24,6 @@
 # - 0: success (engine loaded from local src or central package).
 # - 1: failure (engine not found or download error).
 shell_cli_preflight_load_core_engine() {
-  unset SHELL_CLI_CORE_LOAD
-  declare -g SHELL_CLI_CORE_LOAD="0"
-
-
-  if [ "${SHELL_CLI_LOCAL_LOAD_MAIN_PKG_SRC}" = "1" ]; then
-    local pathtoMainPkgSRC="$(cd "$(dirname "${BASH_SOURCE}")/../../src" && pwd)"
-    local arrMainPkgSRCFiles=($(find "${pathtoMainPkgSRC}" -type f -name "*.sh" | sort))
-
-    for file in "${arrMainPkgSRCFiles[@]}"; do
-      if [[ "${file}" == *_test.sh ]]; then
-        continue
-      fi
-      . "${file}"
-    done
-
-    return 0
-  fi
-
-
   local xdgDataHome="${XDG_DATA_HOME:-${HOME}/.local/share}"
   local shellCLIDir="${xdgDataHome}/shell-cli"
   local shellCLIEnginePackage="${shellCLIDir}/package.sh"
@@ -59,7 +40,7 @@ shell_cli_preflight_load_core_engine() {
         echo "[ . ] Removing local cached runtime engine dependency..."
         
         if rm -f "${shellCLIEnginePackage}" 2>/dev/null; then
-          unset SHELL_CLI_CORE_LOAD
+          SHELL_CLI_CORE_LOAD="0"
 
           echo "[ v ] Local engine cache purged successfully."
           echo "================================================================================"

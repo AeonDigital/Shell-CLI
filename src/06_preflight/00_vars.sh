@@ -5,19 +5,32 @@
 # DESCRIPTION: 
 # ==============================================================================
 
-# SHELL_CLI_PROCESS_LOCK_PID - global variable storing the process identifier (PID).
+# SHELL_CLI_CORE_LOAD - global variable indicating the load state of the 
+# Shell-CLI core.
 #
-# - Updated when a process lock is activated.
-# - Used to detect nested executions sharing the same memory stack frame.
-declare -g SHELL_CLI_PROCESS_LOCK_PID=""
-
-# SHELL_CLI_PROCESS_LOCK_ACTIVE — global variable acting as a boolean flag.
-#
-# - "1" indicates that a process lock is active for the current pipeline.
-# - "0" indicates no active lock.
-declare -g SHELL_CLI_PROCESS_LOCK_ACTIVE="0"
+# - Initialized to "-1" if not yet defined.
+# - Updated by 'shell_cli_client_load_core_engine' and 
+#   'shell_cli_preflight_load_core_engine'.
+# - Used to determine whether the runtime engine is already active in the session.
+if [ "${SHELL_CLI_CORE_LOAD}" = "" ]; then
+  declare -g SHELL_CLI_CORE_LOAD="-1"
+fi
 
 
+
+if [ "${SHELL_CLI_PROCESS_LOCK_PID}" = "" ]; then
+  # SHELL_CLI_PROCESS_LOCK_PID - global variable storing the process identifier (PID).
+  #
+  # - Updated when a process lock is activated.
+  # - Used to detect nested executions sharing the same memory stack frame.
+  declare -g SHELL_CLI_PROCESS_LOCK_PID="-"
+
+  # SHELL_CLI_PROCESS_LOCK_ACTIVE — global variable acting as a boolean flag.
+  #
+  # - "1" indicates that a process lock is active for the current pipeline.
+  # - "0" indicates no active lock.
+  declare -g SHELL_CLI_PROCESS_LOCK_ACTIVE="0"
+fi
 
 
 

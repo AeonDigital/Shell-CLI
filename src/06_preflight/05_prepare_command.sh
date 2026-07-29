@@ -55,8 +55,8 @@ shell_cli_preflight_prepare_command() {
 
   #
   # 1. If shell cli not initializated by 'shell_cli_preflight_load_core_engine'
-  if [ "${SHELL_CLI_CORE_LOAD}" = "" ] || [ -d "${SHELL_CLI_CORE_LOAD}" ]; then
-    echo "[ERR] Shell CLI not found."
+  if [ "${SHELL_CLI_CORE_LOAD}" != "1" ]; then
+    echo "[ERR] Shell CLI not found or not load."
     return 1
   fi
 
