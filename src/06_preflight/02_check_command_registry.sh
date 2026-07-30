@@ -30,24 +30,19 @@ shell_cli_preflight_check_command_registry() {
     return 1
   fi
 
-  local checkedRef="${assocCmdName}[__checked]"
-  if [ "${!checkedRef}" = "1" ]; then
+  local -n assocCmdRegistry="${assocCmdName}"
+  if [ "${assocCmdRegistry["__checked"]}" = "1" ]; then
     return 0
   fi
 
   local requiredKeys=("cmd" "summary")
   local k=""
-  local kRef=""
-  local kVal=""
-
   for k in "${requiredKeys[@]}"; do
-    kRef="${assocCmdName}["${k}"]"
-    kVal=$(shell_cli_type_normalize_string "${!kRef}")
-    if [ "${!kVal}" = "" ]; then
+    if [ "${assocCmdRegistry["${k}"]}" = "" ]; then
       return 2
     fi
   done
 
-  eval "${assocCmdName}[__checked]=1"
+  assocCmdRegistry["__checked"]="1"
   return 0
 }

@@ -7,9 +7,10 @@
 # ==============================================================================
 
 shell_cli_run() {
-  local rootPath="${1}"; shift
+  local mainCmdRootPath="${1}"; shift
+  local commandName=$(basename "${mainCmdRootPath}" ".sh")
 
-  # echo "${rootPath}"
+  # echo "${mainCmdRootPath}"
   # echo "--- ARGUMENT DUMP (Total: $#) ---"
   # for arg in "$@"; do
   #   printf "  Arg [%d]: '%s'\n" "$i" "$arg"
@@ -24,21 +25,32 @@ shell_cli_run() {
   if ! shell_cli_preflight_process_lock; then
     return 1
   fi
-  echo "exit"
-  exit
+
   #
-  # Loads the CLI shell engine and all dependencies for the command to be activated. 
-  if ! shell_cli_preflight_prepare_command "${rootPath}" "$@"; then
+  # Prepare main command.
+  if ! shell_cli_preflight_prepare_main_cmd "${mainCmdRootPath}" "${commandName}" "$@"; then
     shell_cli_preflight_process_unlock
     return 1
   fi
-  
+
+  #
+  # Prepare target resource.
+  if ! shell_cli_preflight_prepare_target_resource "$@"; then
+    shell_cli_preflight_process_unlock
+    return 1
+  fi
+
   #
   # Prepare and compile flags for the current sub-command
-  if ! shell_cli_preflight_prepare_command_flags; then
+  if ! shell_cli_preflight_prepare_target_resource_flags; then
     shell_cli_preflight_process_unlock
     return 1
   fi
+  shell_cli_context_dump
+
+  
+  echo "exit"
+  exit
 
   #
   # Extracts the flags and their values ​​entered by the user.

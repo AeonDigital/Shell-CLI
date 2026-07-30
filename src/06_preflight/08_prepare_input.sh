@@ -15,8 +15,8 @@
 # - Collects raw flags into SHELL_CLI_COMMAND_POSIT_FLAG_RAW_INPUT.
 # - Splits flags into key-value pairs, treating flags without values as booleans.
 # - Normalizes short flags into their long equivalents using
-#   SHELL_CLI_COMMAND_FLAG_SHORTNAME.
-# - Validates that each flag exists in SHELL_CLI_COMMAND_FLAG_LONGNAME.
+#   SHELL_CLI_RESOURCE_FLAG_MAP_SHORTNAME.
+# - Validates that each flag exists in SHELL_CLI_RESOURCE_FLAG_MAP_LONGNAME.
 # - Prevents duplicate flags by checking against the associative input array.
 # - Populates SHELL_CLI_COMMAND_ASSOC_FLAG_RAW_INPUT and
 #   SHELL_CLI_COMMAND_ARRAY_FLAG_RAW_INPUT_ORDER with validated flags.
@@ -96,13 +96,13 @@ shell_cli_preflight_prepare_input() {
 
     #
     # Get the long name of the flag from its short version
-    if [ "${SHELL_CLI_COMMAND_FLAG_SHORTNAME["${currentFlagKey}"]}" != "" ]; then
-      currentFlagKey=${SHELL_CLI_COMMAND_FLAG_SHORTNAME["${currentFlagKey}"]}
+    if [ "${SHELL_CLI_RESOURCE_FLAG_MAP_SHORTNAME["${currentFlagKey}"]}" != "" ]; then
+      currentFlagKey=${SHELL_CLI_RESOURCE_FLAG_MAP_SHORTNAME["${currentFlagKey}"]}
     fi
 
     #
     # Checks if the flag really exists
-    if [ "${SHELL_CLI_COMMAND_FLAG_LONGNAME["${currentFlagKey}"]}" = "" ]; then
+    if [ "${SHELL_CLI_RESOURCE_FLAG_MAP_LONGNAME["${currentFlagKey}"]}" = "" ]; then
       echo "[ x ] Parameter Error :: Unknown flag '${currentFlagK}' provided."
       return 1
     fi

@@ -24,7 +24,7 @@ declare -g SHELL_CLI_HANDLER_HELP_SEPARATOR="===================================
 # Error & Panic Natures:
 #   - Return Errors: None. Pure structural routing interceptor routine.
 shell_cli_handler_help() {
-  if [ "${SHELL_CLI_COMMAND_TREE}" = "" ] || [ "${SHELL_CLI_COMMAND_TREE}" = "${SHELL_CLI_COMMAND_NAME}" ]; then
+  if [ "${SHELL_CLI_RESOURCE_TREE}" = "." ] || [ "${SHELL_CLI_RESOURCE_TREE}" = "${SHELL_CLI_MAIN_CMD_NAME}" ]; then
     shell_cli_handler_help_global
   else
     shell_cli_handler_help_contextual
@@ -36,7 +36,7 @@ shell_cli_handler_help() {
 
 
 shell_cli_handler_help_render_header() {
-  local -n assocCmdRegistry="${SHELL_CLI_CMD_MAIN_REGISTRY}"
+  local -n assocCmdRegistry="${SHELL_CLI_RESOURCE_REGISTRY}"
   local cmdName="${assocCmdRegistry["cmd"]}"
   local cmdSummary="${assocCmdRegistry["summary"]}"
   local cmdDescription="${assocCmdRegistry["description"]}"
@@ -61,14 +61,14 @@ shell_cli_handler_help_render_header() {
 
 
 shell_cli_handler_help_render_subcmd() {
-  local -n arrayMainRegistryOrder="${SHELL_CLI_COMMAND_NAME}_SUBCOMMAND_ORDER"
+  local -n arrayMainRegistryOrder="${SHELL_CLI_MAIN_CMD_NAME}_RESOURCE_ORDER"
   if [ "${#arrayMainRegistryOrder[@]}" = "0" ]; then
     return 0
   fi
 
   echo "Available Operational Command Tree:"
   local subCmdName=""
-  local subCmdRegistryPrefix="${SHELL_CLI_CMD_MAIN_REGISTRY}"
+  local subCmdRegistryPrefix="${SHELL_CLI_RESOURCE_REGISTRY}"
   for subCmdName in "${arrayMainRegistryOrder[@]}"; do
     local -n subCmdFlagAssoc="${subCmdRegistryPrefix}_${subCmdName}"
     printf "  %-20s %s\n" "${subCmdName}" "${subCmdFlagAssoc["summary"]}"
@@ -77,7 +77,7 @@ shell_cli_handler_help_render_subcmd() {
 
 
 shell_cli_handler_help_global() {
-  local cmdName="${SHELL_CLI_COMMAND_NAME}"
+  local cmdName="${SHELL_CLI_MAIN_CMD_NAME}"
 
   echo ""
   echo "${SHELL_CLI_HANDLER_HELP_SEPARATOR}"
@@ -103,8 +103,8 @@ shell_cli_handler_help_global() {
 
 
 shell_cli_handler_help_contextual() {
-  local cmdName="${SHELL_CLI_COMMAND_NAME}"
-  local cmdTree="${SHELL_CLI_COMMAND_TREE}"
+  local cmdName="${SHELL_CLI_MAIN_CMD_NAME}"
+  local cmdTree="${SHELL_CLI_RESOURCE_TREE}"
 
 
   echo ""
@@ -113,7 +113,7 @@ shell_cli_handler_help_contextual() {
   echo "${SHELL_CLI_HANDLER_HELP_SEPARATOR}"
 
 
-  local -n arrayCmdFlagOrder="${SHELL_CLI_CMD_MAIN_REGISTRY_ORDER}"
+  local -n arrayCmdFlagOrder="${SHELL_CLI_RESOURCE_REGISTRY_FLAG_ORDER}"
   if [ "${#arrayCmdFlagOrder[@]}" = "0" ]; then
     echo ""
     echo "This operational command option does not register or mandate any parameter flags."
@@ -128,7 +128,7 @@ shell_cli_handler_help_contextual() {
 
   local flagName=""
   for flagName in "${arrayCmdFlagOrder[@]}"; do
-    local -n flagRules="${SHELL_CLI_COMMAND_FLAG_FAMILY}_${flagName}"
+    local -n flagRules="${SHELL_CLI_RESOURCE_FLAG_FAMILY}_${flagName}"
     local flagShort="${flagRules["short"]}"
     local flagLong="${flagRules["long"]}"
     local flagDescription="${flagRules["description"]}"

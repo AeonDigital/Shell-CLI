@@ -34,42 +34,44 @@ fi
 
 
 
-# SHELL_CLI_ROOT_PATH — global variable holding the absolute root path of the CLI project.
+# SHELL_CLI_MAIN_CMD_ROOT_PATH — global variable holding the absolute root path of the CLI project.
 #
 # - Populated by the 'shell_cli_preflight_prepare_command' function.
 # - Represents the base directory from which command sources and assets are resolved.
 # - Used as the starting point for locating entrypoint scripts, globals, and command tree contexts.
-declare -g SHELL_CLI_ROOT_PATH=""
+declare -g SHELL_CLI_MAIN_CMD_ROOT_PATH=""
 
 
-# SHELL_CLI_COMMAND_NAME — Global variable holding the normalized main command name.
+# SHELL_CLI_MAIN_CMD_NAME — Global variable holding the normalized main command name.
 #
 # - Set during preflight preparation after user input normalization.
-declare -g SHELL_CLI_COMMAND_NAME=""
+declare -g SHELL_CLI_MAIN_CMD_NAME=""
 
 
-# SHELL_CLI_COMMAND_DIR — Global variable holding the absolute path to the command directory.
+declare -g SHELL_CLI_MAIN_CMD_REGISTRY=""
+declare -g SHELL_CLI_MAIN_CMD_REGISTRY_ORDER=""
+
+
+
+
+# SHELL_CLI_RESOURCE_PATH — Global variable holding the absolute path to the command directory.
 #
 # - Built from rootPath and command tree arguments.
 # - Used to locate and source scripts specific to the command context.
-declare -g SHELL_CLI_COMMAND_DIR=""
+declare -g SHELL_CLI_RESOURCE_PATH=""
+
+declare -g SHELL_CLI_RESOURCE_NAME=""
 
 
-# SHELL_CLI_COMMAND_PATH — Global variable holding the relative path of the command tree.
-#
-# - Represents the hierarchical structure of subcommands.
-# - Used to resolve execution flow and locate command-specific assets.
-declare -g SHELL_CLI_COMMAND_PATH=""
 
-
-# SHELL_CLI_COMMAND_TREE — Global variable holding the textual representation of the command tree.
+# SHELL_CLI_RESOURCE_TREE — Global variable holding the textual representation of the command tree.
 #
 # - Concatenates all subcommand parts into a single string.
 # - Used for error reporting and to preserve the logical execution context.
-declare -g SHELL_CLI_COMMAND_TREE=""
+declare -g SHELL_CLI_RESOURCE_TREE=""
 
 
-# SHELL_CLI_CMD_MAIN_REGISTRY — global variable holding the canonical name of the
+# SHELL_CLI_RESOURCE_REGISTRY — global variable holding the canonical name of the
 #   associative array that defines the main command.
 #
 # - Convention: must be declared in the client as 'declare -A SHELL_CLI_CMD_<CMDNAME>'.
@@ -77,41 +79,41 @@ declare -g SHELL_CLI_COMMAND_TREE=""
 # - Populated during 'shell_cli_preflight_prepare_command' to reference the main
 #   command’s metadata definition.
 # - Used to build help output and provide context for the root command.
-declare -g SHELL_CLI_CMD_MAIN_REGISTRY=""
+declare -g SHELL_CLI_RESOURCE_REGISTRY=""
 
 
-# SHELL_CLI_CMD_MAIN_REGISTRY_ORDER — global variable holding the canonical name of
+# SHELL_CLI_RESOURCE_REGISTRY_FLAG_ORDER — global variable holding the canonical name of
 #   the indexed array that defines the order of subcommands for the main command.
 #
 # - Convention: must be declared in the client as
-#   'declare -a SHELL_CLI_CMD_<CMDNAME>_SUBCOMMAND_ORDER'.
+#   'declare -a SHELL_CLI_CMD_<CMDNAME>_RESOURCE_ORDER'.
 # - Each element represents a subcommand name, listed in the order they should
 #   appear in help and documentation.
 # - Populated during 'shell_cli_preflight_prepare_command' to reference the
 #   subcommand ordering array.
 # - Used to ensure consistent listing of subcommands when generating help output.
-declare -g SHELL_CLI_CMD_MAIN_REGISTRY_ORDER=""
+declare -g SHELL_CLI_RESOURCE_REGISTRY_FLAG_ORDER=""
 
 
 
 
 
-# SHELL_CLI_COMMAND_SUBCOMMAND_ORDER — global indexed array holding available subcommands.
+# SHELL_CLI_COMMAND_RESOURCE_ORDER — global indexed array holding available subcommands.
 #
 # - Declared as an indexed array (declare -a) only if not already defined by the CLI client.
 # - If the client has previously initialized it, the existing definition is preserved.
 # - Each element represents a subcommand name in the order they should appear.
 # - Used primarily to build the help output, ensuring that subcommands are listed
 #   consistently and in the intended sequence.
-if ! declare -p "SHELL_CLI_COMMAND_SUBCOMMAND_ORDER" &>/dev/null; then
-  declare -ga SHELL_CLI_COMMAND_SUBCOMMAND_ORDER=()
+if ! declare -p "SHELL_CLI_COMMAND_RESOURCE_ORDER" &>/dev/null; then
+  declare -ga SHELL_CLI_COMMAND_RESOURCE_ORDER=()
 fi
 
 
 
 
 
-# SHELL_CLI_COMMAND_FLAG_FAMILY — global variable holding the canonical name prefix
+# SHELL_CLI_RESOURCE_FLAG_FAMILY — global variable holding the canonical name prefix
 #   for the associative array that defines the command’s flags.
 #
 # - Built dynamically during 'shell_cli_preflight_prepare_command' using the
@@ -119,10 +121,10 @@ fi
 # - Convention: the array must be declared as 'declare -A CMD_<command>_<subcommands>_FLAG'.
 # - Expected keys inside this associative array: 'cmd', 'summary', and 'description'.
 # - Used as the reference point for compiling and validating all flags of the command.
-declare -g SHELL_CLI_COMMAND_FLAG_FAMILY=""
+declare -g SHELL_CLI_RESOURCE_FLAG_FAMILY=""
 
 
-# SHELL_CLI_COMMAND_FLAG_FAMILY_ORDER — global variable holding the canonical name
+# SHELL_CLI_RESOURCE_FLAG_FAMILY_ORDER — global variable holding the canonical name
 #   of the indexed array that defines the order of flags for the command.
 #
 # - Built dynamically during 'shell_cli_preflight_prepare_command' using the
@@ -131,28 +133,28 @@ declare -g SHELL_CLI_COMMAND_FLAG_FAMILY=""
 # - Each element represents the name of a flag, which must correspond to an
 #   associative array defined under the same family prefix.
 # - Used to preserve the declaration order of flags and ensure consistent iteration.
-declare -g SHELL_CLI_COMMAND_FLAG_FAMILY_ORDER=""
+declare -g SHELL_CLI_RESOURCE_FLAG_FAMILY_ORDER=""
 
 
-# SHELL_CLI_COMMAND_FLAG_LONGNAME — global associative array mapping long flag names.
+# SHELL_CLI_RESOURCE_FLAG_MAP_LONGNAME — global associative array mapping long flag names.
 #
 # - Keys: canonical long names of flags (e.g., "--verbose").
 # - Values: reference to the corresponding associative array definition for the flag.
 # - Populated during 'shell_cli_preflight_prepare_command' by iterating the flag family order.
 # - Used to resolve flags by their long name at runtime.
-declare -gA SHELL_CLI_COMMAND_FLAG_LONGNAME=()
+declare -gA SHELL_CLI_RESOURCE_FLAG_MAP_LONGNAME=()
 
 
-# SHELL_CLI_COMMAND_FLAG_SHORTNAME — global associative array mapping short flag names.
+# SHELL_CLI_RESOURCE_FLAG_MAP_SHORTNAME — global associative array mapping short flag names.
 #
 # - Keys: canonical short names of flags (e.g., "-v").
 # - Values: the corresponding long flag name.
 # - Populated during 'shell_cli_preflight_prepare_command' alongside long names.
 # - Used to resolve flags by their short name and link them to their long form.
-declare -gA SHELL_CLI_COMMAND_FLAG_SHORTNAME=()
+declare -gA SHELL_CLI_RESOURCE_FLAG_MAP_SHORTNAME=()
 
 
-# SHELL_CLI_COMMAND_FN_ACTION — global variable holding the canonical name of the
+# SHELL_CLI_RESOURCE_FUNCTION_ACTION — global variable holding the canonical name of the
 #   function responsible for executing the command’s main action.
 #
 # - Populated by 'shell_cli_preflight_prepare_command' using the normalized command
@@ -160,10 +162,10 @@ declare -gA SHELL_CLI_COMMAND_FLAG_SHORTNAME=()
 # - Convention: must point to a function named 'cmd_<command>_<subcommands>_action'.
 # - Invoked after all validations and flag compilations succeed, representing the
 #   actual business logic of the command.
-declare -g SHELL_CLI_COMMAND_FN_ACTION=""
+declare -g SHELL_CLI_RESOURCE_FUNCTION_ACTION=""
 
 
-# SHELL_CLI_COMMAND_FN_VALIDATE — global variable holding the canonical name of the
+# SHELL_CLI_RESOURCE_FUNCTION_VALIDATE — global variable holding the canonical name of the
 #   function responsible for validating the command’s execution context.
 #
 # - Populated by 'shell_cli_preflight_prepare_command' using the normalized command
@@ -171,7 +173,7 @@ declare -g SHELL_CLI_COMMAND_FN_ACTION=""
 # - Convention: must point to a function named 'cmd_<command>_<subcommands>_validate'.
 # - Invoked before executing the action function, ensuring that all required flags
 #   and contextual rules are satisfied.
-declare -g SHELL_CLI_COMMAND_FN_VALIDATE=""
+declare -g SHELL_CLI_RESOURCE_FUNCTION_VALIDATE=""
 
 
 
@@ -229,26 +231,78 @@ declare -ga SHELL_CLI_COMMAND_ARRAY_FLAG_RAW_INPUT_ORDER=()
 # Returns:
 # - 0: always succeeds (globals reset to default values).
 shell_cli_preflight_reset() {
-  SHELL_CLI_ROOT_PATH=""
-  SHELL_CLI_COMMAND_NAME=""
-  SHELL_CLI_COMMAND_DIR=""
-  SHELL_CLI_COMMAND_PATH=""
-  SHELL_CLI_COMMAND_TREE=""
+  # MAIN CMD
+  SHELL_CLI_MAIN_CMD_ROOT_PATH=""
+  SHELL_CLI_MAIN_CMD_NAME=""
+  SHELL_CLI_MAIN_CMD_REGISTRY=""
+  SHELL_CLI_MAIN_CMD_REGISTRY_ORDER=""
 
-  SHELL_CLI_CMD_MAIN_REGISTRY=""
-  SHELL_CLI_CMD_MAIN_REGISTRY_ORDER=""
 
-  SHELL_CLI_COMMAND_FLAG_FAMILY=""
-  SHELL_CLI_COMMAND_FLAG_FAMILY_ORDER=""
-  SHELL_CLI_COMMAND_FLAG_LONGNAME=()
-  SHELL_CLI_COMMAND_FLAG_SHORTNAME=()
+  # SELECTED RESOURCE
+  SHELL_CLI_RESOURCE_PATH=""
+  SHELL_CLI_RESOURCE_NAME=""
+  SHELL_CLI_RESOURCE_TREE=""
+  SHELL_CLI_RESOURCE_REGISTRY=""
+  SHELL_CLI_RESOURCE_REGISTRY_FLAG_ORDER=""
+  SHELL_CLI_RESOURCE_FUNCTION_ACTION=""
+  SHELL_CLI_RESOURCE_FUNCTION_VALIDATE=""
 
-  SHELL_CLI_COMMAND_FN_ACTION=""
-  SHELL_CLI_COMMAND_FN_VALIDATE=""
+  # RESOURCE FLAG
+  SHELL_CLI_RESOURCE_FLAG_FAMILY=""
+  SHELL_CLI_RESOURCE_FLAG_FAMILY_ORDER=""
+
+  # RESOURCE FLAG MAP
+  SHELL_CLI_RESOURCE_FLAG_MAP_LONGNAME=()
+  SHELL_CLI_RESOURCE_FLAG_MAP_SHORTNAME=()
+
 
   SHELL_CLI_COMMAND_TRIGGER_HELP="0"
   SHELL_CLI_COMMAND_TRIGGER_INTERACTIVE="0"
   SHELL_CLI_COMMAND_POSIT_FLAG_RAW_INPUT=()
   SHELL_CLI_COMMAND_ASSOC_FLAG_RAW_INPUT=()
   SHELL_CLI_COMMAND_ARRAY_FLAG_RAW_INPUT_ORDER=()
+}
+
+shell_cli_context_dump() {
+  echo "MAIN CMD"
+  echo " ROOT PATH : $SHELL_CLI_MAIN_CMD_ROOT_PATH"
+  echo "      NAME : $SHELL_CLI_MAIN_CMD_NAME"
+  echo " ASSOC REG : $SHELL_CLI_MAIN_CMD_REGISTRY"
+  echo " ARRAY ORD : $SHELL_CLI_MAIN_CMD_REGISTRY_ORDER"
+  echo ""
+
+  echo "SELECTED RESOURCE"
+  echo "      PATH : $SHELL_CLI_RESOURCE_PATH"
+  echo "      NAME : $SHELL_CLI_RESOURCE_NAME"
+  echo "      TREE : $SHELL_CLI_RESOURCE_TREE"
+  echo " ASSOC REG : $SHELL_CLI_RESOURCE_REGISTRY"
+  echo "  FLAG ORD : $SHELL_CLI_RESOURCE_REGISTRY_FLAG_ORDER"
+  echo " FN ACTION : $SHELL_CLI_RESOURCE_FUNCTION_ACTION"
+  echo " FN VALIDA : $SHELL_CLI_RESOURCE_FUNCTION_VALIDATE"
+  echo ""
+
+  echo "RESOURCE FLAG"
+  echo "    FAMILY : $SHELL_CLI_RESOURCE_FLAG_FAMILY"
+  echo "FAMILY ORD : $SHELL_CLI_RESOURCE_FLAG_FAMILY_ORDER"
+  echo ""
+
+  
+  echo "RESOURCE FLAG MAP"
+  local k=""
+  local v=""
+  
+  echo " SHORT NAME : "
+  for k in "${!SHELL_CLI_RESOURCE_FLAG_MAP_SHORTNAME[@]}"; do
+    v="${SHELL_CLI_RESOURCE_FLAG_MAP_SHORTNAME["${k}"]}"
+    echo "    '${k}' >> '${v}'"
+  done
+
+  echo ""
+
+  echo " LONG NAME : "
+  for k in "${!SHELL_CLI_RESOURCE_FLAG_MAP_LONGNAME[@]}"; do
+    v="${SHELL_CLI_RESOURCE_FLAG_MAP_LONGNAME["${k}"]}"
+    echo "    '${k}' >> '${v}'"
+  done
+  
 }

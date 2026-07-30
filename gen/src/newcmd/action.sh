@@ -14,7 +14,7 @@
 # Returns:
 #   - 0: If all system configurations and parameters pass strict validations.
 #   - 1: If contextual boundaries or safety policies are violated.
-cmd_gen_ores_newcmd_main_validate() {
+shell_cli_cmd_gen_newcmd_validate() {
   local target_path="${CMD_GEN_ORES_newcmd_PARSED["path"]}"
 
   # Verify if the target workspace path already exists and contains files
@@ -49,7 +49,7 @@ cmd_gen_ores_newcmd_main_validate() {
 # Returns:
 #   - 0: On absolute multi-task initialization success with zero pipeline errors.
 #   - 1: If any critical directory or template compilation command fails.
-cmd_gen_ores_newcmd_action() {
+shell_cli_cmd_gen_newcmd_action() {
   # Exporting parameters to environment scope so external templates can consume them
   export TARGET_PATH="${CMD_GEN_ORES_newcmd_PARSED["path"]}"
   export TARGET_PKG="${CMD_GEN_ORES_newcmd_PARSED["pkg"]}"
