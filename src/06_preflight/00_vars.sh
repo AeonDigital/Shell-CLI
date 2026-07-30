@@ -179,36 +179,36 @@ declare -g SHELL_CLI_RESOURCE_FUNCTION_VALIDATE=""
 
 
 
-# SHELL_CLI_COMMAND_TRIGGER_HELP — global flag indicating help mode.
+# SHELL_CLI_TRIGGER_HELP — global flag indicating help mode.
 #
 # - "1" when the command was invoked with "help", "--help" or "-h".
 # - Used to short-circuit execution and display usage information.
-declare -g SHELL_CLI_COMMAND_TRIGGER_HELP="0"
+declare -g SHELL_CLI_TRIGGER_HELP="0"
 
-# SHELL_CLI_COMMAND_TRIGGER_INTERACTIVE — global flag indicating interactive mode.
+# SHELL_CLI_TRIGGER_INTERACTIVE — global flag indicating interactive mode.
 #
 # - "1" when the command was invoked with "interactive" or "--interactive"/"-itr".
 # - Used to trigger interactive execution flow instead of standard batch mode.
-declare -g SHELL_CLI_COMMAND_TRIGGER_INTERACTIVE="0"
+declare -g SHELL_CLI_TRIGGER_INTERACTIVE="0"
 
-# SHELL_CLI_COMMAND_POSIT_FLAG_RAW_INPUT — global indexed array storing raw flags.
+# SHELL_CLI_INPUT_RAW_FLAG — global indexed array storing raw flags.
 #
 # - Contains all flags exactly as typed by the user (e.g., "--opt=value").
 # - Populated during input parsing before normalization.
-declare -ga SHELL_CLI_COMMAND_POSIT_FLAG_RAW_INPUT=()
+declare -ga SHELL_CLI_INPUT_RAW_FLAG=()
 
-# SHELL_CLI_COMMAND_ASSOC_FLAG_RAW_INPUT — global associative array mapping flags to values.
+# SHELL_CLI_INPUT_RAW_FLAG_ASSOC — global associative array mapping flags to values.
 #
 # - Keys: canonical long flag names.
 # - Values: raw values provided by the user (or "1" for boolean flags).
 # - Populated after validation of existence and duplication.
-declare -gA SHELL_CLI_COMMAND_ASSOC_FLAG_RAW_INPUT=()
+declare -gA SHELL_CLI_INPUT_RAW_FLAG_ASSOC=()
 
-# SHELL_CLI_COMMAND_ARRAY_FLAG_RAW_INPUT_ORDER — global indexed array preserving flag order.
+# SHELL_CLI_INPUT_RAW_FLAG_ORDER — global indexed array preserving flag order.
 #
 # - Stores the sequence of flags as they were provided by the user.
 # - Ensures deterministic iteration and validation order.
-declare -ga SHELL_CLI_COMMAND_ARRAY_FLAG_RAW_INPUT_ORDER=()
+declare -ga SHELL_CLI_INPUT_RAW_FLAG_ORDER=()
 
 
 
@@ -255,54 +255,78 @@ shell_cli_preflight_reset() {
   SHELL_CLI_RESOURCE_FLAG_MAP_LONGNAME=()
   SHELL_CLI_RESOURCE_FLAG_MAP_SHORTNAME=()
 
+  # TRIGGERS
+  SHELL_CLI_TRIGGER_HELP="0"
+  SHELL_CLI_TRIGGER_INTERACTIVE="0"
 
-  SHELL_CLI_COMMAND_TRIGGER_HELP="0"
-  SHELL_CLI_COMMAND_TRIGGER_INTERACTIVE="0"
-  SHELL_CLI_COMMAND_POSIT_FLAG_RAW_INPUT=()
-  SHELL_CLI_COMMAND_ASSOC_FLAG_RAW_INPUT=()
-  SHELL_CLI_COMMAND_ARRAY_FLAG_RAW_INPUT_ORDER=()
+  # INPUT FLAGS
+  SHELL_CLI_INPUT_RAW_FLAG=()
+  SHELL_CLI_INPUT_RAW_FLAG_ASSOC=()
+  SHELL_CLI_INPUT_RAW_FLAG_ORDER=()
 }
 
 shell_cli_context_dump() {
   echo "MAIN CMD"
-  echo " ROOT PATH : $SHELL_CLI_MAIN_CMD_ROOT_PATH"
-  echo "      NAME : $SHELL_CLI_MAIN_CMD_NAME"
-  echo " ASSOC REG : $SHELL_CLI_MAIN_CMD_REGISTRY"
-  echo " ARRAY ORD : $SHELL_CLI_MAIN_CMD_REGISTRY_ORDER"
+  echo "  ROOT PATH : $SHELL_CLI_MAIN_CMD_ROOT_PATH"
+  echo "       NAME : $SHELL_CLI_MAIN_CMD_NAME"
+  echo "  ASSOC REG : $SHELL_CLI_MAIN_CMD_REGISTRY"
+  echo "  ARRAY ORD : $SHELL_CLI_MAIN_CMD_REGISTRY_ORDER"
   echo ""
 
   echo "SELECTED RESOURCE"
-  echo "      PATH : $SHELL_CLI_RESOURCE_PATH"
-  echo "      NAME : $SHELL_CLI_RESOURCE_NAME"
-  echo "      TREE : $SHELL_CLI_RESOURCE_TREE"
-  echo " ASSOC REG : $SHELL_CLI_RESOURCE_REGISTRY"
-  echo "  FLAG ORD : $SHELL_CLI_RESOURCE_REGISTRY_FLAG_ORDER"
-  echo " FN ACTION : $SHELL_CLI_RESOURCE_FUNCTION_ACTION"
-  echo " FN VALIDA : $SHELL_CLI_RESOURCE_FUNCTION_VALIDATE"
+  echo "       PATH : $SHELL_CLI_RESOURCE_PATH"
+  echo "       NAME : $SHELL_CLI_RESOURCE_NAME"
+  echo "       TREE : $SHELL_CLI_RESOURCE_TREE"
+  echo "  ASSOC REG : $SHELL_CLI_RESOURCE_REGISTRY"
+  echo "   FLAG ORD : $SHELL_CLI_RESOURCE_REGISTRY_FLAG_ORDER"
+  echo "  FN ACTION : $SHELL_CLI_RESOURCE_FUNCTION_ACTION"
+  echo "  FN VALIDA : $SHELL_CLI_RESOURCE_FUNCTION_VALIDATE"
   echo ""
 
   echo "RESOURCE FLAG"
-  echo "    FAMILY : $SHELL_CLI_RESOURCE_FLAG_FAMILY"
-  echo "FAMILY ORD : $SHELL_CLI_RESOURCE_FLAG_FAMILY_ORDER"
+  echo "     FAMILY : $SHELL_CLI_RESOURCE_FLAG_FAMILY"
+  echo " FAMILY ORD : $SHELL_CLI_RESOURCE_FLAG_FAMILY_ORDER"
   echo ""
 
   
   echo "RESOURCE FLAG MAP"
+  local i=""
   local k=""
   local v=""
   
-  echo " SHORT NAME : "
+  echo "  SHORT NAME : "
   for k in "${!SHELL_CLI_RESOURCE_FLAG_MAP_SHORTNAME[@]}"; do
     v="${SHELL_CLI_RESOURCE_FLAG_MAP_SHORTNAME["${k}"]}"
-    echo "    '${k}' >> '${v}'"
+    echo "    [ ${k} ] = '${v}'"
   done
 
   echo ""
 
-  echo " LONG NAME : "
+  echo "  LONG NAME : "
   for k in "${!SHELL_CLI_RESOURCE_FLAG_MAP_LONGNAME[@]}"; do
     v="${SHELL_CLI_RESOURCE_FLAG_MAP_LONGNAME["${k}"]}"
-    echo "    '${k}' >> '${v}'"
+    echo "    [ ${k} ] = '${v}'"
   done
   
+  echo ""
+
+  echo "TRIGGERS"
+  echo "       HELP : $SHELL_CLI_TRIGGER_HELP"
+  echo "INTERACTIVE : $SHELL_CLI_TRIGGER_INTERACTIVE"
+
+  echo ""
+
+  echo " RAW FLAGS : "
+  for i in "${!SHELL_CLI_INPUT_RAW_FLAG[@]}"; do
+    v="${SHELL_CLI_INPUT_RAW_FLAG["${i}"]}"
+    echo "    [ ${i} ] = '${v}'"
+  done
+
+  echo ""
+
+  echo "FLAG ASSOC [in order] : "
+  for k in "${SHELL_CLI_INPUT_RAW_FLAG_ORDER[@]}"; do
+    v="${SHELL_CLI_INPUT_RAW_FLAG_ASSOC["${k}"]}"
+    echo "    [ ${k} ] = '${v}'"
+  done
 }

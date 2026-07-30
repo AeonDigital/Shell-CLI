@@ -61,7 +61,7 @@ shell_cli_preflight_prepare_main_cmd() {
   #
   # 2. Check if the main command name is omitted.
   if [ "${mainCmdName}" = "" ]; then
-    echo "[ERR] Missing operational main command name context."
+    echo "[ERR] :: Missing operational main command name context."
     return 1
   fi
 

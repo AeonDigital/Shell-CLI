@@ -15,7 +15,7 @@ declare -g SHELL_CLI_HANDLER_HELP_SEPARATOR="===================================
 # shell_cli_handler_help intercepts execution to render manuals.
 #
 # Arguments:
-#   None. Uses compiled SHELL_CLI_COMMAND_TRIGGER_HELP and command tree registers directly.
+#   None. Uses compiled SHELL_CLI_TRIGGER_HELP and command tree registers directly.
 #
 # Returns:
 #   - 0: If the help context was triggered and rendered successfully.

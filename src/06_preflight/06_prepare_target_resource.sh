@@ -48,9 +48,18 @@ shell_cli_preflight_prepare_target_resource() {
     SHELL_CLI_RESOURCE_TREE="."
     return 0
   fi
+  if [ "${resourceName}" == "help" ]; then
+    SHELL_CLI_RESOURCE_TREE="."
+
+    SHELL_CLI_TRIGGER_HELP="1"
+    SHELL_CLI_TRIGGER_INTERACTIVE="0"
+    return 0
+  fi
 
   local errTitle="[ERR] :: Invalid resource definition."
   local errIndent="         "
+  
+  local triggerHelp="0"
 
 
   local mainCmdName="${SHELL_CLI_MAIN_CMD_NAME}"
@@ -73,6 +82,10 @@ shell_cli_preflight_prepare_target_resource() {
     arg=$(shell_cli_type_normalize_string "${arg,,}")
     if [ "${arg}" != "" ]; then
       if [ "${arg:0:1}" = "-" ]; then
+        break
+      fi
+      if [ "${arg}" = "help" ]; then
+        triggerHelp="1"
         break
       fi
 
@@ -196,6 +209,10 @@ shell_cli_preflight_prepare_target_resource() {
   SHELL_CLI_RESOURCE_FLAG_FAMILY="${resourceFlagFamily}"
   SHELL_CLI_RESOURCE_FLAG_FAMILY_ORDER="${resourceFlagFamilyOrder}"
 
+  if [ "${triggerHelp}" == "1" ]; then
+    SHELL_CLI_TRIGGER_HELP="1"
+    SHELL_CLI_TRIGGER_INTERACTIVE="0"
+  fi
 
   return 0
 }

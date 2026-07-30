@@ -10,14 +10,6 @@ shell_cli_run() {
   local mainCmdRootPath="${1}"; shift
   local commandName=$(basename "${mainCmdRootPath}" ".sh")
 
-  # echo "${mainCmdRootPath}"
-  # echo "--- ARGUMENT DUMP (Total: $#) ---"
-  # for arg in "$@"; do
-  #   printf "  Arg [%d]: '%s'\n" "$i" "$arg"
-  #   ((i++))
-  # done
-  # echo "--------------------------------"
-
 
   #
   # Avoid nested shell CLI processes; 
@@ -46,11 +38,6 @@ shell_cli_run() {
     shell_cli_preflight_process_unlock
     return 1
   fi
-  shell_cli_context_dump
-
-  
-  echo "exit"
-  exit
 
   #
   # Extracts the flags and their values ​​entered by the user.
@@ -59,10 +46,15 @@ shell_cli_run() {
     return 1
   fi
 
+  shell_cli_context_dump
+  echo "exit"
+  exit
+
+  
 
   #
   # 1. If help triggers are pulled, render it
-  if [ "${SHELL_CLI_COMMAND_TRIGGER_HELP}" = "1" ]; then
+  if [ "${SHELL_CLI_TRIGGER_HELP}" = "1" ]; then
     shell_cli_handler_help
     shell_cli_preflight_process_unlock
     return 0
@@ -70,7 +62,7 @@ shell_cli_run() {
 
   #
   # 2. If interactive triggers, starts it handler
-  if [ "${SHELL_CLI_COMMAND_TRIGGER_INTERACTIVE}" = "1" ]; then
+  if [ "${SHELL_CLI_TRIGGER_INTERACTIVE}" = "1" ]; then
     shell_cli_handler_interactive
     shell_cli_preflight_process_unlock
     return 0
