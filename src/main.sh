@@ -12,42 +12,41 @@ shell_cli_run() {
 
 
   #
-  # Avoid nested shell CLI processes; 
-  # use a subshell if necessary.
+  # 1. Avoid nested shell CLI processes; use a subshell if necessary.
   if ! shell_cli_preflight_process_lock; then
     return 1
   fi
 
   #
-  # Prepare main command.
+  # 2. Prepare main command.
   if ! shell_cli_preflight_prepare_main_cmd "${mainCmdRootPath}" "${commandName}" "$@"; then
     shell_cli_preflight_process_unlock
     return 1
   fi
 
   #
-  # Prepare target resource.
+  # 3. Prepare target resource.
   if ! shell_cli_preflight_prepare_target_resource "$@"; then
     shell_cli_preflight_process_unlock
     return 1
   fi
 
   #
-  # Prepare and compile flags for the current sub-command
+  # 4. Prepare and compile flags for the current sub-command
   if ! shell_cli_preflight_prepare_target_resource_flags; then
     shell_cli_preflight_process_unlock
     return 1
   fi
 
   #
-  # Extracts the flags and their values ​​entered by the user.
+  # 5. Extracts the flags and their values ​​entered by the user.
   if ! shell_cli_preflight_prepare_input "$@"; then
     shell_cli_preflight_process_unlock
     return 1
   fi
 
   #
-  # 1. If help triggers are pulled, render it
+  # 6. If help triggers are pulled, render it
   if [ "${SHELL_CLI_TRIGGER_HELP}" = "1" ]; then
     shell_cli_handler_help
     shell_cli_preflight_process_unlock
@@ -55,76 +54,70 @@ shell_cli_run() {
   fi
 
   #
-  # 2. If interactive triggers, starts it handler
+  # 7. If interactive triggers, starts it handler
   if [ "${SHELL_CLI_TRIGGER_INTERACTIVE}" = "1" ]; then
-    shell_cli_handler_interactive
-    shell_cli_preflight_process_unlock
-    return 0
+    if [ ! shell_cli_handler_interactive ]; then
+      shell_cli_preflight_process_unlock
+      return "$s"
+    fi
   fi
 
 
 
+
+
+  #
+  # By this point, all flag data has been properly validated and processed. 
+  # We move it into the 'SHELL_CLI_CMD_INPUT' associative array so that it is 
+  # easily accessible to the CLI client.
+  local k=""
+  local v=""
+  for k in "${!SHELL_CLI_INPUT_RAW_FLAG_ASSOC[@]}"; do
+    v="${SHELL_CLI_CMD_INPUT["${k}"]}"
+    SHELL_CLI_CMD_INPUT["${k}"]="${v}"
+  done
+  #
+  # replicates the flag acquisition order for the 'SHELL_CLI_CMD_INPUT_ORDER' array
+  SHELL_CLI_CMD_INPUT_ORDER=("${SHELL_CLI_INPUT_RAW_FLAG_ORDER[@]}")
+
+
+  #
+  # performs context validation of the client command
+  if [ "${SHELL_CLI_RESOURCE_FUNCTION_VALIDATE}" != "" ]; then
+    if ! "${SHELL_CLI_RUNTIME_FN_VALIDATE}"; then
+      local validateStatus="$?"
+      local validatePrefix=""
+      case "${validateStatus}" in
+        1)
+          # input error
+          validatePrefix="[ x ]"
+          ;;
+        2)
+          # input warning
+          validatePrefix="[ w ]"
+          ;;
+        10)
+          # input critical error
+          validatePrefix="[ERR]"
+          ;;
+      esac
+      echo "${validatePrefix} :: ${SHELL_CLI_CMD_VALIDATE_ERR}"
+
+      shell_cli_runtime_reset
+      return "${validateStatus}"
+    fi
+  fi
+
+
+  #
+  # executes the selected action command
+  "${SHELL_CLI_RESOURCE_FUNCTION_ACTION}"
+  local actionStatus="$?"
+
+
+  #
+  # clears the execution environment and releases the process
   shell_cli_preflight_reset
   shell_cli_preflight_process_unlock
-  return 0
-
-  # # ----------------------------------------------------------------------------
-  # # STEP 2.2: ORCHESTRATE INTERACTIVE RUNTIME STEP-BY-STEP QUESTIONNAIRE
-  # # ----------------------------------------------------------------------------
-  # # Catch the precise execution status return code from the interactive pipeline
-  # local skip_inputs_validation=0
-  # shell_cli_runtime_handle_interactive
-  # local interactive_status=$?
-
-  # if [ "$interactive_status" -eq 0 ]; then
-  #   # Questionnaire passed perfectly, skip batch validations at Step 3
-  #   skip_inputs_validation=1
-  # elif [ "$interactive_status" -eq 2 ]; then
-  #   # User requested a graceful termination. Clear memory, drop locks and exit.
-  #   shell_cli_runtime_reset
-  #   return 1
-  # fi
-
-  # # ----------------------------------------------------------------------------
-  # # STEP 3: EXPLICIT RUNTIME VALUES COMPLIANCE VALIDATION
-  # # ----------------------------------------------------------------------------
-  # # Executed only if standard parameters were provided directly via terminal args
-  # if [ "$skip_inputs_validation" -eq 0 ]; then
-  #   if ! shell_cli_runtime_validate_inputs; then
-  #     echo -e "$VALIDATION_ERROR_MSG"
-  #     shell_cli_runtime_reset
-  #     return 1
-  #   fi
-  # fi
-
-  # # ----------------------------------------------------------------------------
-  # # STEP 4: MATERIALIZE AND EXPORT PUBLIC INPUT CONTRACTS
-  # # ----------------------------------------------------------------------------
-  # # Clone validated inputs into the public dynamic CoC map 'CMD_<PKG>_<TREE>_INPUT'
-  # shell_cli_runtime_export_inputs
-
-  # # ----------------------------------------------------------------------------
-  # # STEP 5: EXECUTE BUSINESS LIFE CYCLE ACTION HOOK PIPELINES
-  # # ----------------------------------------------------------------------------
-  # # If help system was triggered, we can handle it or pass directly to execution.
-  # # First execute the optional cross-validation business rules hook
-  # if declare -f "$SHELL_CLI_RUNTIME_FN_VALIDATE" >/dev/null; then
-  #   if ! "$SHELL_CLI_RUNTIME_FN_VALIDATE"; then
-  #     echo -e "$VALIDATION_ERROR_MSG"
-  #     shell_cli_runtime_reset
-  #     return 1
-  #   fi
-  # fi
-
-  # # Finally trigger the mandatory core action logic block
-  # "$SHELL_CLI_RUNTIME_FN_ACTION"
-  # local action_exit_code=$?
-
-
-  # # ----------------------------------------------------------------------------
-  # # STEP 6: TERMINATION PURGE AND LOCK RELEASE
-  # # ----------------------------------------------------------------------------
-  # shell_cli_runtime_reset
-
-  # return $action_exit_code
+  return "${actionStatus}"
 }

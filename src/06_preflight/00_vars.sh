@@ -216,6 +216,13 @@ declare -ga SHELL_CLI_INPUT_RAW_FLAG_ORDER=()
 
 
 
+declare -gA SHELL_CLI_CMD_INPUT=()
+declare -ga SHELL_CLI_CMD_INPUT_ORDER=()
+declare -g SHELL_CLI_CMD_VALIDATE_ERR=""
+
+
+
+
 
 
 # shell_cli_preflight_reset — clear all global variables related to command execution.
@@ -267,6 +274,12 @@ shell_cli_preflight_reset() {
   SHELL_CLI_INPUT_RAW_FLAG=()
   SHELL_CLI_INPUT_RAW_FLAG_ASSOC=()
   SHELL_CLI_INPUT_RAW_FLAG_ORDER=()
+
+
+  # CLIENT CLI CMD
+  SHELL_CLI_CMD_INPUT=()
+  SHELL_CLI_CMD_INPUT_ORDER=()
+  SHELL_CLI_CMD_VALIDATE_ERR=""
 }
 
 shell_cli_context_dump() {

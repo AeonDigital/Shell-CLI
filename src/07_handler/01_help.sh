@@ -45,6 +45,9 @@ shell_cli_handler_help() {
 }
 
 
+
+
+
 _shell_cli_handler_help_render_header() {
   local cmdName="${SHELL_CLI_MAIN_CMD_NAME}"
   local subCmdName="> ${SHELL_CLI_RESOURCE_TREE/ / > }"
@@ -69,6 +72,8 @@ _shell_cli_handler_help_render_header() {
     shell_cli_utils_string_wrap "${cmdDescription}" "${SHELL_CLI_HANDLER_HELP_COLUMNS}" "2" "2"
   fi
 }
+
+
 _shell_cli_handler_help_render_usage() {
   local cmdName="${SHELL_CLI_MAIN_CMD_NAME}"
 
@@ -81,6 +86,8 @@ _shell_cli_handler_help_render_usage() {
     echo "   ./${cmdName}.sh ${SHELL_CLI_RESOURCE_TREE} [<action>] [flags]"
   fi
 }
+
+
 _shell_cli_handler_help_render_global_flags() {
   local cmdName="${SHELL_CLI_MAIN_CMD_NAME}"
 
@@ -89,6 +96,8 @@ _shell_cli_handler_help_render_global_flags() {
   echo "   -h, --help            Display documentation and metadata definitions."
   echo "   -itr, --interactive   Starts user interaction prompt mode."
 }
+
+
 _shell_cli_handler_help_render_subcmd_options() {
   local useSubCmdType="Actions"
   local useCmdRegistry="${SHELL_CLI_RESOURCE_REGISTRY}"
@@ -178,6 +187,8 @@ _shell_cli_handler_help_render_subcmd_options() {
     fi
   done
 }
+
+
 _shell_cli_handler_help_render_flags() {
   if [ "${SHELL_CLI_RESOURCE_TREE}" = "." ]; then
     echo ""
@@ -189,7 +200,7 @@ _shell_cli_handler_help_render_flags() {
 
 
   echo ""
-  echo "## Command Parameter Flags:"
+  echo "## Parameter Flags:"
   if [ "${#arrayCmdFlagOrder[@]}" = "0" ]; then
     echo "   This command has no flag options."
     echo ""
