@@ -46,12 +46,6 @@ shell_cli_run() {
     return 1
   fi
 
-  shell_cli_context_dump
-  echo "exit"
-  exit
-
-  
-
   #
   # 1. If help triggers are pulled, render it
   if [ "${SHELL_CLI_TRIGGER_HELP}" = "1" ]; then

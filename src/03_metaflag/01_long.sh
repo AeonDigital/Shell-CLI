@@ -20,7 +20,7 @@ METAFLAG_long["required"]=true
 
 METAFLAG_long["normalize"]=""
 METAFLAG_long["min"]="4"
-METAFLAG_long["max"]="32"
+METAFLAG_long["max"]="16"
 METAFLAG_long["regex"]="^[a-z0-9_-]+$"
 METAFLAG_long["validate"]=""
 METAFLAG_long["transform"]=""

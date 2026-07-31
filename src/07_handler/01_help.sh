@@ -6,8 +6,9 @@
 # ==============================================================================
 
 
-declare -g SHELL_CLI_HANDLER_HELP_SEPARATOR="================================================================================"
-
+declare -g SHELL_CLI_HANDLER_HELP_COLUMNS="100"
+declare -g SHELL_CLI_HANDLER_HELP_SEPARATOR_CHAR="="
+declare -g SHELL_CLI_HANDLER_HELP_SEPARATOR=""
 
 
 
@@ -24,182 +25,320 @@ declare -g SHELL_CLI_HANDLER_HELP_SEPARATOR="===================================
 # Error & Panic Natures:
 #   - Return Errors: None. Pure structural routing interceptor routine.
 shell_cli_handler_help() {
-  if [ "${SHELL_CLI_RESOURCE_TREE}" = "." ] || [ "${SHELL_CLI_RESOURCE_TREE}" = "${SHELL_CLI_MAIN_CMD_NAME}" ]; then
-    shell_cli_handler_help_global
-  else
-    shell_cli_handler_help_contextual
+  local currentCols="${COLUMNS:-80}"
+  if [ "${currentCols}" -lt "${SHELL_CLI_HANDLER_HELP_COLUMNS}" ] && [ "${currentCols}" -gt 20 ]; then
+    SHELL_CLI_HANDLER_HELP_COLUMNS="${currentCols}"
   fi
+
+  for ((i=0; i<SHELL_CLI_HANDLER_HELP_COLUMNS; i++)); do
+    SHELL_CLI_HANDLER_HELP_SEPARATOR+="${SHELL_CLI_HANDLER_HELP_SEPARATOR_CHAR}"
+  done
+
+
+  _shell_cli_handler_help_render_header
+  _shell_cli_handler_help_render_usage
+  _shell_cli_handler_help_render_global_flags
+  _shell_cli_handler_help_render_subcmd_options
+  _shell_cli_handler_help_render_flags
 
   return 0
 }
 
 
+_shell_cli_handler_help_render_header() {
+  local cmdName="${SHELL_CLI_MAIN_CMD_NAME}"
+  local subCmdName="> ${SHELL_CLI_RESOURCE_TREE/ / > }"
+  local useCmdRegistry="${SHELL_CLI_RESOURCE_REGISTRY}"
+  if [ "${SHELL_CLI_RESOURCE_TREE}" = "." ]; then
+    useCmdRegistry="${SHELL_CLI_MAIN_CMD_REGISTRY}"
+    subCmdName=""
+  fi
 
-shell_cli_handler_help_render_header() {
-  local -n assocCmdRegistry="${SHELL_CLI_RESOURCE_REGISTRY}"
-  local cmdName="${assocCmdRegistry["cmd"]}"
+  local -n assocCmdRegistry="${useCmdRegistry}"
+  
   local cmdSummary="${assocCmdRegistry["summary"]}"
   local cmdDescription="${assocCmdRegistry["description"]}"
 
-  local isMainCmd="${1:-0}"
-  if [ "${2}" != "" ]; then
-    cmdName="${2}"
-  fi
-
-
-  if [ "${isMainCmd}" = "1" ]; then
-    echo "  ${cmdName} - ${cmdSummary}"
-  else
-    echo "COMMAND: ${cmdName}"
-    echo "SUMMARY: ${cmdSummary}"
-    if [ "${cmdDescription}" != "" ]; then
-      echo "DESCRIPTION:"
-      shell_cli_utils_string_wrap "${cmdDescription}" "120"
-    fi
+  #echo ""
+  echo "${SHELL_CLI_HANDLER_HELP_SEPARATOR}"
+  echo "# Shell CLI > Help > ${cmdName} ${subCmdName}"
+  echo ""
+  shell_cli_utils_string_wrap "${cmdSummary}" "${SHELL_CLI_HANDLER_HELP_COLUMNS}" "2" "2"
+  echo ""
+  if [ "${cmdDescription}" != "" ]; then
+    shell_cli_utils_string_wrap "${cmdDescription}" "${SHELL_CLI_HANDLER_HELP_COLUMNS}" "2" "2"
   fi
 }
+_shell_cli_handler_help_render_usage() {
+  local cmdName="${SHELL_CLI_MAIN_CMD_NAME}"
 
+  echo ""
+  echo "## Usage:"
+  if [ "${SHELL_CLI_RESOURCE_TREE}" = "." ]; then
+    echo "   ./${cmdName}.sh <action> [flags]"
+    echo "   ./${cmdName}.sh <resource> [<action>] [flags]"
+  else
+    echo "   ./${cmdName}.sh ${SHELL_CLI_RESOURCE_TREE} [<action>] [flags]"
+  fi
+}
+_shell_cli_handler_help_render_global_flags() {
+  local cmdName="${SHELL_CLI_MAIN_CMD_NAME}"
 
-shell_cli_handler_help_render_subcmd() {
-  local -n arrayMainRegistryOrder="${SHELL_CLI_MAIN_CMD_NAME}_RESOURCE_ORDER"
-  if [ "${#arrayMainRegistryOrder[@]}" = "0" ]; then
+  echo ""
+  echo "## Global System Flags:"
+  echo "   -h, --help            Display documentation and metadata definitions."
+  echo "   -itr, --interactive   Starts user interaction prompt mode."
+}
+_shell_cli_handler_help_render_subcmd_options() {
+  local useSubCmdType="Actions"
+  local useCmdRegistry="${SHELL_CLI_RESOURCE_REGISTRY}"
+  local useAssocCmdName="${SHELL_CLI_RESOURCE_REGISTRY_ACTION_ORDER}"
+  local useCmdResourcePath="${SHELL_CLI_RESOURCE_PATH}"
+
+  if [ "${SHELL_CLI_RESOURCE_TREE}" = "." ]; then
+    local useSubCmdType="Resources"
+    useCmdRegistry="${SHELL_CLI_MAIN_CMD_REGISTRY}"
+    useAssocCmdName="${SHELL_CLI_MAIN_CMD_REGISTRY_ORDER}"
+    useCmdResourcePath="${SHELL_CLI_MAIN_CMD_ROOT_PATH}/src"
+  fi
+
+  local -n arraySubCmdOrder="${useAssocCmdName}"
+  if [ "${#arraySubCmdOrder[@]}" = "0" ]; then
     return 0
   fi
 
-  echo "Available Operational Command Tree:"
+
+
+  local -a arraySubCmdName=()
+  local -a arraySubCmdSummary=()
+
   local subCmdName=""
-  local subCmdRegistryPrefix="${SHELL_CLI_RESOURCE_REGISTRY}"
-  for subCmdName in "${arrayMainRegistryOrder[@]}"; do
-    local -n subCmdFlagAssoc="${subCmdRegistryPrefix}_${subCmdName}"
-    printf "  %-20s %s\n" "${subCmdName}" "${subCmdFlagAssoc["summary"]}"
+  local subCmdSummary=""
+  local subCmdPath=""
+  local subCmdRegistry=""
+
+  local maxSubCmdNameLength="0"
+  for subCmdName in "${arraySubCmdOrder[@]}"; do
+    arraySubCmdName+=("${subCmdName}")
+    if [ "${#subCmdName}" -gt "${maxSubCmdNameLength}" ]; then
+      maxSubCmdNameLength="${#subCmdName}"
+    fi
+
+    subCmdPath="${useCmdResourcePath}/${subCmdName}/cmd.sh"
+    if [ ! -f "${subCmdPath}" ]; then
+      local nl=$'\n'
+      arraySubCmdSummary+=("Sub-Command definition not found.${nl}Missing file: '${subCmdPath}'.")
+      continue
+    fi
+
+
+    . "${subCmdPath}"
+    subCmdRegistry="${useCmdRegistry}_${subCmdName^^}"
+    shell_cli_preflight_check_command_registry "${subCmdRegistry}"
+    local s="$?"
+    local ref=""
+    if [ "${s}" = "1" ]; then
+      arraySubCmdSummary+=("Not found '${subCmdRegistry}' associative array (declare -A) in '${subCmdPath}'.")
+      continue
+    elif [ "${s}" = "2" ]; then
+      arraySubCmdSummary+=("Assoc '${subCmdRegistry}'  in '${subCmdPath}' missing one or more mandatory keys.")
+      continue
+    fi
+
+    ref="${subCmdRegistry}[summary]"
+    arraySubCmdSummary+=("${!ref}")
+  done
+
+
+
+  echo ""
+  echo "## Available ${useSubCmdType}:"
+  local i=""
+  local txtSubCmdName=""
+  local txtSubCmdInfo=""
+  
+  local txtSubCmdIndent="3"
+  local txtSubCmdSeparator="3"
+  local txtSubCmdSpace="0"
+  (( txtSubCmdSpace = txtSubCmdIndent + maxSubCmdNameLength + txtSubCmdSeparator))
+
+  local lastLineI="${#arraySubCmdOrder[@]}"
+  (( lastLineI = lastLineI - 1 ))
+
+  for i in "${!arraySubCmdOrder[@]}"; do
+    subCmdName="${arraySubCmdOrder["${i}"]}"
+    subCmdSummary="${arraySubCmdSummary["${i}"]}"
+
+    txtSubCmdName=$(printf "%-${maxSubCmdNameLength}s" "${subCmdName}")
+    txtSubCmdInfo="${txtSubCmdName}   ${subCmdSummary}"
+
+    shell_cli_utils_string_wrap "${txtSubCmdInfo}" "${SHELL_CLI_HANDLER_HELP_COLUMNS}" "${txtSubCmdIndent}" "${txtSubCmdSpace}"
+    if [ "${SHELL_CLI_UTILS_STRING_WRAP_LINES}" -ge "2" ] && [ "${i}" != "${lastLineI}" ]; then
+      echo ""
+    fi
   done
 }
-
-
-shell_cli_handler_help_global() {
-  local cmdName="${SHELL_CLI_MAIN_CMD_NAME}"
-
-  echo ""
-  echo "${SHELL_CLI_HANDLER_HELP_SEPARATOR}"
-  shell_cli_handler_help_render_header "1"
-  echo "${SHELL_CLI_HANDLER_HELP_SEPARATOR}"
-
-  echo ""
-  echo "Usage:"
-  echo "  ./${cmdName}.sh <action> [flags]"
-  echo "  ./${cmdName}.sh <resource> <action> [flags]"
-
-  echo ""
-  echo "Global System Flags:"
-  echo "  -h, --help          Display documentation and metadata definitions."
-  echo "  -itr, --interactive Starts user interaction prompt mode."
-
-  echo ""
-  shell_cli_handler_help_render_subcmd
-  echo "${SHELL_CLI_HANDLER_HELP_SEPARATOR}"
-
-  return 0
-}
-
-
-shell_cli_handler_help_contextual() {
-  local cmdName="${SHELL_CLI_MAIN_CMD_NAME}"
-  local cmdTree="${SHELL_CLI_RESOURCE_TREE}"
-
-
-  echo ""
-  echo "${SHELL_CLI_HANDLER_HELP_SEPARATOR}"
-  shell_cli_handler_help_render_header "0" "${cmdName} ${cmdTree}"
-  echo "${SHELL_CLI_HANDLER_HELP_SEPARATOR}"
-
-
-  local -n arrayCmdFlagOrder="${SHELL_CLI_RESOURCE_REGISTRY_FLAG_ORDER}"
-  if [ "${#arrayCmdFlagOrder[@]}" = "0" ]; then
+_shell_cli_handler_help_render_flags() {
+  if [ "${SHELL_CLI_RESOURCE_TREE}" = "." ]; then
     echo ""
-    echo "This operational command option does not register or mandate any parameter flags."
+    return 0
+  fi
+
+  local useCmdFlagOrder="${SHELL_CLI_RESOURCE_REGISTRY_FLAG_ORDER}"
+  local -n arrayCmdFlagOrder="${useCmdFlagOrder}"
+
+
+  echo ""
+  echo "## Command Parameter Flags:"
+  if [ "${#arrayCmdFlagOrder[@]}" = "0" ]; then
+    echo "   This command has no flag options."
+    echo ""
     echo "${SHELL_CLI_HANDLER_HELP_SEPARATOR}"
+    echo ""
     return 0
   fi
 
 
-  echo ""
-  echo "Command Parameter Flags (Evaluated in strict checklist sequence):"
-  echo ""
+  local arraySubCmdFlagNameMaxLength="0"
+  local -a arraySubCmdFlagName=()
+
+  local -a arraySubCmdFlagType=()
+  local -a arraySubCmdFlagMode=()
+  local -a arraySubCmdFlagDefault=()
+  local -a arraySubCmdFlagDescription=()
+  local -a arraySubCmdFlagConstraints=()
 
   local flagName=""
   for flagName in "${arrayCmdFlagOrder[@]}"; do
-    local -n flagRules="${SHELL_CLI_RESOURCE_FLAG_FAMILY}_${flagName}"
-    local flagShort="${flagRules["short"]}"
-    local flagLong="${flagRules["long"]}"
-    local flagDescription="${flagRules["description"]}"
-    local flagType="${flagRules["type"]}"
-    
-    local flagRequired="${flagRules["required"]}"
-    local flagDefault="${flagRules["default"]}"
+    local -n assocFlagRules="${SHELL_CLI_RESOURCE_FLAG_FAMILY}_${flagName}"
 
-    local flagMin="${flagRules["min"]}"
-    local flagMax="${flagRules["max"]}"
+    #
+    # Get flags
+    # long      = 2 + 16 = 18  chars
+    # short     = 1 +  3 =  4  chars
+    # separator = 2      =  2  chars ( ', ' )
+    # max length         = 24  chars
+    local flagLong="${assocFlagRules["long"]}"
+    local flagShort="${assocFlagRules["short"]}"
 
-    local flagIsArray="${flagRules["is_array"]}"
-    local flagIsAssoc="${flagRules["is_ssoc"]}"
-
-
-    # Assemble flags
-    local strShowFlags="    --${flagLong}"
+    local strShowFlags="--${flagLong}"
     if [ "${flagShort}" != "" ]; then
       strShowFlags="-${flagShort}, --${flagLong}"
     fi
+    arraySubCmdFlagName+=("${strShowFlags}")
 
-    # Build the parameter status indicators (Required vs Optional)
-    local metaStatus="[optional]"
-    if [ "${flagRequired}" = "1" ]; then
-      metaStatus="[REQUIRED]"
-    fi
-
-    # Extract array and assoc structural identifiers for high-density typing info
-    if [ "${flagIsArray}" = "1" ]; then
-      flagType="array<${flagType}>"
-    elif [ "${flagIsAssoc}" = "1" ]; then
-      flagType="map<string,${flagType}>"
-    fi
-
-    # Render the primary compiled specification parameter line block
-    printf "  %-25s %-18s %s\n" "${strShowFlags}" "${flagType}" "${metaStatus}"
-
-
-
-    # Render the human-centric functional usage description text statement
-    if [ "${flagDescription}" = "" ]; then
-      echo -n "      Description: "
-      shell_cli_utils_string_wrap "${flagDescription}" "100" | sed '2,$s/^/                   /'
+    if [ "${#strShowFlags}" -gt "${arraySubCmdFlagNameMaxLength}" ]; then
+      arraySubCmdFlagNameMaxLength="${#strShowFlags}"
     fi
 
 
-
-    # Render optional default fallback mapping hints if configured in the matrix
-    if [ "${flagRequired}" = "0" ] && [ "${flagDefault}" != "" ]; then
-      echo "      Default: \"${flagDefault}\""
+    #
+    # Get type
+    # max type length       = 12 chars ( 'relativepath' )
+    # lt; gt symbols        =  2 chars ( '<', '>' )
+    #
+    # max array type length = 25 chars ( 'map<string, relativepath>' )
+    #
+    # max length            = 25 chars
+    local strShowType="${assocFlagRules["type"]}"
+    local strShowArrayType=""
+    if [ "${assocFlagRules["is_array"]}" = "1" ] || [ "${assocFlagRules["is_array"]}" = "true" ]; then
+      strShowType="<${strShowType}>"
+      strShowArrayType="array"
+    elif [ "${assocFlagRules["is_ssoc"]}" = "1" ] || [ "${assocFlagRules["is_ssoc"]}" = "true" ]; then
+      strShowType="<string, ${strShowType}>"
+      strShowArrayType="map"
+    else
+      strShowType="<${strShowType}>"
     fi
+    arraySubCmdFlagType+=("${strShowArrayType}${strShowType}")
 
 
+    #
+    # Get mode (10)
+    # max type length = 10 chars ( '[REQUIRED]' )
+    local strShowMode=""
+    if [ "${assocFlagRules["required"]}" = "1" ] || [ "${assocFlagRules["required"]}" = "true" ]; then
+      strShowMode="[REQUIRED]"
+    fi
+    arraySubCmdFlagMode+=("${strShowMode}")
 
-    # Render optional validation limits (min/max boundaries)
+
+    #
+    # Get default
+    arraySubCmdFlagDefault+=("${assocFlagRules["default"]}")
+
+    #
+    # Get description
+    arraySubCmdFlagDescription+=("${assocFlagRules["description"]}")
+
+    #
+    # Get Min/Max Constraints
+    local flagMin="${assocFlagRules["min"]}"
+    local flagMax="${assocFlagRules["max"]}"
+    local strShowConstraints=""
     if [ "${flagMin}" != "" ] || [ "${flagMax}" != "" ]; then
-      local limits=""
+      local constraints=""
       
       if [ "${flagMin}" != "" ]; then
-        limits+="min: ${flagMin}, "
+        constraints+="min: ${flagMin}, "
       fi
       if [ "${flagMax}" != "" ]; then
-        limits+="max: ${flagMax}, "
+        constraints+="max: ${flagMax}, "
       fi
+      strShowConstraints="${constraints%, }"
 
-      limits="${limits%, }"
-      echo "      Constraints: [${limits}]"
     fi
+    arraySubCmdFlagConstraints+=("${strShowConstraints}")
   done
-  
+
+
+
+  local i=""
+  local lastLineI="${#arrayCmdFlagOrder[@]}"
+  (( lastLineI = lastLineI - 1 ))
+
+  for i in "${!arrayCmdFlagOrder[@]}"; do
+    local strFlagName=$(printf "%${arraySubCmdFlagNameMaxLength}s" "${arraySubCmdFlagName["${i}"]}")
+    local strFlagType="${arraySubCmdFlagType["${i}"]}"
+    local strFlagMode="${arraySubCmdFlagMode["${i}"]}"
+    local strFlagDefault="${arraySubCmdFlagDefault["${i}"]}"
+    local strFlagConstraints="${arraySubCmdFlagConstraints["${i}"]}"
+    local strFlagDescription="${arraySubCmdFlagDescription["${i}"]}"
+
+    local useIndent="${arraySubCmdFlagNameMaxLength}"
+    (( useIndent = useIndent + 6))
+
+    #
+    # Mount flag title
+    # Identation  =  3 chars
+    #   Name      = 24 chars
+    # Separator   =  3 chars
+    #   Type      = 25 chars
+    # Separator   =  2 chars
+    #   Mode      = 10 chars
+    # max length  = 67 chars
+    local strFlagTitle="${strFlagName}   ${strFlagType}  ${strFlagMode}"
+    shell_cli_utils_string_wrap "${strFlagTitle}" "${SHELL_CLI_HANDLER_HELP_COLUMNS}" "3" "3"
+
+    if [ "${strFlagDefault}" != "" ]; then
+      shell_cli_utils_string_wrap "Default='${strFlagDefault}'" "${SHELL_CLI_HANDLER_HELP_COLUMNS}" "${useIndent}" "${useIndent}"
+    fi
+
+    if [ "${strFlagConstraints}" != "" ]; then
+      shell_cli_utils_string_wrap "Constraints='${strFlagConstraints}'" "${SHELL_CLI_HANDLER_HELP_COLUMNS}" "${useIndent}" "${useIndent}"
+    fi
+
+    if [ "${strFlagDescription}" != "" ]; then
+      shell_cli_utils_string_wrap "${strFlagDescription}" "${SHELL_CLI_HANDLER_HELP_COLUMNS}" "${useIndent}" "${useIndent}"
+      if [ "${i}" != "${lastLineI}" ]; then
+        echo ""
+      fi
+    fi
+    
+  done
+
+
   echo ""
-  echo "${SHELL_CLI_HANDLER_HELP_SEPARATOR}"
-  return 0
+  return 
 }

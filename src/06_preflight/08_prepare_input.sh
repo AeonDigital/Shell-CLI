@@ -76,6 +76,7 @@ shell_cli_preflight_prepare_input() {
   local currentFlagK=""
   local currentFlagKey=""
   local currentFlagValue=""
+  local currentFlagAssocName=""
   for currentFlagRaw in "${SHELL_CLI_INPUT_RAW_FLAG[@]}"; do
     
     # If the flag is defined with a value, it splits each item into a key-value pair; 
@@ -110,14 +111,24 @@ shell_cli_preflight_prepare_input() {
 
     #
     # Checks for duplicate flags.
-    if [ -n "${SHELL_CLI_INPUT_RAW_FLAG_ASSOC["${currentFlagKey}"]+exists}" ]; then
+    currentFlagAssocName="${SHELL_CLI_INPUT_RAW_FLAG_ASSOC["${currentFlagKey}"]}"
+    if [ "${currentFlagAssocName}" = "" ]; then
       echo "[ x ] Duplicated Error :: Parameter '${currentFlagK}' was provided multiple times."
+      return 1
+    fi
+
+    #
+    # Validate flag value
+    shell_cli_process_flag_value "${currentFlagAssocName}" "${currentFlagValue}"
+    if [ "$?" != "0" ]; then
+      echo "${SHELL_CLI_PROCESS_FLAG_VALUE_ERR_MESSAGE}"
       return 1
     fi
 
     SHELL_CLI_INPUT_RAW_FLAG_ORDER+=("${currentFlagKey}")
     SHELL_CLI_INPUT_RAW_FLAG_ASSOC["${currentFlagKey}"]="${currentFlagValue}"
   done
+
 
   return 0
 }

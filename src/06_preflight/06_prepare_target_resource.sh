@@ -67,6 +67,7 @@ shell_cli_preflight_prepare_target_resource() {
   local resourceCmdTree="${resourceName}"
   local resourceRegistry="SHELL_CLI_CMD_${SHELL_CLI_MAIN_CMD_NAME^^}_${resourceName^^}"
   
+  local resourceRegistryActionOrder=""
   local resourceRegistryFlagOrder=""
   local resourceFunctionAction=""
   local resourceFunctionValidate=""
@@ -94,6 +95,7 @@ shell_cli_preflight_prepare_target_resource() {
       resourceRegistry+="_${arg^^}"
     fi
   done
+  resourceRegistryActionOrder="${resourceRegistry}_ACTION_ORDER"
   resourceRegistryFlagOrder="${resourceRegistry}_FLAG_ORDER"
   resourceFunctionAction="${resourceRegistry,,}_action"
   resourceFunctionValidate="${resourceRegistry,,}_validate"
@@ -111,16 +113,14 @@ shell_cli_preflight_prepare_target_resource() {
   fi
 
   #
-  # 3. checks for the existence of the 'flags.sh' file for the selected resource..
-  if [ ! -f "${resourcePath}/flags.sh" ]; then
+  # 3. checks for the existence of the 'cmd.sh' file for the selected resource.
+  if [ ! -f "${resourcePath}/cmd.sh" ]; then
     echo "${errTitle}"
-    echo "${errIndent}Definition flags not found for > '${mainCmdName} ${resourceCmdTree}'."
-    echo "${errIndent}Missing file '${resourcePath}/flags.sh'."
+    echo "${errIndent}Definition resource not found for > '${mainCmdName} ${resourceCmdTree}'."
+    echo "${errIndent}Missing file '${resourcePath}/cmd.sh'."
     return 1
   fi
-  . "${resourcePath}/flags.sh"
-
-
+  . "${resourcePath}/cmd.sh"
 
   #
   # 4. Source and validates the registration of the main command
@@ -137,25 +137,43 @@ shell_cli_preflight_prepare_target_resource() {
     return 1
   fi
 
+  #
+  # 5. validates the existence of the sub-resource order register array
+  if ! shell_cli_utils_array_is_indexed "${resourceRegistryActionOrder}"; then
+    echo "${errTitle}"
+    echo "${errIndent}Not found '${resourceRegistryActionOrder}' indexed array (declare -a)."
+    return 1
+  fi
+
+
+
 
 
   #
-  # 5. validates the existence of the sub-command register array
+  # 6. checks for the existence of the 'flags.sh' file for the selected resource..
+  if [ ! -f "${resourcePath}/flags.sh" ]; then
+    echo "${errTitle}"
+    echo "${errIndent}Definition flags not found for > '${mainCmdName} ${resourceCmdTree}'."
+    echo "${errIndent}Missing file '${resourcePath}/flags.sh'."
+    return 1
+  fi
+  . "${resourcePath}/flags.sh"
+
+  #
+  # 7. validates the existence of the sub-command register array
   if ! shell_cli_utils_array_is_indexed "${resourceRegistryFlagOrder}"; then
     echo "${errTitle}"
     echo "${errIndent}Not found '${resourceRegistryFlagOrder}' indexed array (declare -a)."
     return 1
   fi
 
-
-
   #
-  # 6. checks whether the flags defined in the ordenador array have their respective definitions
+  # 8. checks whether the flags defined in the ordenador array have their respective definitions
   local -n arrayResourceRegistryOrder="${resourceRegistryFlagOrder}"
   if [ "${#arrayResourceRegistryOrder[@]}" -gt "0" ]; then
     local flagName=""
     local flagAssocName=""
-    
+
     for flagName in "${arrayResourceRegistryOrder[@]}"; do
       flagAssocName="${resourceRegistry}_FLAG_${flagName,,}"
       if ! shell_cli_utils_array_is_assoc "${flagAssocName}"; then
@@ -168,10 +186,8 @@ shell_cli_preflight_prepare_target_resource() {
   fi
   unset -n arrayResourceRegistryOrder
 
-
-
   #
-  # 7. checks for the existence of the 'action.sh' file for the selected resource..
+  # 9. checks for the existence of the 'action.sh' file for the selected resource..
   if [ ! -f "${resourcePath}/action.sh" ]; then
     echo "${errTitle}"
     echo "${errIndent}Entrypoint not found for > '${mainCmdName} ${resourceCmdTree}'."
@@ -180,10 +196,8 @@ shell_cli_preflight_prepare_target_resource() {
   fi
   . "${resourcePath}/action.sh"
 
-
-
   #
-  # 8. Checks if the command's main function actually exists.
+  # 10. Checks if the command's main function actually exists.
   if ! declare -f "${resourceFunctionAction}" >/dev/null; then
     echo "${errTitle}"
     echo "${errIndent}Main function '${resourceFunctionAction}' is missing."
@@ -191,10 +205,13 @@ shell_cli_preflight_prepare_target_resource() {
   fi
 
   #
-  # 9. Check if the command's special validation function is present.
+  # 11. Check if the command's special validation function is present.
   if ! declare -f "${resourceFunctionValidate}" >/dev/null; then
     resourceFunctionValidate=""
   fi
+
+
+
 
 
   #
@@ -203,6 +220,7 @@ shell_cli_preflight_prepare_target_resource() {
   SHELL_CLI_RESOURCE_NAME="${resourceName}"
   SHELL_CLI_RESOURCE_TREE="${resourceCmdTree}"
   SHELL_CLI_RESOURCE_REGISTRY="${resourceRegistry}"
+  SHELL_CLI_RESOURCE_REGISTRY_ACTION_ORDER="${resourceRegistryActionOrder}"
   SHELL_CLI_RESOURCE_REGISTRY_FLAG_ORDER="${resourceRegistryFlagOrder}"
   SHELL_CLI_RESOURCE_FUNCTION_ACTION="${resourceFunctionAction}"
   SHELL_CLI_RESOURCE_FUNCTION_VALIDATE="${resourceFunctionValidate}"

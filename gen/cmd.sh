@@ -10,7 +10,7 @@
 declare -gA SHELL_CLI_CMD_GEN=()
 SHELL_CLI_CMD_GEN["cmd"]="gen"
 SHELL_CLI_CMD_GEN["summary"]="Shell CLI implementation generator."
-SHELL_CLI_CMD_GEN["descriptione"]="Allows creating and editing projects implemented with the Shell-CLI."
+SHELL_CLI_CMD_GEN["description"]="Allows creating and editing projects implemented with the Shell-CLI."
 
 
 # registers the subcommands available for use and their order of presentation in 
