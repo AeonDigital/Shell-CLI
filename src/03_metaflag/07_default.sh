@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+#
+# METAFLAG 'default'
+# Canonical definition scheme for this flag.
 declare -gA METAFLAG_default=()
 METAFLAG_default["long"]="default"
 METAFLAG_default["short"]=""
@@ -30,23 +33,15 @@ METAFLAG_default["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_default - validate metaflag 'default'.
+# shell_cli_metaflag_property_validate_default - validate structural integrity of this metaflag.
 #
-# Arguments:
-# - fval: value (normalized and validated by type).
-# - fassoc: name of associative array with all flag definitions.
+# Arguments
+# - fval: value (normalized and validated by type). 
+# - fassoc: Name of the associative array with flag definition.
 #
-# Behavior:
-# - Ensures that the 'default' property is consistent with other flag rules.
-# - Accepts empty values (since 'default' is optional).
-# - If a default value is provided while 'required=true', validation fails,
-#   because a required flag cannot have a fallback.
-# - On failure, stores an error message in
-#   'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'.
-#
-# Returns:
-# - 0: validation success (value is empty or consistent with 'required').
-# - 1: validation failure (default provided while required=true).
+# Returns
+# - 0: Success.
+# - 1: Failure.
 shell_cli_metaflag_property_validate_default() {
   local fval="${1}"
   local fassoc="${2}"
@@ -69,22 +64,16 @@ shell_cli_metaflag_property_validate_default() {
 
 
 
-# shell_cli_metaflag_check_input_default - check input for metaflag 'default'.
+# shell_cli_metaflag_check_input_default - runtime input check placeholder for this metaflag.
 #
-# Arguments:
+# Arguments
 # - inputVal: value provided by user input.
 # - typeVal: type of value.
-# - ruleVal: current value of this property (default assignment).
+# - ruleVal: current value of this property (boolean indicator).
 #
-# Behavior:
-# - Applies the default value if the user omitted the flag.
-# - If 'inputVal' is empty and 'ruleVal' is non-empty, assigns 'ruleVal'
-#   as the new value.
-# - Stores the new value in 'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'.
-# - Clears any previous error message.
-#
-# Returns:
-# - 0: always valid (default applied if needed).
+# Returns
+# - 0: Success.
+# - 1: Failure.
 shell_cli_metaflag_check_input_default() {
   local inputVal="${1}"
   local typeVal="${2}"

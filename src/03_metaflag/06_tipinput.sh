@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+#
+# METAFLAG 'tipinput'
+# Canonical definition scheme for this flag.
 declare -gA METAFLAG_tipinput=()
 METAFLAG_tipinput["long"]="tipinput"
 METAFLAG_tipinput["short"]=""
@@ -30,20 +33,15 @@ METAFLAG_tipinput["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_tipinput - validate metaflag 'tipinput'.
+# shell_cli_metaflag_property_validate_tipinput - validate structural integrity of this metaflag.
 #
-# Arguments:
-# - fval: value (normalized and validated by type).
-# - fassoc: name of associative array with all flag definitions.
+# Arguments
+# - fval: value (normalized and validated by type). 
+# - fassoc: Name of the associative array with flag definition.
 #
-# Behavior:
-# - Always accepts the value; no structural or semantic validation is applied.
-# - This property is optional and can be empty.
-# - Used only as a descriptive phrase to guide interactive prompts.
-# - Clears any previous error message before returning.
-#
-# Returns:
-# - 0: always valid.
+# Returns
+# - 0: Success.
+# - 1: Failure.
 shell_cli_metaflag_property_validate_tipinput() {
   SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE=""
   return 0
@@ -51,23 +49,16 @@ shell_cli_metaflag_property_validate_tipinput() {
 
 
 
-# shell_cli_metaflag_check_input_tipinput - check input for metaflag 'tipinput'.
+# shell_cli_metaflag_check_input_tipinput - runtime input check placeholder for this metaflag.
 #
-# Arguments:
+# Arguments
 # - inputVal: value provided by user input.
 # - typeVal: type of value.
-# - ruleVal: current value of this property.
+# - ruleVal: current value of this property (boolean indicator).
 #
-# Behavior:
-# - This function is a placeholder only; the 'tipinput' metaflag does not
-#   accept user input at runtime.
-# - If invoked, it always fails with an error message indicating that
-#   validation is inapplicable.
-# - Stores the error message in 'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'.
-# - Stores a sentinel value "!ERR" in 'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'.
-#
-# Returns:
-# - 1: always invalid (inapplicable check).
+# Returns
+# - 0: Success.
+# - 1: Failure.
 shell_cli_metaflag_check_input_tipinput() {
   local inputVal="${1}"
   local typeVal="${2}"

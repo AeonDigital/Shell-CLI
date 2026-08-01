@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+#
+# METAFLAG 'transform'
+# Canonical definition scheme for this flag.
 declare -gA METAFLAG_transform=()
 METAFLAG_transform["long"]="transform"
 METAFLAG_transform["short"]=""
@@ -30,25 +33,15 @@ METAFLAG_transform["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_transform - validate metaflag 'transform'.
+# shell_cli_metaflag_property_validate_transform - validate structural integrity of this metaflag.
 #
-# Arguments:
-# - fval: value (normalized and validated by type).
-# - fassoc: name of associative array with all flag definitions.
+# Arguments
+# - fval: value (normalized and validated by type). 
+# - fassoc: Name of the associative array with flag definition.
 #
-# Behavior:
-# - Ensures that the 'transform' property points to a valid indexed array of functions.
-# - Accepts empty values (since 'transform' is optional).
-# - Uses 'shell_cli_utils_array_is_indexed' to confirm that the pointer refers to
-#   an indexed array (declare -a).
-# - Iterates through the array and checks that each listed function is declared
-#   in the current shell environment.
-# - On failure, stores an error message in
-#   'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'.
-#
-# Returns:
-# - 0: validation success (array exists and all functions are declared).
-# - 1: validation failure (not an indexed array or function missing).
+# Returns
+# - 0: Success.
+# - 1: Failure.
 shell_cli_metaflag_property_validate_transform() {
   local fval="${1}"
   local fassoc="${2}"
@@ -77,27 +70,16 @@ shell_cli_metaflag_property_validate_transform() {
 
 
 
-# shell_cli_metaflag_check_input_transform - check input for metaflag 'transform'.
+# shell_cli_metaflag_check_input_transform - runtime input check placeholder for this metaflag.
 #
-# Arguments:
-# - inputVal: value provided by user input (already validated).
+# Arguments
+# - inputVal: value provided by user input.
 # - typeVal: type of value.
-# - ruleVal: current value of this property (pointer to indexed array of functions).
+# - ruleVal: current value of this property (boolean indicator).
 #
-# Behavior:
-# - Executes each transformation function listed in the 'transform' array sequentially.
-# - Each function is called with the current value as its sole argument.
-# - Captures the function's printed output as the new transformed value.
-# - Checks the function's exit code:
-#   * 0: success = updates the value and continues to the next function.
-#   * 1: failure = stops immediately, stores an error message in
-#     'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE', and returns error code 1.
-# - If all functions succeed, stores the final transformed value in
-#   'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'.
-#
-# Returns:
-# - 0: transformation success (all functions applied).
-# - 1: transformation failure (at least one function failed).
+# Returns
+# - 0: Success.
+# - 1: Failure.
 shell_cli_metaflag_check_input_transform() {
   local inputVal="${1}"
   local typeVal="${2}"

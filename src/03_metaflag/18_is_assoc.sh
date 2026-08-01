@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+#
+# METAFLAG 'is_assoc'
+# Canonical definition scheme for this flag.
 declare -gA METAFLAG_is_assoc=()
 METAFLAG_is_assoc["long"]="is_assoc"
 METAFLAG_is_assoc["short"]=""
@@ -30,22 +33,15 @@ METAFLAG_is_assoc["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_is_assoc - validate metaflag 'is_assoc'.
+# shell_cli_metaflag_property_validate_is_assoc - validate structural integrity of this metaflag.
 #
-# Arguments:
-# - fval: value (normalized and validated by type).
-# - fassoc: name of associative array with all flag definitions.
+# Arguments
+# - fval: value (normalized and validated by type). 
+# - fassoc: Name of the associative array with flag definition.
 #
-# Behavior:
-# - Ensures that the 'is_assoc' property is explicitly defined (cannot be empty).
-# - Checks consistency with 'is_array':
-#   * If 'is_assoc=true' and 'is_array=true' simultaneously, validation fails.
-# - On failure, stores an error message in
-#   'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'.
-#
-# Returns:
-# - 0: validation success (value non-empty and consistent with 'is_array').
-# - 1: validation failure (empty or conflicting configuration).
+# Returns
+# - 0: Success.
+# - 1: Failure.
 shell_cli_metaflag_property_validate_is_assoc() {
   local fval="${1}"
   local fassoc="${2}"
@@ -69,33 +65,16 @@ shell_cli_metaflag_property_validate_is_assoc() {
 
 
 
-# shell_cli_metaflag_check_input_is_assoc - check input for metaflag 'is_assoc'.
+# shell_cli_metaflag_check_input_is_assoc - runtime input check placeholder for this metaflag.
 #
-# Arguments:
+# Arguments
 # - inputVal: value provided by user input.
 # - typeVal: type of value.
 # - ruleVal: current value of this property (boolean indicator).
 #
-# Behavior:
-# - Validates whether the input should be treated as an associative map.
-# - If 'ruleVal=0' (false) or input is empty, no validation is applied.
-# - If input is already an associative array, passes through unchanged and
-#   stores its name in SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE.
-# - Otherwise, attempts to parse the input string as a serialized JSON‑like
-#   structure using 'shell_cli_parse_sjson_to_assoc'.
-# - On parse failure, stores the parser's error message in
-#   SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE.
-# - On success:
-#   * Stores the name of the internal parsed assoc object
-#     ('SHELL_CLI_PARSE_SJSON_TO_ASSOC') in SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE.
-#   * Stores the deserialized key‑value pairs in
-#     SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ASSOC.
-#   * Preserves the declaration order of keys in
-#     SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ASSOC_ORDER.
-#
-# Returns:
-# - 0: validation success (input accepted as associative map).
-# - 1: validation failure (input not compatible with associative format).
+# Returns
+# - 0: Success.
+# - 1: Failure.
 shell_cli_metaflag_check_input_is_assoc() {
   local inputVal="${1}"
   local typeVal="${2}"

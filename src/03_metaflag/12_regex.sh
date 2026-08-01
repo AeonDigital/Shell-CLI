@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+#
+# METAFLAG 'regex'
+# Canonical definition scheme for this flag.
 declare -gA METAFLAG_regex=()
 METAFLAG_regex["long"]="regex"
 METAFLAG_regex["short"]=""
@@ -30,22 +33,15 @@ METAFLAG_regex["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_regex - validate metaflag 'regex'.
+# shell_cli_metaflag_property_validate_regex - validate structural integrity of this metaflag.
 #
-# Arguments:
-# - fval: value (normalized and validated by type).
-# - fassoc: name of associative array with all flag definitions.
+# Arguments
+# - fval: value (normalized and validated by type). 
+# - fassoc: Name of the associative array with flag definition.
 #
-# Behavior:
-# - Ensures that the 'regex' property, if defined, is a valid regular expression.
-# - Accepts empty values (since 'regex' is optional).
-# - Performs a test match against an empty string to verify regex syntax.
-# - If the regex is invalid, stores an error message in
-#   'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'.
-#
-# Returns:
-# - 0: validation success (regex is empty or valid).
-# - 1: validation failure (regex syntax invalid).
+# Returns
+# - 0: Success.
+# - 1: Failure.
 shell_cli_metaflag_property_validate_regex() {
   local fval="${1}"
   local fassoc="${2}"
@@ -66,24 +62,16 @@ shell_cli_metaflag_property_validate_regex() {
 
 
 
-# shell_cli_metaflag_check_input_regex - check input for metaflag 'regex'.
+# shell_cli_metaflag_check_input_regex - runtime input check placeholder for this metaflag.
 #
-# Arguments:
-# - inputVal: value provided by user input (normalized and validated by type).
+# Arguments
+# - inputVal: value provided by user input.
 # - typeVal: type of value.
-# - ruleVal: current value of this property (regex pattern).
+# - ruleVal: current value of this property (boolean indicator).
 #
-# Behavior:
-# - Validates whether the user-provided input matches the regex pattern.
-# - If 'ruleVal' is empty, no validation is applied.
-# - If input does not match the regex, stores an error message in
-#   'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'.
-# - On success, stores the validated input in
-#   'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'.
-#
-# Returns:
-# - 0: validation success (input matches regex or regex not defined).
-# - 1: validation failure (input does not match regex).
+# Returns
+# - 0: Success.
+# - 1: Failure.
 shell_cli_metaflag_check_input_regex() {
   local inputVal="${1}"
   local typeVal="${2}"

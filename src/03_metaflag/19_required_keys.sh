@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+#
+# METAFLAG 'required_keys'
+# Canonical definition scheme for this flag.
 declare -gA METAFLAG_required_keys=()
 METAFLAG_required_keys["long"]="required_keys"
 METAFLAG_required_keys["short"]=""
@@ -30,23 +33,15 @@ METAFLAG_required_keys["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_required_keys - validate metaflag 'required_keys'.
+# shell_cli_metaflag_property_validate_required_keys - validate structural integrity of this metaflag.
 #
-# Arguments:
-# - fval: value (normalized and validated by type).
-# - fassoc: name of associative array with all flag definitions.
+# Arguments
+# - fval: value (normalized and validated by type). 
+# - fassoc: Name of the associative array with flag definition.
 #
-# Behavior:
-# - Ensures that the 'required_keys' property is only defined when 'is_assoc=true'.
-# - If 'is_assoc=false' and 'required_keys' is set, validation fails.
-# - If 'is_assoc=true' and 'required_keys' is set, verifies that the pointer
-#   refers to an indexed array (declare -a).
-# - On failure, stores an error message in
-#   'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'.
-#
-# Returns:
-# - 0: validation success (property consistent with is_assoc and array type).
-# - 1: validation failure (defined for non-assoc flag or not an indexed array).
+# Returns
+# - 0: Success.
+# - 1: Failure.
 shell_cli_metaflag_property_validate_required_keys() {
   local fval="${1}"
   local fassoc="${2}"
@@ -74,28 +69,16 @@ shell_cli_metaflag_property_validate_required_keys() {
 
 
 
-# shell_cli_metaflag_check_input_required_keys - check input for metaflag 'required_keys'.
+# shell_cli_metaflag_check_input_required_keys - runtime input check placeholder for this metaflag.
 #
-# Arguments:
-# - inputVal: associative array name containing values provided by user input.
+# Arguments
+# - inputVal: value provided by user input.
 # - typeVal: type of value.
-# - ruleVal: current value of this property (pointer to indexed array of required keys).
+# - ruleVal: current value of this property (boolean indicator).
 #
-# Behavior:
-# - Validates whether the input associative array contains all required keys.
-# - If 'ruleVal=0' (false) or input is empty, no validation is applied.
-# - Otherwise, dereferences both the associative array and the required keys array.
-# - Iterates through the required keys:
-#   * If a key is missing in the associative array, adds it to a list of lost keys.
-# - If any required keys are missing, validation fails:
-#   * Stores an error message listing the missing keys in
-#     'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'.
-#   * Returns error code 1.
-# - On success, the input associative array is accepted unchanged.
-#
-# Returns:
-# - 0: validation success (all required keys present or rule not enforced).
-# - 1: validation failure (one or more required keys missing).
+# Returns
+# - 0: Success.
+# - 1: Failure.
 shell_cli_metaflag_check_input_required_keys() {
   local inputVal="${1}"
   local typeVal="${2}"

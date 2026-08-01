@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+#
+# METAFLAG 'type'
+# Canonical definition scheme for this flag.
 declare -gA METAFLAG_type=()
 METAFLAG_type["long"]="type"
 METAFLAG_type["short"]=""
@@ -30,22 +33,15 @@ METAFLAG_type["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_type - validate metaflag 'type'.
+# shell_cli_metaflag_property_validate_type - validate structural integrity of this metaflag.
 #
-# Arguments:
-# - fval: value (normalized and validated by type).
-# - fassoc: name of associative array with all flag definitions.
+# Arguments
+# - fval: value (normalized and validated by type). 
+# - fassoc: Name of the associative array with flag definition.
 #
-# Behavior:
-# - Ensures that the type assigned to a flag is valid and supported.
-# - Rejects empty values (since 'type' is required).
-# - Checks if the provided type exists in the global registry 'SHELL_CLI_TYPE'.
-# - On failure, stores an error message in
-#   'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'.
-#
-# Returns:
-# - 0: validation success (value is a supported type).
-# - 1: validation failure (value is empty or not in SHELL_CLI_TYPE).
+# Returns
+# - 0: Success.
+# - 1: Failure.
 shell_cli_metaflag_property_validate_type() {
   local fval="${1}"
   local fassoc="${2}"
@@ -61,23 +57,16 @@ shell_cli_metaflag_property_validate_type() {
 
 
 
-# shell_cli_metaflag_check_input_type - check input for metaflag 'type'.
+# shell_cli_metaflag_check_input_type - runtime input check placeholder for this metaflag.
 #
-# Arguments:
+# Arguments
 # - inputVal: value provided by user input.
 # - typeVal: type of value.
-# - ruleVal: current value of this property.
+# - ruleVal: current value of this property (boolean indicator).
 #
-# Behavior:
-# - This function is a placeholder only; the 'type' metaflag does not accept
-#   user input at runtime.
-# - If invoked, it always fails with an error message indicating that
-#   validation is inapplicable.
-# - Stores the error message in 'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'.
-# - Stores a sentinel value "!ERR" in 'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'.
-#
-# Returns:
-# - 1: always invalid (inapplicable check).
+# Returns
+# - 0: Success.
+# - 1: Failure.
 shell_cli_metaflag_check_input_type() {
   local inputVal="${1}"
   local typeVal="${2}"

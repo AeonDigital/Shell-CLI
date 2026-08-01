@@ -1,30 +1,23 @@
 #!/usr/bin/env bash
 
-# shell_cli_metaflag_property_cross_validate_min_max - cross-validate metaflags 
-# 'min' and 'max'.
+# shell_cli_metaflag_property_cross_validate_min_max - Cross-validate 'min' and 'max' metaflag boundaries.
 #
-# Arguments:
-# - fval: value (normalized and validated by type).
-# - fassoc: name of associative array with all flag definitions.
+# Arguments
+# - fval: Normalized and type-validated input value.
+# - fassoc: Name of the associative array containing the flag definition properties.
 #
-# Behavior:
-# - Ensures logical consistency between 'min' and 'max' boundaries for a flag.
-# - If validation has already been performed, indicated by '__cross_min_max=1',
-#   the function exits successfully without repeating checks.
-# - When both 'min' and 'max' are defined:
-#   * int: verifies that min ≤ max.
-#   * float: verifies that min ≤ max using math utility for precision.
-#   * date/time/datetime: converts values to epoch timestamps and verifies
-#     that min ≤ max chronologically.
-#   * string/other: verifies that minimum length ≤ maximum length.
-# - On violation, stores an error message in
-#   'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'.
-# - On success, marks '__cross_min_max=1' in the flag definition to avoid
-#   redundant checks.
+# Global outputs
+# - SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE: Stores descriptive violation message on failure.
 #
-# Returns:
-# - 0: validation success (boundaries consistent or already validated).
-# - 1: validation failure (min exceeds max).
+# Notes
+# - Skips validation and returns 0 if '__cross_min_max=1' is already set in the flag definition.
+# - Evaluates boundaries based on data type: numeric comparison for 'int'/'float', chronological epoch 
+#   comparison for 'date'/'time'/'datetime', and length comparison for 'string' or other types.
+# - Mutates the input associative array by setting '__cross_min_max=1' upon successful validation to cache results.
+#
+# Returns
+# - 0: Success (boundaries are consistent or already validated).
+# - 1: Failure ('min' boundary or length exceeds 'max').
 shell_cli_metaflag_property_cross_validate_min_max() {
   local fassoc="${2}"
   local -n __assoc="${fassoc}"
@@ -87,29 +80,27 @@ shell_cli_metaflag_property_cross_validate_min_max() {
   return 0
 }
 
-# shell_cli_metaflag_property_cross_validate_min_array_max_array - cross-validate 
-# metaflags 'min_array' and 'max_array'.
+
+
+
+
+# shell_cli_metaflag_property_cross_validate_min_array_max_array - Cross-validate 'min_array' and 'max_array' boundaries.
 #
-# Arguments:
-# - fval: value (normalized and validated by type).
-# - fassoc: name of associative array with all flag definitions.
+# Arguments
+# - fval: Normalized and type-validated input value.
+# - fassoc: Name of the associative array containing the flag definition properties.
 #
-# Behavior:
-# - Ensures logical consistency between 'min_array' and 'max_array' boundaries
-#   when the flag is defined as an array.
-# - If validation has already been performed, indicated by 
-#   '__cross_min_array_max_array=1', the function exits successfully without 
-#   repeating checks.
-# - When 'is_array' is true and both 'min_array' and 'max_array' are defined:
-#   * Verifies that min_array ≤ max_array.
-#   * If min_array > max_array, validation fails and an error message is stored in
-#     'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'.
-# - On success, marks '__cross_min_array_max_array=1' in the flag definition to
-#   avoid redundant checks.
+# Global outputs
+# - SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE: Stores descriptive violation message on failure.
 #
-# Returns:
-# - 0: validation success (boundaries consistent or already validated).
-# - 1: validation failure (min_array exceeds max_array).
+# Notes
+# - Skips validation and returns 0 if '__cross_min_array_max_array=1' is already set in the flag definition.
+# - Enforcement only triggers when 'is_array' equals 1 and both boundaries are explicitly defined.
+# - Mutates the input associative array by setting '__cross_min_array_max_array=1' upon success to cache results.
+#
+# Returns
+# - 0: Success (boundaries are consistent, inapplicable, or already validated).
+# - 1: Failure ('min_array' size boundary exceeds 'max_array').
 shell_cli_metaflag_property_cross_validate_min_array_max_array() {
   local fassoc="${2}"
   local -n __assoc="${fassoc}"

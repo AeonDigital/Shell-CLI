@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+#
+# METAFLAG 'min'
+# Canonical definition scheme for this flag.
 declare -gA METAFLAG_min=()
 METAFLAG_min["long"]="min"
 METAFLAG_min["short"]=""
@@ -30,23 +33,15 @@ METAFLAG_min["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_min - validate metaflag 'min'.
+# shell_cli_metaflag_property_validate_min - validate structural integrity of this metaflag.
 #
-# Arguments:
-# - fval: value (normalized and validated by type).
-# - fassoc: name of associative array with all flag definitions.
+# Arguments
+# - fval: value (normalized and validated by type). 
+# - fassoc: Name of the associative array with flag definition.
 #
-# Behavior:
-# - Ensures that the 'min' property is consistent with the paired 'max' property.
-# - Delegates validation to 'shell_cli_metaflag_property_cross_validate_min_max',
-#   which checks logical consistency between minimum and maximum boundaries.
-# - Clears any previous error message before validation.
-# - On failure, stores the error message in
-#   'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'.
-#
-# Returns:
-# - 0: validation success (min/max boundaries consistent).
-# - 1: validation failure (cross-validation failed).
+# Returns
+# - 0: Success.
+# - 1: Failure.
 shell_cli_metaflag_property_validate_min() {
   SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE=""
   
@@ -59,29 +54,16 @@ shell_cli_metaflag_property_validate_min() {
 
 
 
-# shell_cli_metaflag_check_input_min - check input for metaflag 'min'.
+# shell_cli_metaflag_check_input_min - runtime input check placeholder for this metaflag.
 #
-# Arguments:
-# - inputVal: value provided by user input (normalized and validated by type).
-# - typeVal: type of value (e.g., int, float, date, time, datetime, string).
-# - ruleVal: current value of this property (minimum boundary).
+# Arguments
+# - inputVal: value provided by user input.
+# - typeVal: type of value.
+# - ruleVal: current value of this property (boolean indicator).
 #
-# Behavior:
-# - Validates whether the input respects the minimum boundary defined by 'ruleVal'.
-# - If 'ruleVal' is empty, no validation is applied.
-# - Type-specific checks:
-#   * int: input must be >= min.
-#   * float: input must be >= min (using math utility for precision).
-#   * date/time/datetime: input timestamp must be >= min timestamp.
-#   * string/other: input length must be >= min.
-# - On violation, stores an error message in
-#   'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'.
-# - On success, stores the validated input in
-#   'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'.
-#
-# Returns:
-# - 0: validation success (input meets minimum boundary).
-# - 1: validation failure (input violates minimum boundary).
+# Returns
+# - 0: Success.
+# - 1: Failure.
 shell_cli_metaflag_check_input_min() {
   local inputVal="${1}"
   local typeVal="${2}"

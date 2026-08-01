@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+#
+# METAFLAG 'is_array'
+# Canonical definition scheme for this flag.
 declare -gA METAFLAG_is_array=()
 METAFLAG_is_array["long"]="is_array"
 METAFLAG_is_array["short"]=""
@@ -30,22 +33,15 @@ METAFLAG_is_array["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_is_array - validate metaflag 'is_array'.
+# shell_cli_metaflag_property_validate_is_array - validate structural integrity of this metaflag.
 #
-# Arguments:
-# - fval: value (normalized and validated by type).
-# - fassoc: name of associative array with all flag definitions.
+# Arguments
+# - fval: value (normalized and validated by type). 
+# - fassoc: Name of the associative array with flag definition.
 #
-# Behavior:
-# - Ensures that the 'is_array' property is explicitly defined (cannot be empty).
-# - Checks consistency with 'is_assoc':
-#   * If 'is_array=true' and 'is_assoc=true' simultaneously, validation fails.
-# - On failure, stores an error message in
-#   'SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE'.
-#
-# Returns:
-# - 0: validation success (value non-empty and consistent with 'is_assoc').
-# - 1: validation failure (empty or conflicting configuration).
+# Returns
+# - 0: Success.
+# - 1: Failure.
 shell_cli_metaflag_property_validate_is_array() {
   local fval="${1}"
   local fassoc="${2}"
@@ -69,31 +65,16 @@ shell_cli_metaflag_property_validate_is_array() {
 
 
 
-# shell_cli_metaflag_check_input_is_array - check input for metaflag 'is_array'.
+# shell_cli_metaflag_check_input_is_array - runtime input check placeholder for this metaflag.
 #
-# Arguments:
+# Arguments
 # - inputVal: value provided by user input.
 # - typeVal: type of value.
 # - ruleVal: current value of this property (boolean indicator).
 #
-# Behavior:
-# - Validates whether the input should be treated as an array.
-# - If 'ruleVal=0' (false) or input is empty, no validation is applied.
-# - If input is already an indexed array, passes through unchanged and stores
-#   its name in SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE.
-# - Otherwise, attempts to parse the input string as a serialized array
-#   (e.g., JSON‑like format) using 'shell_cli_parse_sarray_to_array'.
-# - On parse failure, stores the parser's error message in
-#   SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE.
-# - On success:
-#   * Stores the name of the internal parsed array object
-#     ('SHELL_CLI_PARSE_SARRAY_TO_ARRAY') in SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE.
-#   * Stores the deserialized array elements in
-#     SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ARRAY.
-#
-# Returns:
-# - 0: validation success (input accepted as array).
-# - 1: validation failure (input not compatible with array format).
+# Returns
+# - 0: Success.
+# - 1: Failure.
 shell_cli_metaflag_check_input_is_array() {
   local inputVal="${1}"
   local typeVal="${2}"

@@ -1,41 +1,48 @@
 #!/usr/bin/env bash
 
-# TODO 
-
-# Stores the last error message generated from the last 
-# execution of 'shell_cli_metaflag_property_validate_<flag_property>' function.
+# SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE - Error message store for static metaflag schema property validations.
+#
+# - Stores the specific structural violation string when a 'shell_cli_metaflag_property_validate_*' function fails.
+# - Overwritten on every structural property execution check.
 declare -g SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE=""
 
-
-# Stores the last error message generated from the last 
-# execution of 'shell_cli_metaflag_check_input_<flag_property>' function.
+# SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE - Error message store for runtime input evaluations.
+#
+# - Stores the user-facing input violation string when a 'shell_cli_metaflag_check_input_*' function fails.
+# - Overwritten on every runtime evaluation iteration.
 declare -g SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE=""
 
-# Stores the new value to be used as the counterpart to the one received from 
-# user input. Is always populated by the function 
-# 'shell_cli_metaflag_check_input_<flag_property>'
+# SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE - Output store for scalar runtime normalized/transformed input.
+#
+# - Populated with the post-processed counterpart of user input via 'shell_cli_metaflag_check_input_*'.
+# - Contains the failure token string "!ERR" if validation fails.
 declare -g SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE=""
 
-# Stores the deserialized version of a received array. It is populated whenever 
-# the function 'shell_cli_metaflag_check_input_array' is invoked; therefore, 
-# its value is temporary.
+# SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ARRAY - Temporary store for runtime parsed and deserialized indexed arrays.
+#
+# - Populated with discrete elements whenever 'shell_cli_metaflag_check_input_array' executes.
+# - Cleared and rebuilt dynamically per array-type input evaluation.
 declare -ga SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ARRAY=()
 
-# Stores the deserialized version of a received assoc. It is populated whenever 
-# the function 'shell_cli_metaflag_check_input_assoc' is invoked; therefore, 
-# its value is temporary.
+# SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ASSOC - Temporary store for runtime parsed and deserialized associative arrays.
+#
+# - Populated with key-value pairs whenever 'shell_cli_metaflag_check_input_assoc' executes.
+# - Cleared and rebuilt dynamically per object-type input evaluation.
 declare -gA SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ASSOC=()
 
-# Holds the order of discovered keys.
-# Note: This order is fully reliable only when parsing from a JSON string.
-#       When input is an existing associative array, Bash does not preserve
-#       insertion order, so this information is lost.
+# SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ASSOC_ORDER - Runtime index tracker for associative array input sequence.
+#
+# - Guarantees insertion order verification only when deserializing from an input JSON string format.
+# - Unreliable if the original validation source was an native Bash associative array due to internal indexing.
 declare -ga SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_ASSOC_ORDER=()
 
 
 
-# Global associative array mapping all mandatory and optional metadata schema keys
-# to their framework-specified fallback default compilation values.
+
+# SHELL_CLI_METAFLAG_DEFAULT - Framework metadata schema key mappings and fallback default values.
+#
+# - Maps all mandatory and optional metadata property keys required by the CLI system.
+# - Provides baseline fallback initialization values during compilation cycles.
 declare -gA SHELL_CLI_METAFLAG_DEFAULT=()
 SHELL_CLI_METAFLAG_DEFAULT["long"]=""
 SHELL_CLI_METAFLAG_DEFAULT["short"]=""
@@ -66,8 +73,10 @@ SHELL_CLI_METAFLAG_DEFAULT["required_keys"]=""
 
 
 
-# Global indexed array defining the strict execution sequence order for evaluating
-# metadata schema configuration rules during framework pre-flight compilation loops.
+# SHELL_CLI_METAFLAG_DEFAULT_ORDER - Execution sequence tracker for metadata configuration evaluation.
+#
+# - Defines the strict chronological order for running rule evaluations.
+# - Utilized by framework pre-flight compilation loops to prevent dependency failures.
 declare -ga SHELL_CLI_METAFLAG_DEFAULT_ORDER=()
 SHELL_CLI_METAFLAG_DEFAULT_ORDER+=("long")
 SHELL_CLI_METAFLAG_DEFAULT_ORDER+=("short")
