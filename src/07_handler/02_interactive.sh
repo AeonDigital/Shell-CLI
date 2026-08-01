@@ -1,12 +1,43 @@
 #!/usr/bin/env bash
 
+# SHELL_CLI_HANDLER_INTERACTIVE_COLUMNS - Target terminal layout width threshold for interactive wizards.
+#
+# - Defines the standard baseline horizontal character width limit (default "100") for printing form prompts.
+# - Dynamically scales down at runtime to match the active terminal context if '${COLUMNS}' is smaller.
 declare -g SHELL_CLI_HANDLER_INTERACTIVE_COLUMNS="100"
+
+# SHELL_CLI_HANDLER_INTERACTIVE_SEPARATOR_CHAR - Baseline literal string character unit for wizard layout dividers.
+#
+# - Specifies the individual text character used to dynamically draw structural line breaks during prompt cycles.
 declare -g SHELL_CLI_HANDLER_INTERACTIVE_SEPARATOR_CHAR="="
+
+# SHELL_CLI_HANDLER_INTERACTIVE_SEPARATOR - Dynamic horizontal layout boundary string filled by the engine.
+#
+# - Automatically compiled on demand by repeating the separator character until reaching the column threshold.
+# - Used across downstream prompt renderers to separate conversational form blocks with consistent line dividers.
 declare -g SHELL_CLI_HANDLER_INTERACTIVE_SEPARATOR=""
 
 
 
 
+
+# shell_cli_handler_interactive - Orquestrate env audits, boundary scalings, and security gates before initializing interactive wizards.
+#
+# Arguments
+# - None.
+#
+# Global outputs
+# - SHELL_CLI_HANDLER_INTERACTIVE_COLUMNS: Scaled and adjusted to fit terminal boundaries if the active session is narrow.
+# - SHELL_CLI_HANDLER_HELP_SEPARATOR: Appended with dynamically compiled layout divider strings.
+#
+# Notes
+# - Environment Guard: Aborts with a fatal exit immediately if executed outside a valid interactive standard input stream channel (non-TTY contexts).
+# - Command Guards: Rejects execution if active positionals point to root levels or if the leaf node possesses no parameter options to compile.
+# - Diverts control to the underlying sequential capture routine '_shell_cli_handler_interactive_loop' to execute form rendering loops.
+#
+# Returns
+# - 0: Success (interactive inputs successfully collected, validated, and pushed to active execution memory arrays).
+# - 1: Rejection (wizard unavailable due to root invocation or empty command flag schemas).
 shell_cli_handler_interactive() {
   if [ ! -t 0 ]; then
     echo "[ERR] Interactive mode (-itr) cannot be executed in a non-TTY environment (e.g., CI/CD pipelines, cron jobs)." >&2
@@ -42,6 +73,25 @@ shell_cli_handler_interactive() {
 
 
 
+# _shell_cli_handler_interactive_loop - Execute the sequential prompt capture matrix and run in-place validation cycles.
+#
+# Arguments
+# - None.
+#
+# Global outputs
+# - SHELL_CLI_INPUT_RAW_FLAG_ASSOC: Injected with validated data values mapped to their canonical option keys.
+# - SHELL_CLI_INPUT_RAW_FLAG_ORDER: Appended with the sequential order strings of successfully captured parameters.
+# - SHELL_CLI_INPUT_RAW_FLAG: Hydrated with constructed notation payload strings ready for down-stream processing loops.
+#
+# Notes
+# - Sequentially traverses flag vector parameters to present isolated dynamic user prompts with fallback instruction placeholders.
+# - Escape Interceptor: Evaluates inputs for the reserved framework token ':q!' to immediately halt operational workflows gracefully.
+# - Enforces instant atomic validation checks by piping captures through 'shell_cli_process_flag_value' before shifting prompt indexes.
+# - Loops infinitely per parameter entry field until input requirements are satisfied or an explicit termination token fires.
+#
+# Returns
+# - 0: Success (form evaluation completely satisfied and matrix data structures mapped).
+# - 10: Graceful Shutdown (operation intentionally halted and abandoned by explicit user escape command invocation).
 _shell_cli_handler_interactive_loop() {
   # Standardize the print layout: convert underscore structures back into command spacing
   local cmdName="${SHELL_CLI_MAIN_CMD_NAME}"

@@ -1,23 +1,43 @@
 #!/usr/bin/env bash
 
+# SHELL_CLI_HANDLER_HELP_COLUMNS - Target terminal layout width threshold for help documentation.
+#
+# - Defines the standard baseline horizontal character width limit (default "100") for printing help menus.
+# - Dynamically scales down at runtime to match the active terminal context if '${COLUMNS}' is smaller.
 declare -g SHELL_CLI_HANDLER_HELP_COLUMNS="100"
+
+# SHELL_CLI_HANDLER_HELP_SEPARATOR_CHAR - Baseline literal string character unit for visual canvas layout dividers.
+#
+# - Specifies the individual text character used to dynamically draw structural line breaks.
 declare -g SHELL_CLI_HANDLER_HELP_SEPARATOR_CHAR="="
+
+# SHELL_CLI_HANDLER_HELP_SEPARATOR - Dynamic horizontal layout boundary string filled by the engine.
+#
+# - Automatically compiled on demand by repeating the separator character until reaching the column threshold.
+# - Used across downstream renderers to separate informational layout blocks with consistent line dividers.
 declare -g SHELL_CLI_HANDLER_HELP_SEPARATOR=""
 
 
 
 
-# shell_cli_handler_help intercepts execution to render manuals.
+
+# shell_cli_handler_help - Intercept the execution pipeline to render structural command manuals and usage layouts.
 #
-# Arguments:
-#   None. Uses compiled SHELL_CLI_TRIGGER_HELP and command tree registers directly.
+# Arguments
+# - None.
 #
-# Returns:
-#   - 0: If the help context was triggered and rendered successfully.
-#   - 1: If the help context was not triggered, allowing execution to proceed.
+# Global outputs
+# - SHELL_CLI_HANDLER_HELP_COLUMNS: Scaled and adjusted to fit terminal boundaries if the active session is narrow.
+# - SHELL_CLI_HANDLER_HELP_SEPARATOR: Dynamically populated with compiled line break strings.
 #
-# Error & Panic Natures:
-#   - Return Errors: None. Pure structural routing interceptor routine.
+# Notes
+# - Consumes compiled 'SHELL_CLI_TRIGGER_HELP' state layers and isolated command tree registries directly from the active shell scope.
+# - Dynamically evaluates and adapts canvas layout sizing loops by auditing environment column boundaries on the fly.
+# - Cascades sequentially into a series of underlying specialized rendering hooks to print headers, usages, subcommands, and flags.
+#
+# Returns
+# - 0: Success (the help layout manual context was intercepted, generated, and rendered successfully to standard output).
+# - 1: Passthrough (the help condition trigger was inactive, allowing core command loop processors to proceed).
 shell_cli_handler_help() {
   local currentCols="${COLUMNS:-80}"
   if [ "${currentCols}" -lt "${SHELL_CLI_HANDLER_HELP_COLUMNS}" ] && [ "${currentCols}" -gt 20 ]; then
@@ -42,6 +62,18 @@ shell_cli_handler_help() {
 
 
 
+# _shell_cli_handler_help_render_header - Format and print the header layout including command summaries and descriptions.
+#
+# Arguments
+# - None.
+#
+# Notes
+# - Dynamically resolves the active layout namespace registry pointer based on the current depth of the resource command tree.
+# - Leverages 'shell_cli_utils_string_wrap' internally to guarantee clean line folding based on the calculated terminal column width.
+# - Outputs formatted visualization streams directly to standard output channel.
+#
+# Returns
+# - 0: Always success.
 _shell_cli_handler_help_render_header() {
   local cmdName="${SHELL_CLI_MAIN_CMD_NAME}"
   local subCmdName="> ${SHELL_CLI_RESOURCE_TREE/ / > }"
@@ -68,6 +100,18 @@ _shell_cli_handler_help_render_header() {
 }
 
 
+
+# _shell_cli_handler_help_render_usage - Format and display the correct application entrypoint usage syntax patterns.
+#
+# Arguments
+# - None.
+#
+# Notes
+# - Evaluates command positionals and hierarchy nodes to present dynamic syntax blocks based on root vs subcommand execution contexts.
+# - Outputs explicit layout strings directly to standard output channel.
+#
+# Returns
+# - 0: Always success.
 _shell_cli_handler_help_render_usage() {
   local cmdName="${SHELL_CLI_MAIN_CMD_NAME}"
 
@@ -82,6 +126,18 @@ _shell_cli_handler_help_render_usage() {
 }
 
 
+
+# _shell_cli_handler_help_render_global_flags - Render the core built-in framework utility flags documentation block.
+#
+# Arguments
+# - None.
+#
+# Notes
+# - Prints standardized hardcoded instruction templates for the global help ('-h'/'--help') and interactive wizard ('-itr'/'--interactive') tokens.
+# - Outputs explicit layout strings directly to standard output channel.
+#
+# Returns
+# - 0: Always success.
 _shell_cli_handler_help_render_global_flags() {
   local cmdName="${SHELL_CLI_MAIN_CMD_NAME}"
 
@@ -92,6 +148,20 @@ _shell_cli_handler_help_render_global_flags() {
 }
 
 
+
+# _shell_cli_handler_help_render_subcmd_options - Resolve, introspect, and render the collection of available subcommands or actions.
+#
+# Arguments
+# - None.
+#
+# Notes
+# - Dynamically switches context labels between 'Resources' (root-level sub-routes) and 'Actions' (leaf-level commands).
+# - Performs on-the-fly source loading over discovered 'cmd.sh' layouts to extract sub-resource summaries.
+# - Automates layout space sizing by calculating string lengths to produce clean tabular column paddings.
+# - Outputs descriptive failure messages in-place within the list if target metadata registries are missing or broken.
+#
+# Returns
+# - 0: Always success.
 _shell_cli_handler_help_render_subcmd_options() {
   local useSubCmdType="Actions"
   local useCmdRegistry="${SHELL_CLI_RESOURCE_REGISTRY}"
@@ -183,6 +253,20 @@ _shell_cli_handler_help_render_subcmd_options() {
 }
 
 
+
+# _shell_cli_handler_help_render_flags - Compile and render detailed documentation matrix for command-specific parameter options.
+#
+# Arguments
+# - None.
+#
+# Notes
+# - Fast-Track Fallback: Short-circuits immediately if evaluated under the base root project execution context (".").
+# - Iterates option sequence vectors to map metadata fields: notation notations (-s, --long), types, limits, and defaults.
+# - Resolves collection parameters by appending explicit dynamic data brackets based on vector maps ('array' or 'map').
+# - Leverages 'shell_cli_utils_string_wrap' cascading loops to calculate column alignment blocks for stdout streaming.
+#
+# Returns
+# - 0: Always success.
 _shell_cli_handler_help_render_flags() {
   if [ "${SHELL_CLI_RESOURCE_TREE}" = "." ]; then
     echo ""

@@ -1,5 +1,26 @@
 #!/usr/bin/env bash
 
+# shell_cli_run - Main execution engine orquestrator managing the full lifecycle pipeline of a CLI application.
+#
+# Arguments
+# - mainCmdRootPath: Absolute or relative target file route string pointing to the root framework command script.
+# - $@: Variable array of raw command-line interface arguments, parameters, and positionals.
+#
+# Global outputs
+# - SHELL_CLI_CMD_INPUT: Fully populated, production-ready associative data matrix delivered to action handlers.
+# - SHELL_CLI_CMD_INPUT_ORDER: Replicated deterministic sequence matrix mapping the final argument execution order.
+#
+# Notes
+# - Phase 1 (Sandboxing & Preflight Boot): Enforces runtime process locking barriers, hydrating core directory configurations and command tree components.
+# - Phase 2 (Parameter Resolution): Resolves positional resource sub-routes, compiles property flags schemas, and parses raw CLI tokens.
+# - Phase 3 (Interceptor Interception): Evaluates state flags to hijack execution, rendering automated manuals or launching conversational wizard prompts.
+# - Phase 4 (Context Guard & Ingestion): Seals sanitized entries into final client registries and triggers optional, data-domain custom validate hooks.
+# - Phase 5 (Business Execution & Dispersal): Dispatches control to the resolved action function pointer, purging environment memory upon termination.
+# - Error Formatting: Intercepts custom validation exit codes (1=Error, 2=Warning, 10=Critical) to dynamically output prefix tokens to standard error channels.
+#
+# Returns
+# - 0: Success (framework lifecycle completely satisfied and client business actions executed smoothly).
+# - 1+: Downstream Failure (concurrency collision, preflight validation fault, trigger collapse, or custom domain hook violation).
 shell_cli_run() {
   local mainCmdRootPath="${1}"; shift
   local commandName=$(basename "${mainCmdRootPath}" ".sh")
