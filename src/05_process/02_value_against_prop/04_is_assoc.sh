@@ -1,25 +1,24 @@
 #!/usr/bin/env bash
 
-# shell_cli_process_flag_value_against_prop_is_assoc - validate against 'is_assoc' property.
+# shell_cli_process_flag_value_against_prop_is_assoc - Validate associative array presence and enforce dictionary structural constraints.
 #
-# Arguments:
-# - $1: required keys configuration for this assoc flag.
+# Arguments
+# - requiredKeys: Configured list or rule specifying keys that must exist within the associative map.
 #
-# Behavior:
-# - Validates the input value as an associative map using
-#   shell_cli_metaflag_check_input_is_assoc.
-# - On success:
-#   * Updates SHELL_CLI_PROCESS_FLAG_VALUE with the normalized assoc reference.
-#   * Updates SHELL_CLI_PROCESS_FLAG_VALUE_ASSOC_ORDER with the order of keys
-#     as parsed.
-# - Validates that all required keys are present using
-#   shell_cli_metaflag_check_input_required_keys.
-# - On failure at any step, stores message in SHELL_CLI_PROCESS_FLAG_VALUE_ERR_MESSAGE
-#   and halts.
+# Global outputs
+# - SHELL_CLI_PROCESS_FLAG_VALUE: Updated with the runtime validated/normalized associative array reference pointer upon success.
+# - SHELL_CLI_PROCESS_FLAG_VALUE_ASSOC_ORDER: Populated with the precise discovered sequence array of keys parsed from the payload.
+# - SHELL_CLI_PROCESS_FLAG_VALUE_ERR_MESSAGE: Appended with a formatted framework violation string upon failure.
 #
-# Returns:
-# - 0: success (assoc value normalized and required keys validated).
-# - 1: failure (error message stored in SHELL_CLI_PROCESS_FLAG_VALUE_ERR_MESSAGE).
+# Notes
+# - Phase 1 (Structural Integrity): Invokes 'shell_cli_metaflag_check_input_is_assoc' to verify and ingest the dictionary map.
+# - Phase 2 (Key Verification): Executes presence compliance checks over the collection against the 'requiredKeys' rule.
+# - Combines the generic flag context error prefix and the respective internal validator messages into the global error store.
+# - Short-circuits execution immediately upon encountering any structural or missing key breach.
+#
+# Returns
+# - 0: Success (payload is a valid associative array and all mandatory schema keys are present).
+# - 1: Failure (value is not a dictionary map, or it lacks mandatory structural keys).
 shell_cli_process_flag_value_against_prop_is_assoc() {
   #
   # Validate input value

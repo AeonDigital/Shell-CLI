@@ -1,33 +1,24 @@
 #!/usr/bin/env bash
 
-# shell_cli_process_flag_single_value - process and validate a single flag value atomically.
+# shell_cli_process_flag_single_value - Process and validate a single flag value through the evaluation pipeline.
 #
-# Arguments:
-# - $1: raw single value to be validated.
+# Arguments
+# - rawSingleValue: Target raw string value to be normalized and evaluated atomically.
 #
-# Behavior:
-# - Initializes SHELL_CLI_PROCESS_FLAG_SINGLE_VALUE with the raw input.
-# - Clears any previous error message.
-# - If value is not empty:
-#   * Normalizes the value according to the flag type using shell_cli_type_normalize_*.
-#   * Validates the normalized value using shell_cli_type_validate_*.
-#   * On failure, stores a descriptive error message in SHELL_CLI_PROCESS_FLAG_VALUE_ERR_MESSAGE
-#     and returns the validation status code (including special handling for control characters).
-# - Sequentially validates the value against all remaining flag properties:
-#   * accept_values
-#   * normalize
-#   * min
-#   * max
-#   * regex
-#   * validate
-#   * transform
-# - Each property is checked via its dedicated function. On failure, stores a descriptive
-#   error message and halts immediately.
+# Global outputs
+# - SHELL_CLI_PROCESS_FLAG_SINGLE_VALUE: Stores the final post-processed, normalized value state.
+# - SHELL_CLI_PROCESS_FLAG_VALUE_ERR_MESSAGE: Captures specific descriptive violation strings on failure.
 #
-# Returns:
-# - 0: success (single value normalized and validated against all properties).
-# - 1: failure in property validation (error message stored in SHELL_CLI_PROCESS_FLAG_VALUE_ERR_MESSAGE).
-# - 10: failure in type validation (e.g., 10 for control characters).
+# Notes
+# - Skips initial type normalization and type validation cycles if the input value is empty.
+# - Sequentially enforces type compliance before running property-specific validation hooks.
+# - Evaluates values against core metaflag constraints: accept_values, normalize, min, max, regex, validate, and transform.
+# - Short-circuits execution and reports immediate failure upon encountering the first rule breach.
+#
+# Returns
+# - 0: Success (value successfully parsed and passed all schema constraint properties).
+# - 1: Failure (value violated a specific structural metaflag property schema rule).
+# - 10: Type Breach (value failed baseline datatype checks, e.g., structural control characters present).
 shell_cli_process_flag_single_value() {
   local rawSingleValue="${1}"
   local SHELL_CLI_PROCESS_FLAG_SINGLE_VALUE="${1}"

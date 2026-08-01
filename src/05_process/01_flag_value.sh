@@ -1,40 +1,27 @@
 #!/usr/bin/env bash
 
-# shell_cli_process_flag_value - process and validate a flag's input value.
+# shell_cli_process_flag_value - Orchestrate runtime validation, normalization, and structural assembly of flag inputs.
 #
-# Arguments:
-# - $1: name of the associative array defining the flag.
-# - $2: raw input value for the flag.
+# Arguments
+# - flagVarName: Name of the associative array definition scheme holding the rules.
+# - rawInputValue: Target input payload string or pointer reference name to process.
 #
-# Behavior:
-# - Compiles the flag definition to ensure consistency.
-# - Initializes global variables for type, value, error prefix, and assoc order.
-# - Validates against 'required' and 'default' properties.
-# - If flag is array:
-#   * Validates 'is_array', 'min_array', 'max_array'.
-#   * Iterates over the array elements, collecting keys and values.
-# - If flag is assoc:
-#   * Validates 'is_assoc' and 'required_keys'.
-#   * Populates SHELL_CLI_PROCESS_FLAG_VALUE_ASSOC_ORDER with the order of keys
-#     as parsed.
-#   * Iterates over this order to collect keys and values consistently.
-# - If flag is single value:
-#   * Stores a placeholder key "-" and the raw value.
-# - Each collected value is validated atomically against all remaining
-#   properties of the flag using shell_cli_process_flag_single_value.
-#   * On failure, the error message is composed with the proper prefix and
-#     returned immediately.
-#   * On success, the normalized value replaces the original in flagValues.
-# - After atomic validation, the normalized values are remounted into
-#   SHELL_CLI_PROCESS_FLAG_VALUE:
-#   * For single values, replaced directly.
-#   * For arrays, elements updated in the array variable.
-#   * For assoc, key/value pairs updated in the assoc variable.
-# - Finally, resets all global process variables to ensure clean state.
+# Global outputs
+# - SHELL_CLI_PROCESS_FLAG_VALUE_ERR_MESSAGE: Captures compilation breakdowns or downstream runtime validation faults.
+# - SHELL_CLI_PROCESS_FLAG_VALUE_ASSOC_ORDER: Stores the sequenced key tracking array discovered during associative object parsing.
 #
-# Returns:
-# - 0: success (flag value normalized and validated).
-# - 1+: failure (error message stored in SHELL_CLI_PROCESS_FLAG_VALUE_ERR_MESSAGE).
+# Notes
+# - Triggers pre-flight compilation check over the target definition schema rules before initiating any processing.
+# - Pipeline Phase 1 (Hydration Constraints): Enforces baseline evaluation checks for 'required' and 'default' properties.
+# - Pipeline Phase 2 (Collection Matrix): Detects and expands payload types. Splits elements into discrete flat tracking stacks 
+#   for scalar string values, dynamic indexed arrays, or associative dictionary mappings.
+# - Pipeline Phase 3 (Atomic Evaluation): Loops and pipes each detached element through 'shell_cli_process_flag_single_value'.
+# - Pipeline Phase 4 (Reconstruction): Re-assembles all post-processed elements into their final scalar or vector structure formats.
+# - Clean State: Destructively resets all internal global lifecycle variables to empty states upon final successful execution.
+#
+# Returns
+# - 0: Success (flag payload structurally verified, normalized, and correctly updated in-memory).
+# - 1+: Failure (rule violation breach, downstream compilation breakdown, or type constraint fault).
 shell_cli_process_flag_value() {
   #
   # Check flag rules consistency

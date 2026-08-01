@@ -1,27 +1,24 @@
 #!/usr/bin/env bash
 
-# shell_cli_process_flag_value_against_prop_is_array - validate flag value against 'is_array' property.
+# shell_cli_process_flag_value_against_prop_is_array - Validate indexed array presence and enforce structural collection boundaries.
 #
-# Arguments:
-# - $1: minimum number of elements allowed (min_array).
-# - $2: maximum number of elements allowed (max_array).
+# Arguments
+# - minArray: Configured minimum number of elements allowed in the array collection schema.
+# - maxArray: Configured maximum number of elements allowed in the array collection schema.
 #
-# Behavior:
-# - Invokes shell_cli_metaflag_check_input_is_array to ensure the flag value
-#   is treated as an indexed array.
-# - On success:
-#   * Updates SHELL_CLI_PROCESS_FLAG_VALUE with the normalized array reference.
-# - Validates array length constraints:
-#   * Calls shell_cli_metaflag_check_input_min_array to enforce minimum size.
-#   * Calls shell_cli_metaflag_check_input_max_array to enforce maximum size.
-# - If any validation fails:
-#   * Stores a descriptive error message in SHELL_CLI_PROCESS_FLAG_VALUE_ERR_MESSAGE,
-#     including the flag's error prefix and the parser's message.
-#   * Returns failure immediately.
+# Global outputs
+# - SHELL_CLI_PROCESS_FLAG_VALUE: Updated with the runtime validated/normalized array reference pointer upon success.
+# - SHELL_CLI_PROCESS_FLAG_VALUE_ERR_MESSAGE: Appended with a formatted framework violation string upon failure.
 #
-# Returns:
-# - 0: success (array value normalized and size constraints satisfied).
-# - 1: failure (error message stored in SHELL_CLI_PROCESS_FLAG_VALUE_ERR_MESSAGE).
+# Notes
+# - Phase 1 (Type Compliance): Runs 'shell_cli_metaflag_check_input_is_array' to verify structure and normalize the target object.
+# - Phase 2 (Size Boundaries): Sequentially executes length evaluations against the provided 'minArray' and 'maxArray' constraints.
+# - Combines the generic flag context error prefix and the respective internal validator messages into the global error store.
+# - Short-circuits execution immediately upon encountering any type or boundary rule breach.
+#
+# Returns
+# - 0: Success (payload is a valid indexed array and its length stays within the configured threshold limits).
+# - 1: Failure (value is not an array, or its element count violates size constraints).
 shell_cli_process_flag_value_against_prop_is_array() {
   #
   # Validate input value

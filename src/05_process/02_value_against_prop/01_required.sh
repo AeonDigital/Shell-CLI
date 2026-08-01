@@ -1,24 +1,21 @@
 #!/usr/bin/env bash
 
-# shell_cli_process_flag_value_against_prop_required - validate flag value against 'required' property.
+# shell_cli_process_flag_value_against_prop_required - Evaluate the active payload value against mandatory presence rules.
 #
-# Arguments:
-# - $1: current value of the 'required' property (boolean indicator).
+# Arguments
+# - ruleVal: Configured boolean indicator ('true'/'false' or '1'/'0') specifying if the flag is mandatory.
 #
-# Behavior:
-# - Invokes shell_cli_metaflag_check_input_required to verify whether the flag
-#   value is mandatory and has been provided.
-# - If validation fails:
-#   * Stores a descriptive error message in SHELL_CLI_PROCESS_FLAG_VALUE_ERR_MESSAGE,
-#     including the flag's error prefix and the parser's message.
-#   * Returns failure immediately.
-# - On success:
-#   * Updates SHELL_CLI_PROCESS_FLAG_VALUE with the normalized value returned
-#     by the check function.
+# Global outputs
+# - SHELL_CLI_PROCESS_FLAG_VALUE: Updated with the runtime normalized/transformed counterpart payload upon success.
+# - SHELL_CLI_PROCESS_FLAG_VALUE_ERR_MESSAGE: Appended with a formatted framework violation string upon failure.
 #
-# Returns:
-# - 0: success (required property satisfied).
-# - 1: failure (error message stored in SHELL_CLI_PROCESS_FLAG_VALUE_ERR_MESSAGE).
+# Notes
+# - Leverages 'shell_cli_metaflag_check_input_required' internally to detect missing or empty structural arguments.
+# - Combines the generic flag context error prefix and the specific validator message into the global error store.
+#
+# Returns
+# - 0: Success (value presence matches the mandatory schema rule requirements).
+# - 1: Failure (required flag payload is missing or empty).
 shell_cli_process_flag_value_against_prop_required() {
   shell_cli_metaflag_check_input_required "${SHELL_CLI_PROCESS_FLAG_VALUE}" "${SHELL_CLI_PROCESS_FLAG_TYPE}" "${1}"
   if [ "$?" != "0" ]; then

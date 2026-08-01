@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
 
-# shell_cli_process_flag_single_value_against_prop_validate - validate single value against custom 'validate' property.
+# shell_cli_process_flag_single_value_against_prop_validate - Process the active single value against a custom validation rule or hook.
 #
-# Arguments:
-# - $1: custom validation rule or function reference.
+# Arguments
+# - ruleVal: Configured custom validation command string, function pointer, or rule expression.
 #
-# Behavior:
-# - Invokes shell_cli_metaflag_check_input_validate to apply custom validation logic.
-# - On failure:
-#   * Stores error message in SHELL_CLI_PROCESS_FLAG_VALUE_ERR_MESSAGE.
-#   * Returns failure immediately.
-# - On success:
-#   * Updates SHELL_CLI_PROCESS_FLAG_SINGLE_VALUE with the validated value.
+# Global outputs
+# - SHELL_CLI_PROCESS_FLAG_SINGLE_VALUE: Updated with the runtime normalized/transformed counterpart value upon success.
+# - SHELL_CLI_PROCESS_FLAG_VALUE_ERR_MESSAGE: Appended with a formatted framework violation string upon failure.
 #
-# Returns:
-# - 0: success (custom validation passed).
-# - 1: failure (error message stored).
+# Notes
+# - Leverages 'shell_cli_metaflag_check_input_validate' internally to evaluate arbitrary or extended rule compliance.
+# - Combines the generic framework error token and the specific validator message into the global error store.
+#
+# Returns
+# - 0: Success (value satisfies the custom validation function or logic constraints).
+# - 1: Failure (value is rejected by the user-defined validation hook extension).
 shell_cli_process_flag_single_value_against_prop_validate() {
   shell_cli_metaflag_check_input_validate "${SHELL_CLI_PROCESS_FLAG_SINGLE_VALUE}" "${SHELL_CLI_PROCESS_FLAG_TYPE}" "${1}"
   if [ "$?" != "0" ]; then
