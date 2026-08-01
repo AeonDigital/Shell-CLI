@@ -1,21 +1,17 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: flags.sh
-# DESCRIPTION: Defines configuration schemas and flags validation structures 
-#              for the 'gen newcmd' scaffolding command ecosystem.
-# ==============================================================================
-
+# SHELL_CLI_CMD_GEN_NEWCMD_FLAG_ORDER - Chronological sequence matrix tracking target subcommand option parameter keys.
 #
-# Enforce strict sequentially prioritized validation flow for runtime flags
+# - Establishes the strict sequentially prioritized validation flow for runtime parameter evaluations.
+# - Preserves the exact listing and rendering layout sequence used when generating help manuals and documentation blocks.
 declare -ga SHELL_CLI_CMD_GEN_NEWCMD_FLAG_ORDER=()
 
 
 
 #
-# Define validation schema and descriptive metadata for the --path flag
+# FLAG path
+# Canonical definition scheme for this flag.
 SHELL_CLI_CMD_GEN_NEWCMD_FLAG_ORDER+=("path")
-
 declare -gA SHELL_CLI_CMD_GEN_NEWCMD_FLAG_path
 SHELL_CLI_CMD_GEN_NEWCMD_FLAG_path["long"]="path"
 SHELL_CLI_CMD_GEN_NEWCMD_FLAG_path["type"]="dirpath"
@@ -26,9 +22,9 @@ SHELL_CLI_CMD_GEN_NEWCMD_FLAG_path["tipinput"]="Enter the target directory path 
 
 
 #
-# Define validation schema and descriptive metadata for the --pkg flag
+# FLAG pkg
+# Canonical definition scheme for this flag.
 SHELL_CLI_CMD_GEN_NEWCMD_FLAG_ORDER+=("pkg")
-
 declare -gA SHELL_CLI_CMD_GEN_NEWCMD_FLAG_pkg
 SHELL_CLI_CMD_GEN_NEWCMD_FLAG_pkg["long"]="pkg"
 SHELL_CLI_CMD_GEN_NEWCMD_FLAG_pkg["type"]="string"
@@ -42,9 +38,9 @@ SHELL_CLI_CMD_GEN_NEWCMD_FLAG_pkg["transform"]='["shell_cli_transform_uppercase"
 
 
 #
-# Define validation schema and descriptive metadata for the --cmd flag
+# FLAG cmd
+# Canonical definition scheme for this flag.
 SHELL_CLI_CMD_GEN_NEWCMD_FLAG_ORDER+=("cmd")
-
 declare -gA SHELL_CLI_CMD_GEN_NEWCMD_FLAG_cmd
 SHELL_CLI_CMD_GEN_NEWCMD_FLAG_cmd["long"]="cmd"
 SHELL_CLI_CMD_GEN_NEWCMD_FLAG_cmd["type"]="string"
@@ -57,7 +53,8 @@ SHELL_CLI_CMD_GEN_NEWCMD_FLAG_cmd["tipinput"]="Enter the initial command tree ac
 
 
 #
-# Define validation schema and descriptive metadata for the --summary flag
+# FLAG summary
+# Canonical definition scheme for this flag.
 SHELL_CLI_CMD_GEN_NEWCMD_FLAG_ORDER+=("summary")
 
 declare -gA SHELL_CLI_CMD_GEN_NEWCMD_FLAG_summary
@@ -72,9 +69,9 @@ SHELL_CLI_CMD_GEN_NEWCMD_FLAG_summary["tipinput"]="Enter a short, single-line su
 
 
 #
-# Define validation schema and descriptive metadata for the --description flag
+# FLAG description
+# Canonical definition scheme for this flag.
 SHELL_CLI_CMD_GEN_NEWCMD_FLAG_ORDER+=("description")
-
 declare -gA SHELL_CLI_CMD_GEN_NEWCMD_FLAG_description
 SHELL_CLI_CMD_GEN_NEWCMD_FLAG_description["long"]="description"
 SHELL_CLI_CMD_GEN_NEWCMD_FLAG_description["type"]="string"

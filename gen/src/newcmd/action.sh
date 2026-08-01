@@ -1,19 +1,25 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: action.sh
-# DESCRIPTION: Implements validation and generation pipelines for building new
-#              Shell-CLI compliant structural projects natively.
-# ==============================================================================
-
-# cmd_gen_ores_newcmd_main_validate enforces contextual pre-execution checks.
+# shell_cli_cmd_gen_newcmd_validate - Custom pre-execution gatekeeper hook to validate business domain context.
 #
-# Arguments:
-#   - None: Consumes structured target parsed inputs parameters.
+# Arguments
+# - None.
 #
-# Returns:
-#   - 0: If all system configurations and parameters pass strict validations.
-#   - 1: If contextual boundaries or safety policies are violated.
+# Global inputs
+# - SHELL_CLI_CMD_INPUT: Associative matrix containing all sanitized, type-validated, and normalized parameters.
+# - SHELL_CLI_CMD_INPUT_ORDER: Indexed matrix tracking the precise registration sequence of the captured flags.
+#
+# Global outputs
+# - SHELL_CLI_CMD_VALIDATE_ERR: Target store where custom, domain-specific violation messages must be injected on failure.
+#
+# Notes
+# - Invoked automatically by the core framework after input collection (CLI/Interactive) but before business actions run.
+# - Designed to evaluate multi-flag balance constraints, environmental states, and safety policies.
+# - To reject execution and report breaches, populate 'SHELL_CLI_CMD_VALIDATE_ERR' and return a non-zero status.
+#
+# Returns
+# - 0: Success (context satisfies all domain-level guard rails, permitting business actions to proceed).
+# - 1+: Failure (domain violation detected; short-circuits execution and reports the custom message).
 shell_cli_cmd_gen_newcmd_validate() {
   local target_path="${CMD_GEN_ORES_newcmd_PARSED["path"]}"
 
@@ -41,14 +47,26 @@ shell_cli_cmd_gen_newcmd_validate() {
 }
 
 
-# cmd_gen_ores_newcmd_action orchestrates the core execution flow.
+# shell_cli_cmd_gen_newcmd_action - Core business logic handler orchestrating the main operations of the command path.
 #
-# Arguments:
-#   - None: Business operations execution trigger point.
+# Arguments
+# - None.
 #
-# Returns:
-#   - 0: On absolute multi-task initialization success with zero pipeline errors.
-#   - 1: If any critical directory or template compilation command fails.
+# Global inputs
+# - SHELL_CLI_CMD_INPUT: Associative matrix containing all sanitized, type-validated, and normalized parameters.
+# - SHELL_CLI_CMD_INPUT_ORDER: Indexed matrix tracking the precise registration sequence of the captured flags.
+#
+# Global outputs
+# - SHELL_CLI_CMD_VALIDATE_ERR: Target store where runtime operational breakdown or processing error messages can be injected.
+#
+# Notes
+# - Acts as the final execution block in the framework lifecycle pipeline for a successfully matched command route node.
+# - Dispatches primary operational workloads (e.g., orchestration, file manipulation, automation, or task sequences).
+# - To signal runtime errors or processing exceptions, populate 'SHELL_CLI_CMD_VALIDATE_ERR' and return a non-zero status.
+#
+# Returns
+# - 0: Success (all internal operations completed their processing loops smoothly with zero errors).
+# - 1+: Failure (runtime exception, storage fault, or downstream processing barrier encountered).
 shell_cli_cmd_gen_newcmd_action() {
   # Exporting parameters to environment scope so external templates can consume them
   export TARGET_PATH="${CMD_GEN_ORES_newcmd_PARSED["path"]}"

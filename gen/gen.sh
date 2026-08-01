@@ -1,40 +1,37 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: main.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# global variable indicating the load state of the Shell-CLI core.
-# - Initialized to "-1" if not yet defined.
-# - Updated by 'shell_cli_get_core_package' and 'shell_cli_preflight_load_core_engine'.
-# - Used to determine whether the runtime engine is already active in the session.
+# SHELL_CLI_CORE_LOAD - Lifecycle state tracker monitoring the framework core engine ignition level.
+#
+# - Initialized to a baseline fallback token string of "-1" to indicate an unbooted framework environment.
+# - Updated in-place to "0" when the distribution pack is cached, and to "1" upon full memory tree injection.
+# - Evaluated dynamically across bootloader layers to short-circuit redundant package provisioning tasks.
 if [ "${SHELL_CLI_CORE_LOAD}" = "" ]; then
   declare -g SHELL_CLI_CORE_LOAD="-1"
 fi
 
-# global variable controlling local development mode.
-# - When set to "1", forces loading of source files directly from the local "src" directory.
-# - Used primarily during development and testing to bypass central package download.
+# SHELL_CLI_LOCAL_LOAD_MAIN_PKG_SRC - Operational environment bypass toggle for local sandbox development.
+#
+# - Hardcoded to "1" to force the client application to source files directly from a local development tree.
+# - Used to suppress automated remote network updates, enabling offline debugging and structural hacking cycles.
 declare -g SHELL_CLI_LOCAL_LOAD_MAIN_PKG_SRC="1"
 
 
 
-# shell_cli_execute_command - orchestrate command execution.
+
+
+# shell_cli_execute_command - Entrypoint lifecycle coordinator orquestrating application bootstrap and loop invocation.
 #
-# Arguments:
-# - $@: user-provided CLI arguments (command name and context).
+# Arguments
+# - $@: Variable array of raw strings containing user-provided command-line arguments and flags.
 #
-# Behavior:
-# - Ensures the core package is available by invoking 'shell_cli_get_core_package'.
-# - Loads the runtime engine with 'shell_cli_preflight_load_core_engine'.
-# - Resolves the root path of the current script.
-# - Prepares the command context with 'shell_cli_preflight_prepare_command'.
-# - Terminates execution with exit code 1 if preparation fails.
+# Notes
+# - Triggers 'shell_cli_client_start_engine' to assert framework presence before initializing any business path.
+# - Resolves the runtime caller absolute directory root context safely using standard BASH_SOURCE symbol folding.
+# - Dispatches full control to 'shell_cli_run' to execute parsing, validation, interceptors, and final action loops.
 #
-# Returns:
-# - 0: success (command prepared).
-# - 1: failure (invalid context or missing assets).
+# Returns
+# - 0: Success (application pipeline completed its execution cycle smoothly).
+# - 1+: Failure (framework bootstrap breakdown, missing resource pathways, or client action exceptions).
 shell_cli_execute_command() {
   shell_cli_client_start_engine "$@"
 
@@ -48,6 +45,21 @@ shell_cli_execute_command() {
 }
 
 
+
+
+
+# shell_cli_client_start_engine - Core engine bootloader routing asset injection through local paths or central fetchers.
+#
+# Arguments
+# - $@: Variable array of operational command-line tokens forwarded to downstream preflight loaders.
+#
+# Notes
+# - Sandbox Branch: Traverses relative paths to loop-source disk assets recursively from 'src/' if local mode is engaged.
+# - Production Branch: Defers lifecycle routing to remote downloaders and standard centralized preflight engines.
+# - Explicitly updates 'SHELL_CLI_CORE_LOAD' to lock the environment state once loading hooks complete.
+#
+# Returns
+# - 0: Success (framework source files or centralized asset layouts are successfully linked in memory).
 shell_cli_client_start_engine() {
   if [ "${SHELL_CLI_LOCAL_LOAD_MAIN_PKG_SRC}" = "1" ]; then
     local pathtoMainPkgSRC="$(cd "$(dirname "${BASH_SOURCE}")/../src" && pwd)"
@@ -70,22 +82,22 @@ shell_cli_client_start_engine() {
 
 
 
-# shell_cli_client_load_core_engine - ensure Shell-CLI package availability.
+
+
+# shell_cli_client_load_core_engine - Infrastructure distribution provisioner safeguarding engine deployment from remote endpoints.
 #
-# Arguments:
-# - None (uses global state and environment variables).
+# Arguments
+# - None.
 #
-# Behavior:
-# - Checks if SHELL_CLI_CORE_LOAD indicates the engine is already loaded.
-# - Resolves the central workspace directory under XDG_DATA_HOME or HOME.
-# - Verifies presence of the engine package (package.sh).
-# - If missing, provisions the workspace and attempts download via curl or wget.
-# - On failure, emits error signage and terminates execution.
-# - On success, sources the engine package and sets SHELL_CLI_CORE_LOAD to "0".
+# Notes
+# - Audits central user workspace environment path metrics inside XDG or baseline home directories.
+# - Deploys fallback dynamic command utilities ('curl' or 'wget') to fetch the central core engine asset if absent from disk.
+# - Terminal Breaks: Aborts and forces a destructive 'exit 1' pipeline break if network connection or storage faults happen.
+# - Sources the fetched central distribution pack directly into the active terminal instance workspace tree.
 #
-# Returns:
-# - 0: success (engine package verified and loaded).
-# - 1: failure (download error or missing package).
+# Returns
+# - 0: Success (target engine distribution package discovered, cached, and prepared for preflight initialization).
+# - 1: Structure Fault (unreachable remote endpoints or execution environment setup breaches).
 shell_cli_client_load_core_engine() {
   if [ "${SHELL_CLI_CORE_LOAD}" -ge "0" ]; then
     return 0
