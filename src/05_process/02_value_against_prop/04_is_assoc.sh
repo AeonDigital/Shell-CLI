@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 05_process/02_value_against_prop/04_is_assoc.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_process_flag_value_against_prop_is_assoc — validate against 'is_assoc' property.
+# shell_cli_process_flag_value_against_prop_is_assoc - validate against 'is_assoc' property.
 #
 # Arguments:
 # - $1: required keys configuration for this assoc flag.

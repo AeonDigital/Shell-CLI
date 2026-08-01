@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 05_process/01_single_value_against_prop/07_transform.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_process_flag_single_value_against_prop_transform — apply 'transform' property to single value.
+# shell_cli_process_flag_single_value_against_prop_transform - apply 'transform' property to single value.
 #
 # Arguments:
 # - $1: transformation rule or function reference.

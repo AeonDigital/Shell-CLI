@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 03_metaflag/07_default.sh
-# DESCRIPTION: defines the fallback value automatically assigned if the user 
-#   omits the flag.
-# ==============================================================================
-
 declare -gA METAFLAG_default=()
 METAFLAG_default["long"]="default"
 METAFLAG_default["short"]=""
@@ -36,7 +30,7 @@ METAFLAG_default["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_default — validate metaflag 'default'.
+# shell_cli_metaflag_property_validate_default - validate metaflag 'default'.
 #
 # Arguments:
 # - fval: value (normalized and validated by type).
@@ -75,7 +69,7 @@ shell_cli_metaflag_property_validate_default() {
 
 
 
-# shell_cli_metaflag_check_input_default — check input for metaflag 'default'.
+# shell_cli_metaflag_check_input_default - check input for metaflag 'default'.
 #
 # Arguments:
 # - inputVal: value provided by user input.

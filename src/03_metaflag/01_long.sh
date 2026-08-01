@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 03_metaflag/01_long.sh
-# DESCRIPTION: defines the canonical long name identifier for a command-line 
-#   flag. It acts as a double-dash option (e.g., --scope).
-# ==============================================================================
-
 declare -gA METAFLAG_long=()
 METAFLAG_long["long"]="long"
 METAFLAG_long["short"]=""
@@ -36,7 +30,7 @@ METAFLAG_long["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_long — validate metaflag 'long'.
+# shell_cli_metaflag_property_validate_long - validate metaflag 'long'.
 #
 # Arguments:
 # - fval: value (normalized and validated by type).
@@ -72,7 +66,7 @@ shell_cli_metaflag_property_validate_long() {
 
 
 
-# shell_cli_metaflag_check_input_long — check input for metaflag 'long'.
+# shell_cli_metaflag_check_input_long - check input for metaflag 'long'.
 #
 # Arguments:
 # - inputVal: value provided by user input.

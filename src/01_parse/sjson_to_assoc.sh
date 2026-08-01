@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 01_parse/sjson_to_assoc.sh
-# DESCRIPTION: 
-# ==============================================================================
+# TODO 
 
 # JSON‑like string reconstructed from the input (e.g. {"k1":"v1","k2":"v2"}).
 # In case of error, contains the original string.
@@ -32,16 +29,11 @@ declare SHELL_CLI_PARSE_SJSON_TO_ASSOC_ERR_MESSAGE=""
 
 
 
-# shell_cli_parse_sjson_to_assoc — parse a JSON‑like object string to 
+# shell_cli_parse_sjson_to_assoc - parse a JSON‑like object string to 
 # associative array.
 #
 # Arguments:
-# - value: associative array name or JSON string.
-#
-# Accepted input:
-# - The name of an existing associative array.
-# - A string representing a single‑level JSON object.
-# - An empty string (special case).
+# - value: associative array name or single‑level JSON object string.
 #
 # Behavior:
 # - If the input is the name of an associative array:

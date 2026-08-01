@@ -1,10 +1,5 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 04_compile/00_vars.sh
-# DESCRIPTION: 
-# ==============================================================================
-
 # - Associative array used as a cache to mark which flag families have already
 #   been compiled and validated.
 # - Key: family name (string prefix).

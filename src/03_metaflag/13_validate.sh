@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 03_metaflag/13_validate.sh
-# DESCRIPTION: allows you to configure a series of validator functions to be 
-#   executed against the received value.
-# ==============================================================================
-
 declare -gA METAFLAG_validate=()
 METAFLAG_validate["long"]="validate"
 METAFLAG_validate["short"]=""
@@ -36,7 +30,7 @@ METAFLAG_validate["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_validate — validate metaflag 'validate'.
+# shell_cli_metaflag_property_validate_validate - validate metaflag 'validate'.
 #
 # Arguments:
 # - fval: value (normalized and validated by type).
@@ -83,7 +77,7 @@ shell_cli_metaflag_property_validate_validate() {
 
 
 
-# shell_cli_metaflag_check_input_validate — check input for metaflag 'validate'.
+# shell_cli_metaflag_check_input_validate - check input for metaflag 'validate'.
 #
 # Arguments:
 # - inputVal: value provided by user input (normalized and validated by type).

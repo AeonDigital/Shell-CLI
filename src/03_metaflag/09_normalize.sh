@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 03_metaflag/09_normalize.sh
-# DESCRIPTION: registers the normalization method for the input value by 
-#   pointing to a normalization function.
-# ==============================================================================
-
 declare -gA METAFLAG_normalize=()
 METAFLAG_normalize["long"]="normalize"
 METAFLAG_normalize["short"]=""
@@ -36,7 +30,7 @@ METAFLAG_normalize["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_normalize — validate metaflag 'normalize'.
+# shell_cli_metaflag_property_validate_normalize - validate metaflag 'normalize'.
 #
 # Arguments:
 # - fval: value (normalized and validated by type).
@@ -72,7 +66,7 @@ shell_cli_metaflag_property_validate_normalize() {
 
 
 
-# shell_cli_metaflag_check_input_normalize — check input for metaflag 'normalize'.
+# shell_cli_metaflag_check_input_normalize - check input for metaflag 'normalize'.
 #
 # Arguments:
 # - inputVal: current value provided by user input.
@@ -86,9 +80,9 @@ shell_cli_metaflag_property_validate_normalize() {
 #   * Calls the function with 'inputVal' as its sole argument.
 #   * Captures the function's printed output as the normalized value.
 #   * Checks the function's exit code:
-#       - 0: success → stores the normalized value in
+#       - 0: success = stores the normalized value in
 #         'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'.
-#       - 1: failure → stores the error message
+#       - 1: failure = stores the error message
 #         "normalize function failed ( fn='ruleVal' )" in
 #         'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE'.
 #

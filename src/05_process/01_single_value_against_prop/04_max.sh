@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 05_process/01_single_value_against_prop/04_max.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_process_flag_single_value_against_prop_max — validate single value against 'max' property.
+# shell_cli_process_flag_single_value_against_prop_max - validate single value against 'max' property.
 #
 # Arguments:
 # - $1: maximum threshold allowed for this flag value.

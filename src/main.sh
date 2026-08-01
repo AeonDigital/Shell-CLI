@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: shell_cli/main.sh
-# DESCRIPTION: Framework root lifecycle controller driving auto-sourcing, 
-#              pre-flight parsing, and deterministic execution pipelines.
-# ==============================================================================
-
 shell_cli_run() {
   local mainCmdRootPath="${1}"; shift
   local commandName=$(basename "${mainCmdRootPath}" ".sh")

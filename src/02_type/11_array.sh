@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 02_type/11_array.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_type_normalize_array — normalize 'array' values.
+# shell_cli_type_normalize_array - normalize 'array' values.
 #
 # Arguments:
 # - value: raw input string.
@@ -42,7 +37,7 @@ shell_cli_type_normalize_array() {
 
 
 
-# shell_cli_type_validate_array — validate 'array' values.
+# shell_cli_type_validate_array - validate 'array' values.
 #
 # Arguments:
 # - value: non‑empty normalized string to validate.

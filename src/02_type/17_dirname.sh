@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 02_type/17_dirname.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_type_normalize_dirname — normalize 'dirname' values.
+# shell_cli_type_normalize_dirname - normalize 'dirname' values.
 #
 # Arguments:
 # - value: raw input string.
@@ -26,7 +21,7 @@ shell_cli_type_normalize_dirname() {
 
 
 
-# shell_cli_type_validate_dirname — validate 'dirname' values.
+# shell_cli_type_validate_dirname - validate 'dirname' values.
 #
 # Arguments:
 # - value: non‑empty normalized string to validate.

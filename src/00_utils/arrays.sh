@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 00_utils/arrays.sh
-# DESCRIPTION: General-purpose functions for arrays.
-# ==============================================================================
-
-# shell_cli_utils_array_is_indexed — checks if it is an indexed array.
+# shell_cli_utils_array_is_indexed - checks if it is an indexed array.
 #
 # Arguments:
 # - arrName: name of the array to check
@@ -21,7 +16,7 @@ shell_cli_utils_array_is_indexed() {
   return 1
 }
 
-# shell_cli_utils_array_is_assoc — checks if it is an associative array.
+# shell_cli_utils_array_is_assoc - checks if it is an associative array.
 #
 # Arguments:
 # - arrName: name of the array to check
@@ -37,7 +32,7 @@ shell_cli_utils_array_is_assoc() {
   return 1
 }
 
-# shell_cli_utils_array_indexed_clone — clones the specified indexed 
+# shell_cli_utils_array_indexed_clone - clones the specified indexed 
 # array into a new indexed array with the provided name.
 #
 # Arguments:
@@ -47,9 +42,6 @@ shell_cli_utils_array_is_assoc() {
 # Returns:
 # - 0: if the array was successfully cloned.
 # - 1: if originalArray is not an indexed array, or arguments are missing.
-#
-# Side-Effects:
-# - Creates or overwrites the cloneArrayName as a global indexed array (-g).
 shell_cli_utils_array_indexed_clone() {
   local originalArray="${1}"
   local cloneArrayName="${2}"
@@ -70,7 +62,7 @@ shell_cli_utils_array_indexed_clone() {
   return 0
 }
 
-# shell_cli_utils_array_assoc_clone — clones the specified associative 
+# shell_cli_utils_array_assoc_clone - clones the specified associative 
 # array into a new associative array with the provided name.
 #
 # Arguments:
@@ -80,9 +72,6 @@ shell_cli_utils_array_indexed_clone() {
 # Returns:
 # - 0: if the associative array was successfully cloned.
 # - 1: if originalAssoc is not an associative array, or arguments are missing.
-#
-# Side-Effects:
-# - Creates or overwrites the cloneAssocName as a global associative array (-g).
 shell_cli_utils_array_assoc_clone() {
   local originalAssoc="${1}"
   local cloneAssocName="${2}"

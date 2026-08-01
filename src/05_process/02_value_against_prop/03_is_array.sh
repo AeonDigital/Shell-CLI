@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 05_process/02_value_against_prop/03_is_array.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_process_flag_value_against_prop_is_array — validate flag value against 'is_array' property.
+# shell_cli_process_flag_value_against_prop_is_array - validate flag value against 'is_array' property.
 #
 # Arguments:
 # - $1: minimum number of elements allowed (min_array).

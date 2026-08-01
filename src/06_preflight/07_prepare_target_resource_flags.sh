@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_preflight_prepare_target_resource_flags — validate and compile command flag 
+# shell_cli_preflight_prepare_target_resource_flags - validate and compile command flag 
 # definitions.
 #
 # Arguments:

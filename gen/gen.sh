@@ -20,7 +20,7 @@ declare -g SHELL_CLI_LOCAL_LOAD_MAIN_PKG_SRC="1"
 
 
 
-# shell_cli_execute_command — orchestrate command execution.
+# shell_cli_execute_command - orchestrate command execution.
 #
 # Arguments:
 # - $@: user-provided CLI arguments (command name and context).
@@ -70,7 +70,7 @@ shell_cli_client_start_engine() {
 
 
 
-# shell_cli_client_load_core_engine — ensure Shell-CLI package availability.
+# shell_cli_client_load_core_engine - ensure Shell-CLI package availability.
 #
 # Arguments:
 # - None (uses global state and environment variables).

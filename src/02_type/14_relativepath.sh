@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 02_type/14_relativepath.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_type_normalize_relativepath — normalize 'relativepath' values.
+# shell_cli_type_normalize_relativepath - normalize 'relativepath' values.
 #
 # Arguments:
 # - value: raw input string.
@@ -26,7 +21,7 @@ shell_cli_type_normalize_relativepath() {
 
 
 
-# shell_cli_type_validate_relativepath — validate 'relativepath' values.
+# shell_cli_type_validate_relativepath - validate 'relativepath' values.
 #
 # Arguments:
 # - value: non‑empty normalized string to validate.

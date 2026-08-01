@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 03_metaflag/05_description.sh
-# DESCRIPTION: maps the essential human documentation text used to render help 
-#   modules. 
-# ==============================================================================
-
 declare -gA METAFLAG_description=()
 METAFLAG_description["long"]="description"
 METAFLAG_description["short"]=""
@@ -36,7 +30,7 @@ METAFLAG_description["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_description — validate metaflag 'description'.
+# shell_cli_metaflag_property_validate_description - validate metaflag 'description'.
 #
 # Arguments:
 # - fval: value (normalized and validated by type).
@@ -66,7 +60,7 @@ shell_cli_metaflag_property_validate_description() {
 
 
 
-# shell_cli_metaflag_check_input_description — check input for metaflag 'description'.
+# shell_cli_metaflag_check_input_description - check input for metaflag 'description'.
 #
 # Arguments:
 # - inputVal: value provided by user input.

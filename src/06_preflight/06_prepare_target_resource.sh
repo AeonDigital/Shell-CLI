@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_preflight_prepare_target_resource — validate and prepare command execution context.
+# shell_cli_preflight_prepare_target_resource - validate and prepare command execution context.
 #
 # Arguments:
 # - mainCmdRootPath: base directory where command sources are located.

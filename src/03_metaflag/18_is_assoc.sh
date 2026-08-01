@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 03_metaflag/18_is_assoc.sh
-# DESCRIPTION: declares whether the flag parameter operates as an associative 
-#   map. 
-# ==============================================================================
-
 declare -gA METAFLAG_is_assoc=()
 METAFLAG_is_assoc["long"]="is_assoc"
 METAFLAG_is_assoc["short"]=""
@@ -36,7 +30,7 @@ METAFLAG_is_assoc["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_is_assoc — validate metaflag 'is_assoc'.
+# shell_cli_metaflag_property_validate_is_assoc - validate metaflag 'is_assoc'.
 #
 # Arguments:
 # - fval: value (normalized and validated by type).
@@ -75,7 +69,7 @@ shell_cli_metaflag_property_validate_is_assoc() {
 
 
 
-# shell_cli_metaflag_check_input_is_assoc — check input for metaflag 'is_assoc'.
+# shell_cli_metaflag_check_input_is_assoc - check input for metaflag 'is_assoc'.
 #
 # Arguments:
 # - inputVal: value provided by user input.

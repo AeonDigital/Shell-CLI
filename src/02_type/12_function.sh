@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 02_type/12_function.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_type_normalize_function — normalize 'function' values.
+# shell_cli_type_normalize_function - normalize 'function' values.
 #
 # Arguments:
 # - value: raw input string.
@@ -26,7 +21,7 @@ shell_cli_type_normalize_function() {
 
 
 
-# shell_cli_type_validate_function — validate 'function' values.
+# shell_cli_type_validate_function - validate 'function' values.
 #
 # Arguments:
 # - value: non‑empty normalized string to validate.

@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 05_process/02_value_against_prop/02_default.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_process_flag_value_against_prop_default — validate flag value against 'default' property.
+# shell_cli_process_flag_value_against_prop_default - validate flag value against 'default' property.
 #
 # Arguments:
 # - $1: current value of the 'default' property (default value to apply if input is empty).

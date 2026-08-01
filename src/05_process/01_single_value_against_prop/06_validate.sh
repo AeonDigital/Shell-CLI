@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 05_process/01_single_value_against_prop/06_validate.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_process_flag_single_value_against_prop_validate — validate single value against custom 'validate' property.
+# shell_cli_process_flag_single_value_against_prop_validate - validate single value against custom 'validate' property.
 #
 # Arguments:
 # - $1: custom validation rule or function reference.

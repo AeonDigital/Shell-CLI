@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 02_type/16_filename.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_type_normalize_filename — normalize 'filename' values.
+# shell_cli_type_normalize_filename - normalize 'filename' values.
 #
 # Arguments:
 # - value: raw input string.
@@ -26,7 +21,7 @@ shell_cli_type_normalize_filename() {
 
 
 
-# shell_cli_type_validate_filename — validate 'filename' values.
+# shell_cli_type_validate_filename - validate 'filename' values.
 #
 # Arguments:
 # - value: non‑empty normalized string to validate.
@@ -43,7 +38,7 @@ shell_cli_type_normalize_filename() {
 #   * HTML boundaries (<, >).
 #   * Quotes (").
 #   * Pipe (|).
-#   * Colon (:) — reserved in Windows filenames.
+#   * Colon (:) - reserved in Windows filenames.
 # - Performs a cross‑platform check for Windows drive letters:
 #   * Accepts values like "C:" only if they match the drive letter pattern.
 #   * Rejects other uses of ':' in filenames.

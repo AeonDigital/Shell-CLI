@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 02_type/13_path.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_type_normalize_path — normalize 'path' values.
+# shell_cli_type_normalize_path - normalize 'path' values.
 #
 # Arguments:
 # - value: raw input string.
@@ -26,7 +21,7 @@ shell_cli_type_normalize_path() {
 
 
 
-# shell_cli_type_validate_path — validate 'path' values.
+# shell_cli_type_validate_path - validate 'path' values.
 #
 # Arguments:
 # - value: non‑empty normalized string to validate.

@@ -1,29 +1,18 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 00_utils/math.sh
-# DESCRIPTION: Native arbitrary-precision string math library processing 
-#              decimal and float comparison boundaries in pure Bash.
-# ==============================================================================
-
-# shell_cli_utils_math_compare_float — compares two string-formatted decimal numbers.
+# shell_cli_utils_math_compare_float - compares two string-formatted decimal numbers.
 #
 # Arguments:
 # - val1: The first string decimal number to compare. Supports negative decimals
-#     (e.g., "-5.23"). Automatically normalizes incomplete decimals (e.g., ".5" → "0.5").
+#     (e.g., "-5.23"). Automatically normalizes incomplete decimals (e.g., ".5" = "0.5").
 # - val2: The second string decimal number acting as the boundary threshold.
 #     Supports the same negative/decimal formatting as val1.
-# - strict_mode: If "1", forces exclusive inequality (e.g., > or < instead of >= or <=).
+# - strict: If "1", forces exclusive inequality (e.g., > or < instead of >= or <=).
 #     Defaults to "0" (inclusive inequality).
 #
 # Returns:
-# - 0: If val1 is strictly greater than val2 (or equal when strict_mode=0).
-# - 1: If val1 is less than val2 (or equal when strict_mode=1).
-#
-# Special Cases:
-# - Negative number handling: Positive values always exceed negative values.
-# - Zero equality: Both -0.0 and 0.0 are treated as mathematically identical.
-# - Decimal normalization: Partial decimals (.5) are internally normalized to 0.5.
+# - 0: If val1 is strictly greater than val2 (or equal when strict=0).
+# - 1: If val1 is less than val2 (or equal when strict=1).
 shell_cli_utils_math_compare_float() {
   local val1="${1}"
   local val2="${2}"
@@ -103,7 +92,7 @@ shell_cli_utils_math_compare_float() {
   return 0
 }
 
-# shell_cli_utils_math_is_greater_or_equal — asserts if val1 is higher or equal 
+# shell_cli_utils_math_is_greater_or_equal - asserts if val1 is higher or equal 
 # than val2 bounds.
 #
 # Arguments:
@@ -118,7 +107,7 @@ shell_cli_utils_math_is_greater_or_equal() {
   return $?
 }
 
-# shell_cli_utils_math_is_less_or_equal — asserts if val1 is lower or equal 
+# shell_cli_utils_math_is_less_or_equal - asserts if val1 is lower or equal 
 # than val2 bounds.
 #
 # Arguments:
@@ -133,7 +122,7 @@ shell_cli_utils_math_is_less_or_equal() {
   return $?
 }
 
-# shell_cli_utils_math_is_greater_than — asserts if val1 is strictly greater 
+# shell_cli_utils_math_is_greater_than - asserts if val1 is strictly greater 
 # than val2 bounds.
 #
 # Arguments:
@@ -148,7 +137,7 @@ shell_cli_utils_math_is_greater_than() {
   return $?
 }
 
-# shell_cli_utils_math_is_less_than — asserts if val1 is strictly less 
+# shell_cli_utils_math_is_less_than - asserts if val1 is strictly less 
 # than val2 bounds.
 #
 # Arguments:

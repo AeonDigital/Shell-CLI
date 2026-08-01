@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 02_type/00_main.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_type_normalize_main — normalize string values.
+# shell_cli_type_normalize_main - normalize string values.
 #
 # Arguments:
 # - value: raw input string.
@@ -17,10 +12,6 @@
 #   '\n' (LF), '\r' (CR), and '\t' (HT).
 # - trim: use '1' to trim leading and trailing whitespace, including
 #   spaces, tabs, and boundary '\n' and '\r'.
-#
-# Behavior:
-# - Removes control characters depending on the flags provided.
-# - Always processes the input string and outputs the normalized result.
 #
 # Returns:
 # - Outputs the normalized string to stdout.
@@ -68,7 +59,7 @@ shell_cli_type_normalize_main() {
 
 
 
-# shell_cli_type_validate_main — validate string values.
+# shell_cli_type_validate_main - validate string values.
 #
 # Arguments:
 # - value: non‑empty normalized string to validate.
@@ -76,14 +67,6 @@ shell_cli_type_normalize_main() {
 #   code control characters (except '\n', '\t', and '\r').
 # - invalidateTextCtrlChars: use '1' to invalidate any string containing
 #   text control characters '\n', '\r', or '\t'.
-#
-# Behavior:
-# - Checks the input string for invalid characters based on the flags provided.
-# - If code control characters are found and 'invalidateCodeCtrlChars' is set,
-#   the function returns status 10.
-# - If text control characters are found and 'invalidateTextCtrlChars' is set,
-#   the function returns status 10.
-# - If no invalid characters are found, the function returns status 0.
 #
 # Returns:
 # - 0: validation success.
@@ -161,19 +144,11 @@ declare -g SHELL_CLI_TYPE_NORMALIZE_TMP_ARRAY_ERR_MESSAGE=""
 
 
 
-# shell_cli_type_normalize_main_array — normalize indexed array values.
+# shell_cli_type_normalize_main_array - normalize indexed array values.
 #
 # Arguments:
 # - value: a string containing the name of an indexed array, or a JSON
 #          array string representing the same.
-#
-# Behavior:
-# - Delegates parsing to 'shell_cli_parse_sarray_to_array'.
-# - Copies the parsed results into the temporary normalization variables:
-#   * SHELL_CLI_TYPE_NORMALIZE_TMP_ARRAY_STRING
-#   * SHELL_CLI_TYPE_NORMALIZE_TMP_ARRAY_NAME
-#   * SHELL_CLI_TYPE_NORMALIZE_TMP_ARRAY
-#   * SHELL_CLI_TYPE_NORMALIZE_TMP_ARRAY_ERR_MESSAGE
 #
 # Returns:
 # - 0: normalization success.
@@ -194,25 +169,12 @@ shell_cli_type_normalize_main_array() {
   return "${parseStatus}"
 }
 
-# shell_cli_type_normalize_main_array_types — general‑purpose normalization 
+# shell_cli_type_normalize_main_array_types - general‑purpose normalization 
 # function for any type that uses an indexed array as value.
 #
 # Arguments:
 # - value: a string containing the name of an indexed array, or a JSON
 #          array string representing the same.
-#
-# Behavior:
-# - First normalizes the input string using 'shell_cli_type_normalize_main'
-#   (removing code control characters and trimming).
-# - Then attempts to parse the normalized string with 
-#   'shell_cli_type_normalize_main_array'.
-# - If parsing succeeds:
-#   * Returns the name of the temporary indexed array 
-#     'SHELL_CLI_TYPE_NORMALIZE_TMP_ARRAY', which holds the parsed values.
-#   * If the original input was already a valid indexed array name,
-#     returns that name instead.
-# - If parsing fails:
-#   * Returns the original serialized JSON string exactly as received.
 #
 # Returns:
 # - Always echoes a string to stdout:
@@ -251,21 +213,16 @@ declare -g SHELL_CLI_TYPE_VALIDATE_TMP_SELECTED_ARRAY_VALUE=""
 
 
 
-# shell_cli_type_validate_main_array_types — general validation function 
+# shell_cli_type_validate_main_array_types - general validation function 
 # for any type that uses an indexed array as value.
+#
+# If a match is found:
+#   * Stores the matched index in 'SHELL_CLI_TYPE_VALIDATE_TMP_SELECTED_ARRAY_INDEX'.
+#   * Stores the matched value in 'SHELL_CLI_TYPE_VALIDATE_TMP_SELECTED_ARRAY_VALUE'.
 #
 # Arguments:
 # - value: non‑empty normalized string to validate.
 # - aux: name of the indexed array containing the acceptable values.
-#
-# Behavior:
-# - First enforces strict terminal and structural string safety using 
-#   'shell_cli_type_normalize_main'.
-# - Ensures that 'aux' is a valid indexed array.
-# - Checks if the given value matches any index or value in the array.
-# - If a match is found:
-#   * Stores the matched index in 'SHELL_CLI_TYPE_VALIDATE_TMP_SELECTED_ARRAY_INDEX'.
-#   * Stores the matched value in 'SHELL_CLI_TYPE_VALIDATE_TMP_SELECTED_ARRAY_VALUE'.
 #
 # Returns:
 # - 0: validation success (value matches an index or value).
@@ -345,7 +302,7 @@ declare -g SHELL_CLI_TYPE_NORMALIZE_TMP_ASSOC_ERR_MESSAGE=""
 
 
 
-# shell_cli_type_normalize_main_assoc — normalize associative array values.
+# shell_cli_type_normalize_main_assoc - normalize associative array values.
 #
 # Arguments:
 # - value: a string containing the name of an associative array, or a JSON
@@ -386,25 +343,12 @@ shell_cli_type_normalize_main_assoc() {
   return "${parseStatus}"
 }
 
-# shell_cli_type_normalize_main_assoc_types — general‑purpose normalization 
+# shell_cli_type_normalize_main_assoc_types - general‑purpose normalization 
 # function for any type that uses an associative array as value.
 #
 # Arguments:
 # - value: a string containing the name of an associative array, or a JSON
 #          object string representing the same.
-#
-# Behavior:
-# - First normalizes the input string using 'shell_cli_type_normalize_main'
-#   (removing code control characters and trimming).
-# - Then attempts to parse the normalized string with 
-#   'shell_cli_type_normalize_main_assoc'.
-# - If parsing succeeds:
-#   * Returns the name of the temporary associative array 
-#     'SHELL_CLI_TYPE_NORMALIZE_TMP_ASSOC', which holds the parsed values.
-#   * If the original input was already a valid associative array name,
-#     returns that name instead.
-# - If parsing fails:
-#   * Returns the original serialized JSON string exactly as received.
 #
 # Returns:
 # - Always echoes a string to stdout:
@@ -443,22 +387,16 @@ declare -g SHELL_CLI_TYPE_VALIDATE_TMP_SELECTED_ASSOC_VALUE=""
 
 
 
-# shell_cli_type_validate_main_assoc_types — general validation function 
+# shell_cli_type_validate_main_assoc_types - general validation function 
 # for any type that uses an associative array as value.
+#
+# If a match is found:
+#   * Stores the matched key in 'SHELL_CLI_TYPE_VALIDATE_TMP_ASSOC_SELECTED_KEY'.
+#   * Stores the matched value in 'SHELL_CLI_TYPE_VALIDATE_TMP_SELECTED_ASSOC_VALUE'.
 #
 # Arguments:
 # - value: non‑empty normalized string to validate.
 # - aux: name of the associative array containing the acceptable values.
-#
-# Behavior:
-# - First enforces strict terminal and structural string safety using 
-#   'shell_cli_type_normalize_main'.
-# - Ensures that 'aux' is a valid associative array.
-# - Checks if the given value matches any key or value in the associative 
-#   array map.
-# - If a match is found:
-#   * Stores the matched key in 'SHELL_CLI_TYPE_VALIDATE_TMP_ASSOC_SELECTED_KEY'.
-#   * Stores the matched value in 'SHELL_CLI_TYPE_VALIDATE_TMP_SELECTED_ASSOC_VALUE'.
 #
 # Returns:
 # - 0: validation success (value matches a key or value).

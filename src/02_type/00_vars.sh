@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 02_type/00_vars.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# SHELL_CLI_TYPE — Global associative array indexing all primitive, structured, 
+# SHELL_CLI_TYPE - Global associative array indexing all primitive, structured, 
 # and system types supported by the core engine.
 #
 # Purpose:
@@ -37,14 +32,6 @@
 #     - filename, filepath
 #     - dirname, dirpath
 #     - url, fullurl, relativeurl
-#
-# Behavior:
-# - Acts as a whitelist: only values present in SHELL_CLI_TYPE are considered 
-#   valid type definitions.
-# - Prevents misconfiguration at CLI "pre-compilation" stage by rejecting 
-#   unknown or unsupported types.
-# - Does not perform normalization or validation of user input directly; 
-#   instead, it defines which type-specific pipelines will be applied later.
 #
 declare -gA SHELL_CLI_TYPE=(
 

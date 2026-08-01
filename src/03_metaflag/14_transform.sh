@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 03_metaflag/14_transform.sh
-# DESCRIPTION: It allows for the configuration of a series of transformation 
-#   functions to be applied to the received value after its validation.
-# ==============================================================================
-
 declare -gA METAFLAG_transform=()
 METAFLAG_transform["long"]="transform"
 METAFLAG_transform["short"]=""
@@ -36,7 +30,7 @@ METAFLAG_transform["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_transform — validate metaflag 'transform'.
+# shell_cli_metaflag_property_validate_transform - validate metaflag 'transform'.
 #
 # Arguments:
 # - fval: value (normalized and validated by type).
@@ -83,7 +77,7 @@ shell_cli_metaflag_property_validate_transform() {
 
 
 
-# shell_cli_metaflag_check_input_transform — check input for metaflag 'transform'.
+# shell_cli_metaflag_check_input_transform - check input for metaflag 'transform'.
 #
 # Arguments:
 # - inputVal: value provided by user input (already validated).
@@ -95,8 +89,8 @@ shell_cli_metaflag_property_validate_transform() {
 # - Each function is called with the current value as its sole argument.
 # - Captures the function's printed output as the new transformed value.
 # - Checks the function's exit code:
-#   * 0: success → updates the value and continues to the next function.
-#   * 1: failure → stops immediately, stores an error message in
+#   * 0: success = updates the value and continues to the next function.
+#   * 1: failure = stops immediately, stores an error message in
 #     'SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE', and returns error code 1.
 # - If all functions succeed, stores the final transformed value in
 #   'SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE'.

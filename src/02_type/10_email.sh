@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 02_type/10_email.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_type_normalize_email — normalize 'email' values.
+# shell_cli_type_normalize_email - normalize 'email' values.
 #
 # Arguments:
 # - value: raw input string.
@@ -26,7 +21,7 @@ shell_cli_type_normalize_email() {
 
 
 
-# shell_cli_type_validate_email — validate 'email' values.
+# shell_cli_type_validate_email - validate 'email' values.
 #
 # Arguments:
 # - value: non‑empty normalized string to validate.
@@ -40,7 +35,7 @@ shell_cli_type_normalize_email() {
 #   * Domain part: letters, digits, hyphens, dots, or punycode prefix 'xn--'.
 #   * TLD: at least 2 alphabetic characters.
 # - Supports internationalized domain names (IDN) via punycode, e.g.:
-#   * "bücher.de" → "xn--bcher-kva.de"
+#   * "bücher.de" = "xn--bcher-kva.de"
 # - Does not check for actual domain existence or deliverability,
 #   only structural correctness.
 #

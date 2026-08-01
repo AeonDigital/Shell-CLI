@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 03_metaflag/15_is_array.sh
-# DESCRIPTION: declares whether the flag parameter accepts a structured 
-#   collection. In this case, it must be a string in JSON array format.
-# ==============================================================================
-
 declare -gA METAFLAG_is_array=()
 METAFLAG_is_array["long"]="is_array"
 METAFLAG_is_array["short"]=""
@@ -36,7 +30,7 @@ METAFLAG_is_array["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_is_array — validate metaflag 'is_array'.
+# shell_cli_metaflag_property_validate_is_array - validate metaflag 'is_array'.
 #
 # Arguments:
 # - fval: value (normalized and validated by type).
@@ -75,7 +69,7 @@ shell_cli_metaflag_property_validate_is_array() {
 
 
 
-# shell_cli_metaflag_check_input_is_array — check input for metaflag 'is_array'.
+# shell_cli_metaflag_check_input_is_array - check input for metaflag 'is_array'.
 #
 # Arguments:
 # - inputVal: value provided by user input.

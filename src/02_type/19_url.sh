@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 02_type/19_url.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_type_normalize_url — normalize 'url' values.
+# shell_cli_type_normalize_url - normalize 'url' values.
 #
 # Arguments:
 # - value: raw input string.
@@ -26,7 +21,7 @@ shell_cli_type_normalize_url() {
 
 
 
-# shell_cli_type_validate_url — validate 'url' values.
+# shell_cli_type_validate_url - validate 'url' values.
 #
 # Arguments:
 # - value: non‑empty normalized string to validate.
@@ -35,9 +30,9 @@ shell_cli_type_normalize_url() {
 # Behavior:
 # - First enforces strict string safety using 'shell_cli_type_validate_string'.
 # - Attempts validation using two complementary routines:
-#   * 'shell_cli_type_validate_fullurl' — checks for absolute URLs
+#   * 'shell_cli_type_validate_fullurl' - checks for absolute URLs
 #     with scheme (http, https, ftp, etc.).
-#   * 'shell_cli_type_validate_relativeurl' — checks for relative URL
+#   * 'shell_cli_type_validate_relativeurl' - checks for relative URL
 #     structures (e.g., "/path/resource").
 # - If either validation succeeds, the value is considered valid.
 # - If both fail, the value is considered invalid.

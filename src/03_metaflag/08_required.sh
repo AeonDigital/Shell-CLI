@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 03_metaflag/08_required.sh
-# DESCRIPTION: specifies whether the flag must be filled in, either by the user 
-#   or via a default value.
-# ==============================================================================
-
 declare -gA METAFLAG_required=()
 METAFLAG_required["long"]="required"
 METAFLAG_required["short"]=""
@@ -36,7 +30,7 @@ METAFLAG_required["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_required — validate metaflag 'required'.
+# shell_cli_metaflag_property_validate_required - validate metaflag 'required'.
 #
 # Arguments:
 # - fval: value (normalized and validated by type).
@@ -66,7 +60,7 @@ shell_cli_metaflag_property_validate_required() {
 
 
 
-# shell_cli_metaflag_check_input_required — check input for metaflag 'required'.
+# shell_cli_metaflag_check_input_required - check input for metaflag 'required'.
 #
 # Arguments:
 # - inputVal: value provided by user input.

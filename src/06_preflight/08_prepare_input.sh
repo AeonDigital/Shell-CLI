@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_preflight_prepare_input — parse and validate raw CLI input flags.
+# shell_cli_preflight_prepare_input - parse and validate raw CLI input flags.
 #
 # Arguments:
 # - $@: user-provided CLI arguments (flags and values).

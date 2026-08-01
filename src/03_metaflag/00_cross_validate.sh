@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 03_metaflag/00_cross_validate.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_metaflag_property_cross_validate_min_max — cross-validate metaflags 
+# shell_cli_metaflag_property_cross_validate_min_max - cross-validate metaflags 
 # 'min' and 'max'.
 #
 # Arguments:
@@ -92,7 +87,7 @@ shell_cli_metaflag_property_cross_validate_min_max() {
   return 0
 }
 
-# shell_cli_metaflag_property_cross_validate_min_array_max_array — cross-validate 
+# shell_cli_metaflag_property_cross_validate_min_array_max_array - cross-validate 
 # metaflags 'min_array' and 'max_array'.
 #
 # Arguments:

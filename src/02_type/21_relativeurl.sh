@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 02_type/21_relativeurl.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_type_normalize_relativeurl — normalize 'relativeurl' values.
+# shell_cli_type_normalize_relativeurl - normalize 'relativeurl' values.
 #
 # Arguments:
 # - value: raw input string.
@@ -26,7 +21,7 @@ shell_cli_type_normalize_relativeurl() {
 
 
 
-# shell_cli_type_validate_relativeurl — validate 'relativeurl' values.
+# shell_cli_type_validate_relativeurl - validate 'relativeurl' values.
 #
 # Arguments:
 # - value: non‑empty normalized string to validate.

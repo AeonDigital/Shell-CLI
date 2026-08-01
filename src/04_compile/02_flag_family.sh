@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 04_flag/01_check_rules.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_compile_flag_family — compile all flags in a family.
+# shell_cli_compile_flag_family - compile all flags in a family.
 #
 # Arguments:
 # - flagFamily: prefix name of the flag definitions to be checked.

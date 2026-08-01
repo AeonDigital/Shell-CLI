@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 05_process/01_single_value_against_prop/02_normalize.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_process_flag_single_value_against_prop_normalize — validate single value against 'normalize' property.
+# shell_cli_process_flag_single_value_against_prop_normalize - validate single value against 'normalize' property.
 #
 # Arguments:
 # - $1: normalization configuration for this flag.

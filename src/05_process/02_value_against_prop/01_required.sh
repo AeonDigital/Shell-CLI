@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 05_process/02_value_against_prop/01_required.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_process_flag_value_against_prop_required — validate flag value against 'required' property.
+# shell_cli_process_flag_value_against_prop_required - validate flag value against 'required' property.
 #
 # Arguments:
 # - $1: current value of the 'required' property (boolean indicator).

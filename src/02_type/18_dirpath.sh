@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 02_type/18_dirpath.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_type_normalize_dirpath — normalize 'dirpath' values.
+# shell_cli_type_normalize_dirpath - normalize 'dirpath' values.
 #
 # Arguments:
 # - value: raw input string.
@@ -26,7 +21,7 @@ shell_cli_type_normalize_dirpath() {
 
 
 
-# shell_cli_type_validate_dirpath — validate 'dirpath' values.
+# shell_cli_type_validate_dirpath - validate 'dirpath' values.
 #
 # Arguments:
 # - value: non‑empty normalized string to validate.

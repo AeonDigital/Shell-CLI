@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 02_type/09_datetime.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_type_normalize_datetime — normalize 'datetime' values.
+# shell_cli_type_normalize_datetime - normalize 'datetime' values.
 #
 # Arguments:
 # - value: raw input string.
@@ -53,7 +48,7 @@ shell_cli_type_normalize_datetime() {
 
 
 
-# shell_cli_type_validate_datetime — validate 'datetime' values (YYYY-MM-DD HH:MM:SS).
+# shell_cli_type_validate_datetime - validate 'datetime' values (YYYY-MM-DD HH:MM:SS).
 #
 # Arguments:
 # - value: non‑empty normalized string to validate.

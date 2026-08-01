@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 03_metaflag/03_type.sh
-# DESCRIPTION: defines the primitive, structured, or system classification of 
-#   the flag data.
-# ==============================================================================
-
 declare -gA METAFLAG_type=()
 METAFLAG_type["long"]="type"
 METAFLAG_type["short"]=""
@@ -36,7 +30,7 @@ METAFLAG_type["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_type — validate metaflag 'type'.
+# shell_cli_metaflag_property_validate_type - validate metaflag 'type'.
 #
 # Arguments:
 # - fval: value (normalized and validated by type).
@@ -67,7 +61,7 @@ shell_cli_metaflag_property_validate_type() {
 
 
 
-# shell_cli_metaflag_check_input_type — check input for metaflag 'type'.
+# shell_cli_metaflag_check_input_type - check input for metaflag 'type'.
 #
 # Arguments:
 # - inputVal: value provided by user input.

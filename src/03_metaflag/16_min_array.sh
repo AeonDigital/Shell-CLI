@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 03_metaflag/16_min_array.sh
-# DESCRIPTION: defines the minimum number of elements required inside a 
-#   collection. 
-# ==============================================================================
-
 declare -gA METAFLAG_min_array=()
 METAFLAG_min_array["long"]="min_array"
 METAFLAG_min_array["short"]=""
@@ -36,7 +30,7 @@ METAFLAG_min_array["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_min_array — validate metaflag 'min_array'.
+# shell_cli_metaflag_property_validate_min_array - validate metaflag 'min_array'.
 #
 # Arguments:
 # - fval: value (normalized and validated by type).
@@ -75,7 +69,7 @@ shell_cli_metaflag_property_validate_min_array() {
 
 
 
-# shell_cli_metaflag_check_input_min_array — check input for metaflag 'min_array'.
+# shell_cli_metaflag_check_input_min_array - check input for metaflag 'min_array'.
 #
 # Arguments:
 # - inputVal: array name containing values provided by user input.

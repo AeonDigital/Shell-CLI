@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 03_metaflag/17_max_array.sh
-# DESCRIPTION: defines the maximum number of elements allowed inside a 
-#   collection. 
-# ==============================================================================
-
 declare -gA METAFLAG_max_array=()
 METAFLAG_max_array["long"]="max_array"
 METAFLAG_max_array["short"]=""
@@ -36,7 +30,7 @@ METAFLAG_max_array["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_max_array — validate metaflag 'max_array'.
+# shell_cli_metaflag_property_validate_max_array - validate metaflag 'max_array'.
 #
 # Arguments:
 # - fval: value (normalized and validated by type).
@@ -75,7 +69,7 @@ shell_cli_metaflag_property_validate_max_array() {
 
 
 
-# shell_cli_metaflag_check_input_max_array — check input for metaflag 'max_array'.
+# shell_cli_metaflag_check_input_max_array - check input for metaflag 'max_array'.
 #
 # Arguments:
 # - inputVal: array name containing values provided by user input.

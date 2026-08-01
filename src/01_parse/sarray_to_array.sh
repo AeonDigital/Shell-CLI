@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 01_parse/sarray_to_array.sh
-# DESCRIPTION: 
-# ==============================================================================
+# TODO 
 
 # JSON‑like string reconstructed from the input (e.g. ["v1","v2"]).
 # In case of error, contains the original string.
@@ -25,16 +22,11 @@ declare SHELL_CLI_PARSE_SARRAY_TO_ARRAY_ERR_MESSAGE=""
 
 
 
-# shell_cli_parse_sarray_to_array — parse a JSON‑like array string to 
+# shell_cli_parse_sarray_to_array - parse a JSON‑like array string to 
 # indexed array.
 #
 # Arguments:
-# - value: indexed array name or array string.
-#
-# Accepted input:
-# - The name of an existing indexed array.
-# - A string representing a single‑level JSON‑like array.
-# - An empty string (special case).
+# - value: indexed array name or single‑level JSON‑like array string.
 #
 # Behavior:
 # - If the input is the name of an indexed array:

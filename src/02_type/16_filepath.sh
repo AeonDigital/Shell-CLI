@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 02_type/16_filepath.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_type_normalize_filepath — normalize 'filepath' values.
+# shell_cli_type_normalize_filepath - normalize 'filepath' values.
 #
 # Arguments:
 # - value: raw input string.
@@ -26,7 +21,7 @@ shell_cli_type_normalize_filepath() {
 
 
 
-# shell_cli_type_validate_filepath — validate 'filepath' values.
+# shell_cli_type_validate_filepath - validate 'filepath' values.
 #
 # Arguments:
 # - value: non‑empty normalized string to validate.

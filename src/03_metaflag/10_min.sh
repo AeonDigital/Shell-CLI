@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 03_metaflag/10_min.sh
-# DESCRIPTION: enforces the minimum boundary size constraint allowed for the 
-#   payload. Evaluates value based on the primary type field.
-# ==============================================================================
-
 declare -gA METAFLAG_min=()
 METAFLAG_min["long"]="min"
 METAFLAG_min["short"]=""
@@ -36,7 +30,7 @@ METAFLAG_min["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_min — validate metaflag 'min'.
+# shell_cli_metaflag_property_validate_min - validate metaflag 'min'.
 #
 # Arguments:
 # - fval: value (normalized and validated by type).
@@ -65,7 +59,7 @@ shell_cli_metaflag_property_validate_min() {
 
 
 
-# shell_cli_metaflag_check_input_min — check input for metaflag 'min'.
+# shell_cli_metaflag_check_input_min - check input for metaflag 'min'.
 #
 # Arguments:
 # - inputVal: value provided by user input (normalized and validated by type).

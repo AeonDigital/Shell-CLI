@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 
-# DESCRIPTION: 
-# ==============================================================================
-
-
 declare -g SHELL_CLI_HANDLER_INTERACTIVE_COLUMNS="100"
 declare -g SHELL_CLI_HANDLER_INTERACTIVE_SEPARATOR_CHAR="="
 declare -g SHELL_CLI_HANDLER_INTERACTIVE_SEPARATOR=""

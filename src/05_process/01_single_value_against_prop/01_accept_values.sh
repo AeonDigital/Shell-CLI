@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 05_process/01_single_value_against_prop/01_accept_values.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_process_flag_single_value_against_prop_accept_values — validate single value against 'accept_values' property.
+# shell_cli_process_flag_single_value_against_prop_accept_values - validate single value against 'accept_values' property.
 #
 # Arguments:
 # - $1: list of accepted values for this flag.

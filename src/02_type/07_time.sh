@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 02_type/07_time.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_type_normalize_time — normalize 'time' values.
+# shell_cli_type_normalize_time - normalize 'time' values.
 #
 # Arguments:
 # - value: raw input string.
@@ -13,10 +8,10 @@
 # Behavior:
 # - Applies string normalization using 'shell_cli_type_normalize_string'.
 # - Adjusts the format based on input length:
-#   * Length 2 → "HH" → converted to "HH:00:00".
-#   * Length 5 → "HH:MM" → converted to "HH:MM:00".
-#   * Length 8 → "HH:MM:SS" → accepted as fully formed.
-#   * Any other length → returned unchanged.
+#   * Length 2 = "HH" = converted to "HH:00:00".
+#   * Length 5 = "HH:MM" = converted to "HH:MM:00".
+#   * Length 8 = "HH:MM:SS" = accepted as fully formed.
+#   * Any other length = returned unchanged.
 # - Does not guarantee that the resulting string is a valid time; 
 #   only ensures a consistent format when possible.
 #
@@ -38,7 +33,7 @@ shell_cli_type_normalize_time() {
 
 
 
-# shell_cli_type_validate_time — validate 'time' values (HH:MM:SS).
+# shell_cli_type_validate_time - validate 'time' values (HH:MM:SS).
 #
 # Arguments:
 # - value: non‑empty normalized string to validate.

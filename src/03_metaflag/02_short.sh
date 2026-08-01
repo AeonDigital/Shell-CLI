@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 03_metaflag/02_short.sh
-# DESCRIPTION: defines the short alphanumeric alias for a command-line flag.
-#   It acts as a single-dash alternative (e.g., -s).
-# ==============================================================================
-
 declare -gA METAFLAG_short=()
 METAFLAG_short["long"]="short"
 METAFLAG_short["short"]=""
@@ -36,7 +30,7 @@ METAFLAG_short["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_short — validate metaflag 'short'.
+# shell_cli_metaflag_property_validate_short - validate metaflag 'short'.
 #
 # Arguments:
 # - fval: value (normalized and validated by type).
@@ -80,7 +74,7 @@ shell_cli_metaflag_property_validate_short() {
 
 
 
-# shell_cli_metaflag_check_input_short — check input for metaflag 'short'.
+# shell_cli_metaflag_check_input_short - check input for metaflag 'short'.
 #
 # Arguments:
 # - inputVal: value provided by user input.

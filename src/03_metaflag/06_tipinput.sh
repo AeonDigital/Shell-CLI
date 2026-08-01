@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 03_metaflag/06_tipinput.sh
-# DESCRIPTION: specifies the custom interactive question or behavioral guide 
-#    displayed to the user when operates under strict interactive mode.
-# ==============================================================================
-
 declare -gA METAFLAG_tipinput=()
 METAFLAG_tipinput["long"]="tipinput"
 METAFLAG_tipinput["short"]=""
@@ -36,7 +30,7 @@ METAFLAG_tipinput["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_tipinput — validate metaflag 'tipinput'.
+# shell_cli_metaflag_property_validate_tipinput - validate metaflag 'tipinput'.
 #
 # Arguments:
 # - fval: value (normalized and validated by type).
@@ -57,7 +51,7 @@ shell_cli_metaflag_property_validate_tipinput() {
 
 
 
-# shell_cli_metaflag_check_input_tipinput — check input for metaflag 'tipinput'.
+# shell_cli_metaflag_check_input_tipinput - check input for metaflag 'tipinput'.
 #
 # Arguments:
 # - inputVal: value provided by user input.

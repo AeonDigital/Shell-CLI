@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 02_type/05_int.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_type_normalize_int — normalize 'int' values.
+# shell_cli_type_normalize_int - normalize 'int' values.
 #
 # Arguments:
 # - value: raw input string.
@@ -26,7 +21,7 @@ shell_cli_type_normalize_int() {
 
 
 
-# shell_cli_type_validate_int — validate 'int' values.
+# shell_cli_type_validate_int - validate 'int' values.
 #
 # Arguments:
 # - value: non‑empty normalized string to validate.

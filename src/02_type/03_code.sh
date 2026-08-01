@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 02_type/03_code.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_type_normalize_code — normalize 'code' values.
+# shell_cli_type_normalize_code - normalize 'code' values.
 #
 # Arguments:
 # - value: raw input string.
@@ -22,7 +17,7 @@ shell_cli_type_normalize_code() {
 
 
 
-# shell_cli_type_validate_code — validate 'code' values.
+# shell_cli_type_validate_code - validate 'code' values.
 #
 # Arguments:
 # - value: non‑empty normalized string to validate.

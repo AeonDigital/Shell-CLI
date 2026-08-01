@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 04_compile/01_flagsh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_compile_flag — compile flag definition.
+# shell_cli_compile_flag - compile flag definition.
 #
 # Arguments:
 # - flagVarName: name of the associative array representing the flag to be checked.

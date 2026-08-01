@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 05_process/01_single_value_against_prop/05_regex.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_process_flag_single_value_against_prop_regex — validate single value against 'regex' property.
+# shell_cli_process_flag_single_value_against_prop_regex - validate single value against 'regex' property.
 #
 # Arguments:
 # - $1: regex pattern to match against.

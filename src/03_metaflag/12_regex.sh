@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 03_metaflag/12_regex.sh
-# DESCRIPTION: provisions an optional regular expression verification 
-#   constraint pattern. 
-# ==============================================================================
-
 declare -gA METAFLAG_regex=()
 METAFLAG_regex["long"]="regex"
 METAFLAG_regex["short"]=""
@@ -36,7 +30,7 @@ METAFLAG_regex["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_regex — validate metaflag 'regex'.
+# shell_cli_metaflag_property_validate_regex - validate metaflag 'regex'.
 #
 # Arguments:
 # - fval: value (normalized and validated by type).
@@ -72,7 +66,7 @@ shell_cli_metaflag_property_validate_regex() {
 
 
 
-# shell_cli_metaflag_check_input_regex — check input for metaflag 'regex'.
+# shell_cli_metaflag_check_input_regex - check input for metaflag 'regex'.
 #
 # Arguments:
 # - inputVal: value provided by user input (normalized and validated by type).

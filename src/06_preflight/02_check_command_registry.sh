@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_preflight_check_command_registry — validate existence and integrity of a command registry.
+# shell_cli_preflight_check_command_registry - validate existence and integrity of a command registry.
 #
 # Arguments:
 # - assocCmdName: name of the associative array that defines the command registry.

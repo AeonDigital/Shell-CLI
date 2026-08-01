@@ -1,14 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 00_utils/strings.sh
-# DESCRIPTION: Native utility operations processing safe character wrapping
-#              and dynamic terminal geometry line adjustments.
-# ==============================================================================
-
-
-
-# SHELL_CLI_UTILS_STRING_WRAP_LINES — global counter tracking word-wrap lines.
+# SHELL_CLI_UTILS_STRING_WRAP_LINES - global counter tracking word-wrap lines.
 #
 # - Dynamic integer reflecting the exact total count of formatted text lines.
 # - Updated automatically upon completion of the shell_cli_utils_string_wrap tool.
@@ -16,7 +8,7 @@ declare -g SHELL_CLI_UTILS_STRING_WRAP_LINES="0"
 
 
 
-# shell_cli_utils_string_wrap — formats long paragraphs into word-wrapped lines.
+# shell_cli_utils_string_wrap - formats long paragraphs into word-wrapped lines.
 #
 # Arguments:
 # - rawText: The comprehensive raw text string sentence to be wrapped.
@@ -27,25 +19,12 @@ declare -g SHELL_CLI_UTILS_STRING_WRAP_LINES="0"
 # - indentRest: Optional positive integer defining indentation width for subsequent lines.
 #     Defaults to 0 characters if left empty or unassigned.
 #
-# Returns:
-# - 0: Always terminates with success echoing the formatted paragraphs.
-#
 # Global Outputs:
 # - SHELL_CLI_UTILS_STRING_WRAP_LINES: Integer reflecting the exact total count
 #     of formatted lines printed to standard output during execution.
 #
-# Behavioral Details:
-# - Dynamic terminal adaptation: Automatically detects terminal width via tput(1).
-#     If terminal width is smaller than max_width, adapts to terminal width.
-# - Hard ceiling constraint: Maximum output width capped at 120 characters,
-#     regardless of terminal width or max_width parameter value.
-# - Terminal minimum: Requires terminal width >= 20 characters for adaptation.
-# - Indentation-aware wrapping: Dynamically reduces available text line width by 
-#     the current active indentation size to strictly prevent horizontal overflow.
-# - Space preservation: Retains consecutive whitespaces within the raw text string,
-#     wrapping them gracefully across line boundaries without compression.
-# - Line break awareness: Respects explicit newline (\n) characters inside the raw
-#     text, instantly forcing a line break while preserving configured indentations.
+# Returns:
+# - 0: Always terminates with success echoing the formatted paragraphs.
 shell_cli_utils_string_wrap() {
   local rawText="${1}"
   local targetWidth="${2:-80}"

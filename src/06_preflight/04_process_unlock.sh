@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_preflight_process_unlock — release process sandboxing lock.
+# shell_cli_preflight_process_unlock - release process sandboxing lock.
 #
 # Arguments:
 # - None.

@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 02_type/08_date.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_type_normalize_date — normalize 'date' values.
+# shell_cli_type_normalize_date - normalize 'date' values.
 #
 # Arguments:
 # - value: raw input string.
@@ -13,10 +8,10 @@
 # Behavior:
 # - Applies string normalization using 'shell_cli_type_normalize_string'.
 # - Adjusts the format based on input length:
-#   * Length 4 → "YYYY" → converted to "YYYY-01-01".
-#   * Length 7 → "YYYY-MM" → converted to "YYYY-MM-01".
-#   * Length 10 → "YYYY-MM-DD" → accepted as fully formed.
-#   * Any other length → returned unchanged.
+#   * Length 4 = "YYYY" = converted to "YYYY-01-01".
+#   * Length 7 = "YYYY-MM" = converted to "YYYY-MM-01".
+#   * Length 10 = "YYYY-MM-DD" = accepted as fully formed.
+#   * Any other length = returned unchanged.
 # - Does not guarantee that the resulting string is a valid date;
 #   only ensures a consistent format when possible.
 #
@@ -38,7 +33,7 @@ shell_cli_type_normalize_date() {
 
 
 
-# shell_cli_type_validate_date — validate 'date' values (YYYY-MM-DD).
+# shell_cli_type_validate_date - validate 'date' values (YYYY-MM-DD).
 #
 # Arguments:
 # - value: non‑empty normalized string to validate.

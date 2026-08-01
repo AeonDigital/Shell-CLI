@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 02_type/01_string.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_type_normalize_string — normalize 'string' values.
+# shell_cli_type_normalize_string - normalize 'string' values.
 #
 # Arguments:
 # - value: raw input string.
@@ -24,16 +19,16 @@ shell_cli_type_normalize_string() {
 
 
 
-# shell_cli_type_validate_string — validate 'string' values.
+# shell_cli_type_validate_string - validate 'string' values.
 #
 # Arguments:
 # - value: non‑empty normalized string to validate.
 # - aux: optional auxiliary configuration (not used in current implementation).
 #
 # Behavior:
+# - Delegates validation to 'shell_cli_type_validate_main'.
 # - Invalidates if any code control characters are found (except '\n', '\r', and '\t').
 # - Invalidates if any text control characters are found ('\n', '\r', and '\t').
-# - Delegates validation to 'shell_cli_type_validate_main'.
 #
 # Returns:
 # - 0: validation success.

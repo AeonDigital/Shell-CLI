@@ -1,12 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 
-# DESCRIPTION: This function must coexist with the CLI-client and must be 
-#   executed before any access to the CLI core.
-# ==============================================================================
-
-# shell_cli_preflight_load_core_engine — initialize and load the core runtime engine.
+# shell_cli_preflight_load_core_engine - initialize and load the core runtime engine.
 #
 # Arguments:
 # - $@: optional runtime arguments, used to intercept reserved maintenance/update

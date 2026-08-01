@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 02_type/02_text.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_type_normalize_text — normalize 'text' values.
+# shell_cli_type_normalize_text - normalize 'text' values.
 #
 # Arguments:
 # - value: raw input string.
@@ -25,16 +20,16 @@ shell_cli_type_normalize_text() {
 
 
 
-# shell_cli_type_validate_text — validate 'text' values.
+# shell_cli_type_validate_text - validate 'text' values.
 #
 # Arguments:
 # - value: non‑empty normalized string to validate.
 # - aux: optional auxiliary configuration (not used in current implementation).
 #
 # Behavior:
+# - Delegates validation to 'shell_cli_type_validate_main'.
 # - Invalidates if any code control characters are found (except '\n', '\r', and '\t').
 # - Text control characters ('\n', '\r', and '\t') are allowed.
-# - Delegates validation to 'shell_cli_type_validate_main'.
 #
 # Returns:
 # - 0: validation success.

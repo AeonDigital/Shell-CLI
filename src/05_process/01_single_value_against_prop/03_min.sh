@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 05_process/01_single_value_against_prop/03_min.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_process_flag_single_value_against_prop_min — validate single value against 'min' property.
+# shell_cli_process_flag_single_value_against_prop_min - validate single value against 'min' property.
 #
 # Arguments:
 # - $1: minimum threshold allowed for this flag value.

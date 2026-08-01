@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_preflight_process_lock — enforce process sandboxing.
+# shell_cli_preflight_process_lock - enforce process sandboxing.
 #
 # Arguments:
 # - None.

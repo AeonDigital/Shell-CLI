@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 05_process/01_flag_single_value.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_process_flag_single_value — process and validate a single flag value atomically.
+# shell_cli_process_flag_single_value - process and validate a single flag value atomically.
 #
 # Arguments:
 # - $1: raw single value to be validated.

@@ -1,10 +1,5 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 05_process/00_vars.sh
-# DESCRIPTION: 
-# ==============================================================================
-
 # - Global variable storing the current single value of the flag being processed.
 # - Updated at each validation step with the normalized value.
 declare -g SHELL_CLI_PROCESS_FLAG_SINGLE_VALUE=""

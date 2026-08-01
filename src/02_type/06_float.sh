@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 02_type/06_float.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_type_normalize_float — normalize 'float' values.
+# shell_cli_type_normalize_float - normalize 'float' values.
 #
 # Arguments:
 # - value: raw input string.
@@ -26,7 +21,7 @@ shell_cli_type_normalize_float() {
 
 
 
-# shell_cli_type_validate_float — validate 'float' values.
+# shell_cli_type_validate_float - validate 'float' values.
 #
 # Arguments:
 # - value: non‑empty normalized string to validate.

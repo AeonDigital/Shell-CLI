@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 03_metaflag/04_accept_values.sh
-# DESCRIPTION: specifies a JSON array with the accepted values (keys) or it 
-#   aliases (values).
-# ==============================================================================
-
 declare -gA METAFLAG_accept_values=()
 METAFLAG_accept_values["long"]="accept_values"
 METAFLAG_accept_values["short"]=""
@@ -36,7 +30,7 @@ METAFLAG_accept_values["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_accept_values — validate metaflag 'accept_values'.
+# shell_cli_metaflag_property_validate_accept_values - validate metaflag 'accept_values'.
 #
 # Arguments:
 # - fval: value (normalized and validated by type).
@@ -72,7 +66,7 @@ shell_cli_metaflag_property_validate_accept_values() {
 
 
 
-# shell_cli_metaflag_check_input_accept_values — check input for metaflag 'accept_values'.
+# shell_cli_metaflag_check_input_accept_values - check input for metaflag 'accept_values'.
 #
 # Arguments:
 # - inputVal: value provided by user input (normalized and validated by type).

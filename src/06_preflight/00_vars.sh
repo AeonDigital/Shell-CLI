@@ -1,10 +1,5 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 06_preflight/00_vars.sh
-# DESCRIPTION: 
-# ==============================================================================
-
 # SHELL_CLI_CORE_LOAD - global variable indicating the load state of the 
 # Shell-CLI core.
 #
@@ -25,7 +20,7 @@ if [ "${SHELL_CLI_PROCESS_LOCK_PID}" = "" ]; then
   # - Used to detect nested executions sharing the same memory stack frame.
   declare -g SHELL_CLI_PROCESS_LOCK_PID="-"
 
-  # SHELL_CLI_PROCESS_LOCK_ACTIVE — global variable acting as a boolean flag.
+  # SHELL_CLI_PROCESS_LOCK_ACTIVE - global variable acting as a boolean flag.
   #
   # - "1" indicates that a process lock is active for the current pipeline.
   # - "0" indicates no active lock.
@@ -34,7 +29,7 @@ fi
 
 
 
-# SHELL_CLI_MAIN_CMD_ROOT_PATH — global variable holding the absolute root path of the CLI project.
+# SHELL_CLI_MAIN_CMD_ROOT_PATH - global variable holding the absolute root path of the CLI project.
 #
 # - Populated by the 'shell_cli_preflight_prepare_command' function.
 # - Represents the base directory from which command sources and assets are resolved.
@@ -42,7 +37,7 @@ fi
 declare -g SHELL_CLI_MAIN_CMD_ROOT_PATH=""
 
 
-# SHELL_CLI_MAIN_CMD_NAME — Global variable holding the normalized main command name.
+# SHELL_CLI_MAIN_CMD_NAME - Global variable holding the normalized main command name.
 #
 # - Set during preflight preparation after user input normalization.
 declare -g SHELL_CLI_MAIN_CMD_NAME=""
@@ -54,7 +49,7 @@ declare -g SHELL_CLI_MAIN_CMD_REGISTRY_ORDER=""
 
 
 
-# SHELL_CLI_RESOURCE_PATH — Global variable holding the absolute path to the command directory.
+# SHELL_CLI_RESOURCE_PATH - Global variable holding the absolute path to the command directory.
 #
 # - Built from rootPath and command tree arguments.
 # - Used to locate and source scripts specific to the command context.
@@ -64,14 +59,14 @@ declare -g SHELL_CLI_RESOURCE_NAME=""
 
 
 
-# SHELL_CLI_RESOURCE_TREE — Global variable holding the textual representation of the command tree.
+# SHELL_CLI_RESOURCE_TREE - Global variable holding the textual representation of the command tree.
 #
 # - Concatenates all subcommand parts into a single string.
 # - Used for error reporting and to preserve the logical execution context.
 declare -g SHELL_CLI_RESOURCE_TREE=""
 
 
-# SHELL_CLI_RESOURCE_REGISTRY — global variable holding the canonical name of the
+# SHELL_CLI_RESOURCE_REGISTRY - global variable holding the canonical name of the
 #   associative array that defines the main command.
 #
 # - Convention: must be declared in the client as 'declare -A SHELL_CLI_CMD_<CMDNAME>'.
@@ -85,7 +80,7 @@ declare -g SHELL_CLI_RESOURCE_REGISTRY=""
 declare -g SHELL_CLI_RESOURCE_REGISTRY_ACTION_ORDER=""
 
 
-# SHELL_CLI_RESOURCE_REGISTRY_FLAG_ORDER — global variable holding the canonical name of
+# SHELL_CLI_RESOURCE_REGISTRY_FLAG_ORDER - global variable holding the canonical name of
 #   the indexed array that defines the order of subcommands for the main command.
 #
 # - Convention: must be declared in the client as
@@ -101,7 +96,7 @@ declare -g SHELL_CLI_RESOURCE_REGISTRY_FLAG_ORDER=""
 
 
 
-# SHELL_CLI_COMMAND_RESOURCE_ORDER — global indexed array holding available subcommands.
+# SHELL_CLI_COMMAND_RESOURCE_ORDER - global indexed array holding available subcommands.
 #
 # - Declared as an indexed array (declare -a) only if not already defined by the CLI client.
 # - If the client has previously initialized it, the existing definition is preserved.
@@ -116,7 +111,7 @@ fi
 
 
 
-# SHELL_CLI_RESOURCE_FLAG_FAMILY — global variable holding the canonical name prefix
+# SHELL_CLI_RESOURCE_FLAG_FAMILY - global variable holding the canonical name prefix
 #   for the associative array that defines the command’s flags.
 #
 # - Built dynamically during 'shell_cli_preflight_prepare_command' using the
@@ -127,7 +122,7 @@ fi
 declare -g SHELL_CLI_RESOURCE_FLAG_FAMILY=""
 
 
-# SHELL_CLI_RESOURCE_FLAG_FAMILY_ORDER — global variable holding the canonical name
+# SHELL_CLI_RESOURCE_FLAG_FAMILY_ORDER - global variable holding the canonical name
 #   of the indexed array that defines the order of flags for the command.
 #
 # - Built dynamically during 'shell_cli_preflight_prepare_command' using the
@@ -139,7 +134,7 @@ declare -g SHELL_CLI_RESOURCE_FLAG_FAMILY=""
 declare -g SHELL_CLI_RESOURCE_FLAG_FAMILY_ORDER=""
 
 
-# SHELL_CLI_RESOURCE_FLAG_MAP_LONGNAME — global associative array mapping long flag names.
+# SHELL_CLI_RESOURCE_FLAG_MAP_LONGNAME - global associative array mapping long flag names.
 #
 # - Keys: canonical long names of flags (e.g., "--verbose").
 # - Values: reference to the corresponding associative array definition for the flag.
@@ -148,7 +143,7 @@ declare -g SHELL_CLI_RESOURCE_FLAG_FAMILY_ORDER=""
 declare -gA SHELL_CLI_RESOURCE_FLAG_MAP_LONGNAME=()
 
 
-# SHELL_CLI_RESOURCE_FLAG_MAP_SHORTNAME — global associative array mapping short flag names.
+# SHELL_CLI_RESOURCE_FLAG_MAP_SHORTNAME - global associative array mapping short flag names.
 #
 # - Keys: canonical short names of flags (e.g., "-v").
 # - Values: the corresponding long flag name.
@@ -157,7 +152,7 @@ declare -gA SHELL_CLI_RESOURCE_FLAG_MAP_LONGNAME=()
 declare -gA SHELL_CLI_RESOURCE_FLAG_MAP_SHORTNAME=()
 
 
-# SHELL_CLI_RESOURCE_FUNCTION_ACTION — global variable holding the canonical name of the
+# SHELL_CLI_RESOURCE_FUNCTION_ACTION - global variable holding the canonical name of the
 #   function responsible for executing the command’s main action.
 #
 # - Populated by 'shell_cli_preflight_prepare_command' using the normalized command
@@ -168,7 +163,7 @@ declare -gA SHELL_CLI_RESOURCE_FLAG_MAP_SHORTNAME=()
 declare -g SHELL_CLI_RESOURCE_FUNCTION_ACTION=""
 
 
-# SHELL_CLI_RESOURCE_FUNCTION_VALIDATE — global variable holding the canonical name of the
+# SHELL_CLI_RESOURCE_FUNCTION_VALIDATE - global variable holding the canonical name of the
 #   function responsible for validating the command’s execution context.
 #
 # - Populated by 'shell_cli_preflight_prepare_command' using the normalized command
@@ -182,32 +177,32 @@ declare -g SHELL_CLI_RESOURCE_FUNCTION_VALIDATE=""
 
 
 
-# SHELL_CLI_TRIGGER_HELP — global flag indicating help mode.
+# SHELL_CLI_TRIGGER_HELP - global flag indicating help mode.
 #
 # - "1" when the command was invoked with "help", "--help" or "-h".
 # - Used to short-circuit execution and display usage information.
 declare -g SHELL_CLI_TRIGGER_HELP="0"
 
-# SHELL_CLI_TRIGGER_INTERACTIVE — global flag indicating interactive mode.
+# SHELL_CLI_TRIGGER_INTERACTIVE - global flag indicating interactive mode.
 #
 # - "1" when the command was invoked with "interactive" or "--interactive"/"-itr".
 # - Used to trigger interactive execution flow instead of standard batch mode.
 declare -g SHELL_CLI_TRIGGER_INTERACTIVE="0"
 
-# SHELL_CLI_INPUT_RAW_FLAG — global indexed array storing raw flags.
+# SHELL_CLI_INPUT_RAW_FLAG - global indexed array storing raw flags.
 #
 # - Contains all flags exactly as typed by the user (e.g., "--opt=value").
 # - Populated during input parsing before normalization.
 declare -ga SHELL_CLI_INPUT_RAW_FLAG=()
 
-# SHELL_CLI_INPUT_RAW_FLAG_ASSOC — global associative array mapping flags to values.
+# SHELL_CLI_INPUT_RAW_FLAG_ASSOC - global associative array mapping flags to values.
 #
 # - Keys: canonical long flag names.
 # - Values: raw values provided by the user (or "1" for boolean flags).
 # - Populated after validation of existence and duplication.
 declare -gA SHELL_CLI_INPUT_RAW_FLAG_ASSOC=()
 
-# SHELL_CLI_INPUT_RAW_FLAG_ORDER — global indexed array preserving flag order.
+# SHELL_CLI_INPUT_RAW_FLAG_ORDER - global indexed array preserving flag order.
 #
 # - Stores the sequence of flags as they were provided by the user.
 # - Ensures deterministic iteration and validation order.
@@ -225,7 +220,7 @@ declare -g SHELL_CLI_CMD_VALIDATE_ERR=""
 
 
 
-# shell_cli_preflight_reset — clear all global variables related to command execution.
+# shell_cli_preflight_reset - clear all global variables related to command execution.
 #
 # Arguments:
 # - None.

@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 03_metaflag/11_max.sh
-# DESCRIPTION: enforces the maximum boundary size constraint allowed for the 
-#   payload. Evaluates value based on the primary type field.
-# ==============================================================================
-
 declare -gA METAFLAG_max=()
 METAFLAG_max["long"]="max"
 METAFLAG_max["short"]=""
@@ -36,7 +30,7 @@ METAFLAG_max["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_max — validate metaflag 'max'.
+# shell_cli_metaflag_property_validate_max - validate metaflag 'max'.
 #
 # Arguments:
 # - fval: value (normalized and validated by type).
@@ -65,7 +59,7 @@ shell_cli_metaflag_property_validate_max() {
 
 
 
-# shell_cli_metaflag_check_input_max — check input for metaflag 'max'.
+# shell_cli_metaflag_check_input_max - check input for metaflag 'max'.
 #
 # Arguments:
 # - inputVal: value provided by user input (normalized and validated by type).

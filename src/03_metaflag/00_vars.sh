@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 03_metaflag/00_vars.sh
-# DESCRIPTION: 
-# ==============================================================================
+# TODO 
 
 # Stores the last error message generated from the last 
 # execution of 'shell_cli_metaflag_property_validate_<flag_property>' function.

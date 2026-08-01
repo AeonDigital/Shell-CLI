@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 03_metaflag/19_required_keys.sh
-# DESCRIPTION: specifies a list of keys that MUST be present in the passed 
-#   value. Use only if is_assoc=true.
-# ==============================================================================
-
 declare -gA METAFLAG_required_keys=()
 METAFLAG_required_keys["long"]="required_keys"
 METAFLAG_required_keys["short"]=""
@@ -36,7 +30,7 @@ METAFLAG_required_keys["required_keys"]=""
 
 
 
-# shell_cli_metaflag_property_validate_required_keys — validate metaflag 'required_keys'.
+# shell_cli_metaflag_property_validate_required_keys - validate metaflag 'required_keys'.
 #
 # Arguments:
 # - fval: value (normalized and validated by type).
@@ -80,7 +74,7 @@ shell_cli_metaflag_property_validate_required_keys() {
 
 
 
-# shell_cli_metaflag_check_input_required_keys — check input for metaflag 'required_keys'.
+# shell_cli_metaflag_check_input_required_keys - check input for metaflag 'required_keys'.
 #
 # Arguments:
 # - inputVal: associative array name containing values provided by user input.

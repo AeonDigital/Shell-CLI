@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# SCRIPT: 02_type/04_bool.sh
-# DESCRIPTION: 
-# ==============================================================================
-
-# shell_cli_type_normalize_bool — normalize 'bool' values.
+# shell_cli_type_normalize_bool - normalize 'bool' values.
 #
 # Arguments:
 # - value: raw input string.
@@ -13,8 +8,8 @@
 # Behavior:
 # - Converts the input to lowercase and applies string normalization.
 # - Maps recognized boolean representations:
-#   * "0" or "false" → "0"
-#   * "1" or "true"  → "1"
+#   * "0" or "false" = "0"
+#   * "1" or "true"  = "1"
 # - If the input does not match any recognized representation,
 #   returns the original string unchanged.
 #
@@ -37,7 +32,7 @@ shell_cli_type_normalize_bool() {
 
 
 
-# shell_cli_type_validate_bool — validate 'bool' values.
+# shell_cli_type_validate_bool - validate 'bool' values.
 #
 # Arguments:
 # - value: non‑empty normalized string to validate.
