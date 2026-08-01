@@ -6,10 +6,11 @@
 # - value: raw input string.
 #
 # Behavior:
+# - Applies string normalization using 'shell_cli_type_normalize_string'.
 # - Converts the input to lowercase and applies string normalization.
 # - Maps recognized boolean representations:
-#   * "0" or "false" = "0"
-#   * "1" or "true"  = "1"
+#   * "0" or "false" → "0"
+#   * "1" or "true"  → "1"
 # - If the input does not match any recognized representation,
 #   returns the original string unchanged.
 #

@@ -88,7 +88,7 @@ shell_cli_run() {
           ;;
         2)
           # input warning
-          validatePrefix="[ w ]"
+          validatePrefix="[ ! ]"
           ;;
         10)
           # input critical error

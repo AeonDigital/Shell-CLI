@@ -120,26 +120,34 @@ shell_cli_type_validate_main() {
 
 
 # ----  ---- -------- ----  ---- -------- ----  ----
-# NORMALIZE AARRAYSSOC ( JSON array string )
+# NORMALIZE ARRAY ( JSON array string )
 # ----  ---- -------- ----  ---- -------- ----  ----
 
-# JSON‑like array string reconstructed from the input (e.g. ["v1","v2"]).
-# In case of error, contains the original string.
-# Always reset at the beginning of the function.
+# SHELL_CLI_TYPE_NORMALIZE_TMP_ARRAY_STRING - Reconstructed JSON-like array string representation.
+#
+# - Contains the normalized array formatted string (e.g., ["v1","v2"]) on success.
+# - Stores the original unparsed input string in case of an error.
+# - Always reset and cleared at the beginning of the execution.
 declare -g SHELL_CLI_TYPE_NORMALIZE_TMP_ARRAY_STRING=""
 
-# Stores the name of the original array when the input is a reference
-# to an existing indexed array. Empty otherwise.
-# Always reset at the beginning of the function.
+# SHELL_CLI_TYPE_NORMALIZE_TMP_ARRAY_NAME - Reference to the input indexed array name.
+#
+# - Stores the variable name only when an existing indexed array is passed as input.
+# - Remains empty when the input is a direct JSON-like array string.
+# - Always reset and cleared at the beginning of the execution.
 declare -g SHELL_CLI_TYPE_NORMALIZE_TMP_ARRAY_NAME=""
 
-# Indexed array holding the values extracted from the input.
-# Always reset at the beginning of the function.
+# SHELL_CLI_TYPE_NORMALIZE_TMP_ARRAY - Global indexed array holding the normalized values.
+#
+# - Populated with elements parsed from the string or copied from the reference array.
+# - Always reset and cleared at the beginning of the execution.
 declare -ga SHELL_CLI_TYPE_NORMALIZE_TMP_ARRAY=()
 
-# Holds the normalization error message when a failure occurs.
-# Empty on success.
-# Always reset at the beginning of the function.
+# SHELL_CLI_TYPE_NORMALIZE_TMP_ARRAY_ERR_MESSAGE - Normalization error message store.
+#
+# - Contains a descriptive syntax or format error message when normalization fails.
+# - Cleared and remains empty on successful execution.
+# - Always reset and cleared at the beginning of the execution.
 declare -g SHELL_CLI_TYPE_NORMALIZE_TMP_ARRAY_ERR_MESSAGE=""
 
 
@@ -201,24 +209,27 @@ shell_cli_type_normalize_main_array_types() {
 
 
 
-# Temporarily stores the selected 'index' value identified by 
-# validation 'shell_cli_type_validate_main_array_types'.
-# Always reset at the beginning of the function.
+
+
+# SHELL_CLI_TYPE_VALIDATE_TMP_SELECTED_ARRAY_INDEX - Temporary store for the validated array index.
+#
+# - Captures the matched index identified during the execution of 'shell_cli_type_validate_main_array_types'.
+# - Always reset and cleared to an empty string at the beginning of the validation function.
 declare -g SHELL_CLI_TYPE_VALIDATE_TMP_SELECTED_ARRAY_INDEX=""
 
-# Temporarily stores the selected 'value' value identified by 
-# validation 'shell_cli_type_validate_main_array_types'.
-# Always reset at the beginning of the function.
+# SHELL_CLI_TYPE_VALIDATE_TMP_SELECTED_ARRAY_VALUE - Temporary store for the validated array value.
+#
+# - Captures the matched element value identified during the execution of 'shell_cli_type_validate_main_array_types'.
+# - Always reset and cleared to an empty string at the beginning of the validation function.
 declare -g SHELL_CLI_TYPE_VALIDATE_TMP_SELECTED_ARRAY_VALUE=""
 
 
 
-# shell_cli_type_validate_main_array_types - general validation function 
-# for any type that uses an indexed array as value.
+# shell_cli_type_validate_main_array_types - general validation function for any type that uses an indexed array as value.
 #
 # If a match is found:
-#   * Stores the matched index in 'SHELL_CLI_TYPE_VALIDATE_TMP_SELECTED_ARRAY_INDEX'.
-#   * Stores the matched value in 'SHELL_CLI_TYPE_VALIDATE_TMP_SELECTED_ARRAY_VALUE'.
+# * Stores the matched index in 'SHELL_CLI_TYPE_VALIDATE_TMP_SELECTED_ARRAY_INDEX'.
+# * Stores the matched value in 'SHELL_CLI_TYPE_VALIDATE_TMP_SELECTED_ARRAY_VALUE'.
 #
 # Arguments:
 # - value: non‑empty normalized string to validate.
@@ -274,30 +285,38 @@ shell_cli_type_validate_main_array_types() {
 # NORMALIZE ASSOC ( JSON object string )
 # ----  ---- -------- ----  ---- -------- ----  ----
 
-# JSON‑like string reconstructed from the input (e.g. {"k1":"v1","k2":"v2"}).
-# In case of error, contains the original string.
-# Always reset at the beginning of the function.
+# SHELL_CLI_TYPE_NORMALIZE_TMP_ASSOC_STRING - Reconstructed JSON object string representation.
+#
+# - Contains the normalized object formatted string (e.g., {"k1":"v1"}) on success.
+# - Stores the original unparsed input string in case of an error.
+# - Always reset and cleared at the beginning of the execution.
 declare -g SHELL_CLI_TYPE_NORMALIZE_TMP_ASSOC_STRING=""
 
-# Stores the name of the original array when the input is a reference
-# to an existing associative array. Empty otherwise.
-# Always reset at the beginning of the function.
+# SHELL_CLI_TYPE_NORMALIZE_TMP_ASSOC_NAME - Reference to the input associative array name.
+#
+# - Stores the variable name only when an existing associative array is passed as input.
+# - Remains empty when the input is a direct JSON object string.
+# - Always reset and cleared at the beginning of the execution.
 declare -g SHELL_CLI_TYPE_NORMALIZE_TMP_ASSOC_NAME=""
 
-# Associative array holding the key/value pairs extracted from the input.
-# Always reset at the beginning of the function.
+# SHELL_CLI_TYPE_NORMALIZE_TMP_ASSOC - Global associative array holding the normalized pairs.
+#
+# - Populated with key-value pairs parsed from the string or copied from the reference array.
+# - Always reset and cleared at the beginning of the execution.
 declare -gA SHELL_CLI_TYPE_NORMALIZE_TMP_ASSOC=()
 
-# Holds the order of discovered keys.
-# Reliable only when parsing from a JSON string.
-# When input is an existing associative array, Bash does not preserve
-# insertion order, so this information is not reliable.
-# Always reset at the beginning of the function.
+# SHELL_CLI_TYPE_NORMALIZE_TMP_ASSOC_ORDER - Global indexed array tracking normalized key sequence.
+#
+# - Guarantees insertion order only when parsing directly from a JSON string.
+# - Unreliable when copying from an associative array reference due to Bash engine indexing.
+# - Always reset and cleared at the beginning of the execution.
 declare -ga SHELL_CLI_TYPE_NORMALIZE_TMP_ASSOC_ORDER=()
 
-# Holds the normalization error message when a failure occurs.
-# Empty on success.
-# Always reset at the beginning of the function.
+# SHELL_CLI_TYPE_NORMALIZE_TMP_ASSOC_ERR_MESSAGE - Normalization error message store.
+#
+# - Contains a descriptive syntax or format error message when normalization fails.
+# - Cleared and remains empty on successful execution.
+# - Always reset and cleared at the beginning of the execution.
 declare -g SHELL_CLI_TYPE_NORMALIZE_TMP_ASSOC_ERR_MESSAGE=""
 
 
@@ -307,15 +326,6 @@ declare -g SHELL_CLI_TYPE_NORMALIZE_TMP_ASSOC_ERR_MESSAGE=""
 # Arguments:
 # - value: a string containing the name of an associative array, or a JSON
 #          object string representing the same.
-#
-# Behavior:
-# - Delegates parsing to 'shell_cli_parse_sjson_to_assoc'.
-# - Copies the parsed results into the temporary normalization variables:
-#   * SHELL_CLI_TYPE_NORMALIZE_TMP_ASSOC_STRING
-#   * SHELL_CLI_TYPE_NORMALIZE_TMP_ASSOC_NAME
-#   * SHELL_CLI_TYPE_NORMALIZE_TMP_ASSOC
-#   * SHELL_CLI_TYPE_NORMALIZE_TMP_ASSOC_ORDER
-#   * SHELL_CLI_TYPE_NORMALIZE_TMP_ASSOC_ERR_MESSAGE
 #
 # Returns:
 # - 0: normalization success.
@@ -375,14 +385,18 @@ shell_cli_type_normalize_main_assoc_types() {
 
 
 
-# Temporarily stores the selected 'key' value identified by 
-# validation 'shell_cli_type_validate_main_assoc_types'.
-# Always reset at the beginning of the function.
+
+
+# SHELL_CLI_TYPE_VALIDATE_TMP_ASSOC_SELECTED_KEY - Temporary store for the validated associative key.
+#
+# - Captures the matched key identified during the execution of 'shell_cli_type_validate_main_assoc_types'.
+# - Always reset and cleared to an empty string at the beginning of the validation function.
 declare -g SHELL_CLI_TYPE_VALIDATE_TMP_ASSOC_SELECTED_KEY=""
 
-# Temporarily stores the selected 'value' value identified by 
-# validation 'shell_cli_type_validate_main_assoc_types'.
-# Always reset at the beginning of the function.
+# SHELL_CLI_TYPE_VALIDATE_TMP_SELECTED_ASSOC_VALUE - Temporary store for the validated associative value.
+#
+# - Captures the matched value identified during the execution of 'shell_cli_type_validate_main_assoc_types'.
+# - Always reset and cleared to an empty string at the beginning of the validation function.
 declare -g SHELL_CLI_TYPE_VALIDATE_TMP_SELECTED_ASSOC_VALUE=""
 
 
@@ -391,8 +405,8 @@ declare -g SHELL_CLI_TYPE_VALIDATE_TMP_SELECTED_ASSOC_VALUE=""
 # for any type that uses an associative array as value.
 #
 # If a match is found:
-#   * Stores the matched key in 'SHELL_CLI_TYPE_VALIDATE_TMP_ASSOC_SELECTED_KEY'.
-#   * Stores the matched value in 'SHELL_CLI_TYPE_VALIDATE_TMP_SELECTED_ASSOC_VALUE'.
+# * Stores the matched key in 'SHELL_CLI_TYPE_VALIDATE_TMP_ASSOC_SELECTED_KEY'.
+# * Stores the matched value in 'SHELL_CLI_TYPE_VALIDATE_TMP_SELECTED_ASSOC_VALUE'.
 #
 # Arguments:
 # - value: non‑empty normalized string to validate.

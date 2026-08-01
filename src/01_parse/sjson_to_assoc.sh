@@ -1,100 +1,61 @@
 #!/usr/bin/env bash
 
-# TODO 
-
-# JSON‑like string reconstructed from the input (e.g. {"k1":"v1","k2":"v2"}).
-# In case of error, contains the original string.
+# SHELL_CLI_PARSE_SJSON_TO_ASSOC_STRING - Reconstructed JSON object string representation.
+#
+# - Contains the formatted object string (e.g., {"k1":"v1"}) on success.
+# - Stores the original unparsed input string in case of an error.
 declare SHELL_CLI_PARSE_SJSON_TO_ASSOC_STRING=""
 
-# Stores the name of the original array when the input is a reference
-# to an existing associative array. Empty otherwise.
+# SHELL_CLI_PARSE_SJSON_TO_ASSOC_NAME - Reference to the input associative array name.
+#
+# - Stores the variable name only when an existing associative array is passed as input.
+# - Remains empty when the input is a direct JSON string.
 declare SHELL_CLI_PARSE_SJSON_TO_ASSOC_NAME=""
 
-# Associative array holding the key/value pairs extracted from the input.
-# Always reset at the beginning of the function.
+# SHELL_CLI_PARSE_SJSON_TO_ASSOC - Global associative array holding extracted key-value pairs.
+#
+# - Populated with pairs parsed from the string or copied from the reference array.
+# - Always reset and cleared at the beginning of the execution.
 declare -gA SHELL_CLI_PARSE_SJSON_TO_ASSOC=()
 
-# Holds the order of discovered keys.
-# Reliable only when parsing from a JSON string.
-# When input is an existing associative array, Bash does not preserve
-# insertion order, so this information is not reliable.
+# SHELL_CLI_PARSE_SJSON_TO_ASSOC_ORDER - Global indexed array tracking object key sequence.
+#
+# - Guarantees insertion order only when parsing directly from a JSON string.
+# - Unreliable when copying from an associative array reference due to Bash engine indexing.
 declare -ga SHELL_CLI_PARSE_SJSON_TO_ASSOC_ORDER=()
 
-# Holds the parser error message when a failure occurs.
-# Empty on success.
-# Always reset at the beginning of the function.
+# SHELL_CLI_PARSE_SJSON_TO_ASSOC_ERR_MESSAGE - Parser error message store.
+#
+# - Contains a descriptive syntax, duplicate key, or mismatch error message on failure.
+# - Cleared and remains empty on successful parsing.
 declare SHELL_CLI_PARSE_SJSON_TO_ASSOC_ERR_MESSAGE=""
 
 
 
 
 
-# shell_cli_parse_sjson_to_assoc - parse a JSON‑like object string to 
-# associative array.
+# shell_cli_parse_sjson_to_assoc - Parse a single-level JSON object string or local associative array into global variables.
 #
-# Arguments:
-# - value: associative array name or single‑level JSON object string.
+# Arguments
+# - value: Name of an existing associative array OR a single-level JSON object string (e.g., '{"k":"v"}').
 #
-# Behavior:
-# - If the input is the name of an associative array:
-#   * All key/value pairs are copied into 'SHELL_CLI_PARSE_SJSON_TO_ASSOC'.
-#   * 'SHELL_CLI_PARSE_SJSON_TO_ASSOC_STRING' is set to the reconstructed 
-#     JSON‑like string (e.g. {"k1":"v1","k2":"v2"}).
-#   * 'SHELL_CLI_PARSE_SJSON_TO_ASSOC_NAME' is set to the array name.
-#   * 'SHELL_CLI_PARSE_SJSON_TO_ASSOC_ORDER' is populated, but order is not 
-#     reliable since Bash associative arrays do not preserve insertion order.
+# Global outputs
+# - SHELL_CLI_PARSE_SJSON_TO_ASSOC: Associative array populated with the parsed/copied key-value pairs.
+# - SHELL_CLI_PARSE_SJSON_TO_ASSOC_ORDER: Indexed array maintaining the insertion order of the parsed keys.
+# - SHELL_CLI_PARSE_SJSON_TO_ASSOC_STRING: Reconstructed JSON object string representation.
+# - SHELL_CLI_PARSE_SJSON_TO_ASSOC_NAME: Stored input array name (only when an associative array name is passed).
+# - SHELL_CLI_PARSE_SJSON_TO_ASSOC_ERR_MESSAGE: Contains descriptive error message on failure.
 #
-# - If the input is a JSON string:
-#   * Empty objects "{}" or "{   }" set 'SHELL_CLI_PARSE_SJSON_TO_ASSOC_STRING' 
-#     to "{}" and produce no pairs.
-#   * Valid single‑level objects are parsed and populate
-#     'SHELL_CLI_PARSE_SJSON_TO_ASSOC' with each key/value pair.
-#   * The order of discovered keys is stored in 
-#     'SHELL_CLI_PARSE_SJSON_TO_ASSOC_ORDER' and is fully reliable when 
-#     originating from JSON parsing.
-#   * 'SHELL_CLI_PARSE_SJSON_TO_ASSOC_STRING' is set to the reconstructed 
-#     JSON string.
+# Notes
+# - Only supports single-level JSON objects; nested objects, arrays, or complex escapes are not supported.
+# - Object keys must be explicitly enclosed in single or double quotes and cannot contain newline characters.
+# - Values support unquoted alphanumeric tokens (no spaces) or quoted strings (spaces allowed).
+# - Duplicate keys within the input JSON string will cause a parsing failure.
+# - If the input is empty, it clears all global outputs and returns 0 without error.
 #
-# - If the input is an empty string:
-#   * Function returns with status 0.
-#   * No global variables are populated.
-#
-# - If the string is malformed:
-#   * 'SHELL_CLI_PARSE_SJSON_TO_ASSOC_ERR_MESSAGE' is set with the error message.
-#   * 'SHELL_CLI_PARSE_SJSON_TO_ASSOC_STRING' is set to the original string.
-#   * Function returns with status 1.
-#
-# Constraints:
-# - Only single‑level JSON objects are supported.
-# - Keys must always be quoted with ' or ".
-# - Accepted values: simple strings (quoted with ' or "),
-#   numbers, booleans, and alphanumeric tokens including '.'.
-# - Spaces are only supported inside quoted strings. Unquoted values cannot 
-#   contain spaces.
-# - Escapes are limited: only \" or \' inside quoted strings are accepted.
-# - Nested objects, arrays, and complex escape sequences are not supported.
-#
-# Error cases:
-# - Missing opening or closing curly brackets produces the message
-#   "invalid syntax; loss of curly brackets."
-# - Empty key names are invalid and produce an error.
-# - Duplicated keys are rejected with the message
-#   "invalid object; duplicated key '<key>'."
-# - Any invalid character in unexpected position produces a descriptive
-#   error message stored in 'SHELL_CLI_PARSE_SJSON_TO_ASSOC_ERR_MESSAGE'.
-# - Mismatched number of keys and values produces the message
-#   "invalid parse; found '<klen>' keys to '<vlen>' values."
-#
-# Returns:
-# - 0: on success
-# - 1: on error
-#
-# - Populates the five global variables as described above:
-#   * SHELL_CLI_PARSE_SJSON_TO_ASSOC
-#   * SHELL_CLI_PARSE_SJSON_TO_ASSOC_STRING
-#   * SHELL_CLI_PARSE_SJSON_TO_ASSOC_NAME
-#   * SHELL_CLI_PARSE_SJSON_TO_ASSOC_ORDER
-#   * SHELL_CLI_PARSE_SJSON_TO_ASSOC_ERR_MESSAGE
+# Returns
+# - 0: Success.
+# - 1: Failure (malformed string, missing curly brackets, duplicate keys, or key/value count mismatch).
 shell_cli_parse_sjson_to_assoc() {
   # clean json string
   local value="${1}"

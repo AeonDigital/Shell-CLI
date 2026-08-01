@@ -7,8 +7,6 @@
 #
 # Behavior:
 # - Applies string normalization using 'shell_cli_type_normalize_string'.
-# - Removes all control characters (including '\n', '\r', and '\t').
-# - Trims leading and trailing whitespace.
 # - Does not enforce numeric conversion; if the input is not a valid integer,
 #   the original string is returned unchanged.
 #

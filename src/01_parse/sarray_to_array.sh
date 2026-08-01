@@ -1,84 +1,53 @@
 #!/usr/bin/env bash
 
-# TODO 
-
-# JSON‑like string reconstructed from the input (e.g. ["v1","v2"]).
-# In case of error, contains the original string.
+# SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING - Reconstructed JSON-like array string representation.
+#
+# - Contains the formatted string (e.g., ["v1","v2"]) on success.
+# - Stores the original unparsed input string in case of an error.
 declare SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING=""
 
-# Stores the name of the original array when the input is a reference
-# to an existing indexed array. Empty otherwise.
+# SHELL_CLI_PARSE_SARRAY_TO_ARRAY_NAME - Reference to the input indexed array name.
+#
+# - Stores the variable name only when an existing indexed array is passed as input.
+# - Remains empty when the input is a direct JSON-like string.
 declare SHELL_CLI_PARSE_SARRAY_TO_ARRAY_NAME=""
 
-# Indexed array holding the values extracted from the input.
-# Always reset at the beginning of the function
+# SHELL_CLI_PARSE_SARRAY_TO_ARRAY - Global indexed array holding the extracted values.
+#
+# - Populated with the elements parsed from the string or copied from the reference array.
+# - Always reset and cleared at the beginning of the execution.
 declare -ga SHELL_CLI_PARSE_SARRAY_TO_ARRAY=()
 
-# Holds the parser error message when a failure occurs.
-# Empty on success.
+# SHELL_CLI_PARSE_SARRAY_TO_ARRAY_ERR_MESSAGE - Parser error message store.
+#
+# - Contains a descriptive syntax or format error message when execution fails.
+# - Cleared and remains empty on successful parsing.
 declare SHELL_CLI_PARSE_SARRAY_TO_ARRAY_ERR_MESSAGE=""
 
 
 
 
 
-# shell_cli_parse_sarray_to_array - parse a JSON‑like array string to 
-# indexed array.
+# shell_cli_parse_sarray_to_array - Parse a JSON-like array string or local indexed array into global variables.
 #
-# Arguments:
-# - value: indexed array name or single‑level JSON‑like array string.
+# Arguments
+# - value: Name of an existing indexed array OR a single-level JSON-like array string (e.g., '["a","b"]').
 #
-# Behavior:
-# - If the input is the name of an indexed array:
-#   * All values are copied into 'SHELL_CLI_PARSE_SARRAY_TO_ARRAY'.
-#   * 'SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING' is set to the reconstructed 
-#      JSON‑like string (e.g. ["v1","v2"]).
-#   * 'SHELL_CLI_PARSE_SARRAY_TO_ARRAY_NAME' is set to the array name.
+# Global outputs
+# - SHELL_CLI_PARSE_SARRAY_TO_ARRAY: Indexed array populated with the parsed/copied elements.
+# - SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING: Reconstructed JSON-like array string representation.
+# - SHELL_CLI_PARSE_SARRAY_TO_ARRAY_NAME: Stored input array name (only when an array name is passed).
+# - SHELL_CLI_PARSE_SARRAY_TO_ARRAY_ERR_MESSAGE: Contains descriptive error message on failure.
 #
-# - If the input is an array string:
-#   * Empty arrays "[]" or "[   ]" set
-#     'SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING' to "[]".
-#   * Valid single‑level arrays are parsed and populate
-#     'SHELL_CLI_PARSE_SARRAY_TO_ARRAY' with each value.
-#   * 'SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING' is set to the 
-#     reconstructed array.
+# Notes
+# - Only supports single-level arrays; nested structures, objects, or complex escapes are not supported.
+# - Spaces are only allowed inside quoted values (single or double quotes).
+# - Escapes are limited to \' and \" inside matching quotes.
+# - If the input is empty, it clears global outputs and returns 0 without error.
 #
-# - If the input is an empty string:
-#   * Function returns with status 0.
-#   * No global variables are populated.
-#
-# - If the string is malformed:
-#   * 'SHELL_CLI_PARSE_SARRAY_TO_ARRAY' will contain a single element with the 
-#     error message.
-#   * 'SHELL_CLI_PARSE_SARRAY_TO_ARRAY_ERR_MESSAGE' is set with the 
-#     error message.
-#   * 'SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING' is set to the original string.
-#   * Function returns with status 1.
-#
-# Constraints:
-# - Only single‑level arrays are supported.
-# - Accepted values: simple strings (quoted with ' or "),
-#   numbers, booleans, and alphanumeric tokens including '.'.
-# - Unquoted values cannot contain spaces.
-# - Spaces are only supported inside quoted strings. 
-# - Escapes are limited: only \" or \' inside quoted strings are accepted.
-# - Nested arrays, objects, and complex escape sequences are not supported.
-#
-# Error cases:
-# - Missing opening or closing square brackets produces the message
-#   "invalid syntax; loss of square brackets."
-# - Any invalid character in unexpected position produces a descriptive
-#   error message stored in 'SHELL_CLI_PARSE_SARRAY_TO_ARRAY_ERR_MESSAGE'.
-#
-# Returns:
-# - 0: on success
-# - 1: on error
-#
-# - Populates the four global variables as described above:
-#   * SHELL_CLI_PARSE_SARRAY_TO_ARRAY
-#   * SHELL_CLI_PARSE_SARRAY_TO_ARRAY_STRING
-#   * SHELL_CLI_PARSE_SARRAY_TO_ARRAY_NAME
-#   * SHELL_CLI_PARSE_SARRAY_TO_ARRAY_ERR_MESSAGE
+# Returns
+# - 0: Success.
+# - 1: Failure (malformed string, missing brackets, or invalid syntax).
 shell_cli_parse_sarray_to_array() {
   # clean json string
   local value="${1}"

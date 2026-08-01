@@ -6,11 +6,8 @@
 # - value: raw input string.
 #
 # Behavior:
-# - Removes all code control characters (except '\n', '\r', and '\t').
-# - Preserves text control characters ('\n', '\r', and '\t') to allow
-#   multi‑line text formatting.
-# - Trims leading and trailing whitespace, including spaces, tabs,
-#   and boundary '\n' and '\r'.
+# - Removes all code control characters except '\n', '\r', and '\t' to allow multi‑line text formatting.
+# - Trims leading and trailing whitespace.
 #
 # Returns:
 # - Outputs the normalized string to stdout.
@@ -27,9 +24,7 @@ shell_cli_type_normalize_text() {
 # - aux: optional auxiliary configuration (not used in current implementation).
 #
 # Behavior:
-# - Delegates validation to 'shell_cli_type_validate_main'.
 # - Invalidates if any code control characters are found (except '\n', '\r', and '\t').
-# - Text control characters ('\n', '\r', and '\t') are allowed.
 #
 # Returns:
 # - 0: validation success.
