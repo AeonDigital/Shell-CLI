@@ -1,33 +1,20 @@
 #!/usr/bin/env bash
 
-# shell_cli_preflight_prepare_target_resource_flags - validate and compile command flag 
-# definitions.
+# shell_cli_preflight_prepare_target_resource_flags - Compile configuration schemas and build runtime lookup maps for command flags.
 #
-# Arguments:
-# - None (uses global variables populated during command preparation).
+# Arguments
+# - None.
 #
-# Behavior:
-# - Aborts if no root path is defined, or if the command tree is the default "_".
-# - Defines global variables for the flag family, flag ordering array, and
-#   canonical names of the action/validation functions.
-# - Enforces conventions:
-#   · Each command must declare an associative array named
-#     <CMD_MAIN_REGISTRY>_FLAG containing 'cmd', 'summary', and 'description'.
-#   · Each command must declare an indexed array named
-#     <CMD_MAIN_REGISTRY>_FLAG_ORDER listing all flags in order.
-#   · Each flag listed must have a corresponding associative array definition
-#     with at least 'long' and 'short' keys.
-# - Builds lookup maps:
-#   · SHELL_CLI_RESOURCE_FLAG_MAP_LONGNAME maps long flag names to their definitions.
-#   · SHELL_CLI_RESOURCE_FLAG_MAP_SHORTNAME maps short flag names to their long form.
-# - Validates that the main action function exists, and optionally sets the
-#   validation function if present.
-# - Compiles both the Shell-CLI metaflags and the command-specific flags using
-#   'shell_cli_compile_flag_family'.
+# Notes
+# - Fast-Track Fallback: Short-circuits and returns 0 immediately if 'SHELL_CLI_RESOURCE_TREE' points to the root execution context (".").
+# - Phase 1 (Compilation): Invokes 'shell_cli_compile_flag_family' to run strict hydration and validation cycles over the active flag family matrix.
+# - Phase 2 (Lookup Indexing): Iterates sequentially through the validated flag ordering array to resolve dynamic reference pointers.
+# - Mapping Matrix: Populates 'SHELL_CLI_RESOURCE_FLAG_MAP_LONGNAME' with canonical pointers and 'SHELL_CLI_RESOURCE_FLAG_MAP_SHORTNAME' with aliases.
+# - Diagnostic Stream: Intercepts downstream validation breaks to strip prefixes and echo clean diagnostic errors to standard output upon failure.
 #
-# Returns:
-# - 0: success (flags validated and compiled).
-# - 1: failure (missing arrays, invalid flag definitions, or missing functions).
+# Returns
+# - 0: Success (target flag schemas successfully compiled, structured, and indexed in lookup tables).
+# - 1: Failure (validation breach or structure fault detected during flag family compilation).
 shell_cli_preflight_prepare_target_resource_flags() {
   if [ "${SHELL_CLI_RESOURCE_TREE}" = "." ]; then
     return 0

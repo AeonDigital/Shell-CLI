@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
 
-# SHELL_CLI_CORE_LOAD - global variable indicating the load state of the 
-# Shell-CLI core.
+# SHELL_CLI_CORE_LOAD - Lifecycle state indicator for the core runtime framework ignition.
 #
-# - Initialized to "-1" if not yet defined.
-# - Updated by 'shell_cli_client_load_core_engine' and 
-#   'shell_cli_preflight_load_core_engine'.
-# - Used to determine whether the runtime engine is already active in the session.
+# - Initialized with a default fallback state token of "-1" if unassigned.
+# - Updated in-place to "1" upon successful completion of core framework loading routines.
+# - Evaluated by preflight guards to block execution if the underlying architecture engine is inactive.
 if [ "${SHELL_CLI_CORE_LOAD}" = "" ]; then
   declare -g SHELL_CLI_CORE_LOAD="-1"
 fi
@@ -14,95 +12,92 @@ fi
 
 
 if [ "${SHELL_CLI_PROCESS_LOCK_PID}" = "" ]; then
-  # SHELL_CLI_PROCESS_LOCK_PID - global variable storing the process identifier (PID).
+  # SHELL_CLI_PROCESS_LOCK_PID - Process lock identifier anchor for concurrency sandboxing.
   #
-  # - Updated when a process lock is activated.
-  # - Used to detect nested executions sharing the same memory stack frame.
+  # - Captures and stores the active 'BASHPID' token when an execution lock initializes.
+  # - Cross-referenced by preflight routines to intercept and block forbidden nested memory stack collisions.
   declare -g SHELL_CLI_PROCESS_LOCK_PID="-"
 
-  # SHELL_CLI_PROCESS_LOCK_ACTIVE - global variable acting as a boolean flag.
+  # SHELL_CLI_PROCESS_LOCK_ACTIVE - Boolean toggle broadcast flag for process sandboxing state.
   #
-  # - "1" indicates that a process lock is active for the current pipeline.
-  # - "0" indicates no active lock.
+  # - Injected with "1" to broadcast that a single-process active pipeline lock is engaged.
+  # - Reverts back to "0" to broadcast a cleared and unlocked pipeline execution stream state.
   declare -g SHELL_CLI_PROCESS_LOCK_ACTIVE="0"
 fi
 
 
 
-# SHELL_CLI_MAIN_CMD_ROOT_PATH - global variable holding the absolute root path of the CLI project.
+# SHELL_CLI_MAIN_CMD_ROOT_PATH - Absolute target base file system directory mapping for the active client project.
 #
-# - Populated by the 'shell_cli_preflight_prepare_command' function.
-# - Represents the base directory from which command sources and assets are resolved.
-# - Used as the starting point for locating entrypoint scripts, globals, and command tree contexts.
+# - Populated during early bootstrap by 'shell_cli_preflight_prepare_main_cmd'.
+# - Serves as the primary anchor path from which layout schemas, dynamic sources, and assets resolve.
 declare -g SHELL_CLI_MAIN_CMD_ROOT_PATH=""
 
-
-# SHELL_CLI_MAIN_CMD_NAME - Global variable holding the normalized main command name.
+# SHELL_CLI_MAIN_CMD_NAME - Canonical normalized lowercase string identifier of the root entrypoint command.
 #
-# - Set during preflight preparation after user input normalization.
+# - Resolved during preflight preparation workflows following strict input sanitization loops.
+# - Used as the global foundational token prefix to build dynamic registry variable lookups.
 declare -g SHELL_CLI_MAIN_CMD_NAME=""
 
-
+# SHELL_CLI_MAIN_CMD_REGISTRY - Dynamic pointer string referencing the client root command associative definition map.
+#
+# - Resolves to the name of a mandatory user-defined array structure following the pattern 'SHELL_CLI_CMD_<CMDNAME>'.
+# - Points to the schema containing baseline metadata descriptors such as 'cmd', 'summary', and 'description'.
 declare -g SHELL_CLI_MAIN_CMD_REGISTRY=""
+
+# SHELL_CLI_MAIN_CMD_REGISTRY_ORDER - Dynamic pointer string referencing the client root command sequencing array.
+#
+# - Resolves to the name of a mandatory user-defined indexed array following the pattern 'SHELL_CLI_CMD_<CMDNAME>_RESOURCE_ORDER'.
+# - Tracks the strict chronological sequence under which subcommands and nested resources are organized for help layouts.
 declare -g SHELL_CLI_MAIN_CMD_REGISTRY_ORDER=""
 
 
 
 
-# SHELL_CLI_RESOURCE_PATH - Global variable holding the absolute path to the command directory.
+# SHELL_CLI_RESOURCE_PATH - Absolute target directory route mapping to the active leaf subcommand source package.
 #
-# - Built from rootPath and command tree arguments.
-# - Used to locate and source scripts specific to the command context.
+# - Built dynamically by traversing the command line positionals and appending path nodes to the core root.
+# - Used by the bootloader to source context-specific assets ('cmd.sh', 'flags.sh', and 'action.sh') into memory.
 declare -g SHELL_CLI_RESOURCE_PATH=""
 
+# SHELL_CLI_RESOURCE_NAME - Canonical normalized lowercase string identifier of the active terminal leaf subcommand.
+#
+# - Isvolated during positional traversal to represent the immediate target node of the execution request.
+# - Serves as a diagnostic variable used during logging loops and context tracing.
 declare -g SHELL_CLI_RESOURCE_NAME=""
 
-
-
-# SHELL_CLI_RESOURCE_TREE - Global variable holding the textual representation of the command tree.
+# SHELL_CLI_RESOURCE_TREE - Sequential string concatenation mapping the fully expanded executable route.
 #
-# - Concatenates all subcommand parts into a single string.
-# - Used for error reporting and to preserve the logical execution context.
+# - Assembles positional parts into a readable phrase representing the route hierarchy (e.g., "root sub1 sub2").
+# - Preserves logical command context utilized primarily inside verbose diagnostic logs and framework error reports.
 declare -g SHELL_CLI_RESOURCE_TREE=""
 
-
-# SHELL_CLI_RESOURCE_REGISTRY - global variable holding the canonical name of the
-#   associative array that defines the main command.
+# SHELL_CLI_RESOURCE_REGISTRY - Dynamic pointer string referencing the target leaf resource associative schema array.
 #
-# - Convention: must be declared in the client as 'declare -A SHELL_CLI_CMD_<CMDNAME>'.
-# - Expected keys: 'cmd', 'summary', and 'description'.
-# - Populated during 'shell_cli_preflight_prepare_command' to reference the main
-#   command’s metadata definition.
-# - Used to build help output and provide context for the root command.
+# - Maps to the specific client-defined metadata schema generated for the active route node.
+# - Evaluated via 'shell_cli_preflight_check_command_registry' to verify baseline descriptor key compliance.
 declare -g SHELL_CLI_RESOURCE_REGISTRY=""
 
-
+# SHELL_CLI_RESOURCE_REGISTRY_ACTION_ORDER - Dynamic pointer string referencing the active target action sequencing array.
+#
+# - Maps to an indexed array convention tracking executable actions assigned under the current command context node.
+# - Enforced by structural preflight checkers to assure sequence presence before running interpreter loop passes.
 declare -g SHELL_CLI_RESOURCE_REGISTRY_ACTION_ORDER=""
 
-
-# SHELL_CLI_RESOURCE_REGISTRY_FLAG_ORDER - global variable holding the canonical name of
-#   the indexed array that defines the order of subcommands for the main command.
+# SHELL_CLI_RESOURCE_REGISTRY_FLAG_ORDER - Dynamic pointer string referencing the active target option parameter sequencing array.
 #
-# - Convention: must be declared in the client as
-#   'declare -a SHELL_CLI_CMD_<CMDNAME>_RESOURCE_ORDER'.
-# - Each element represents a subcommand name, listed in the order they should
-#   appear in help and documentation.
-# - Populated during 'shell_cli_preflight_prepare_command' to reference the
-#   subcommand ordering array.
-# - Used to ensure consistent listing of subcommands when generating help output.
+# - Maps to an indexed array convention tracking option flags assigned under the current command context node.
+# - Utilized by framework loop handlers to compile parameter rule matrix configurations in a predictable structure.
 declare -g SHELL_CLI_RESOURCE_REGISTRY_FLAG_ORDER=""
 
 
 
 
 
-# SHELL_CLI_COMMAND_RESOURCE_ORDER - global indexed array holding available subcommands.
+# SHELL_CLI_COMMAND_RESOURCE_ORDER - Global sequencing matrix tracking active subcommands in execution layouts.
 #
-# - Declared as an indexed array (declare -a) only if not already defined by the CLI client.
-# - If the client has previously initialized it, the existing definition is preserved.
-# - Each element represents a subcommand name in the order they should appear.
-# - Used primarily to build the help output, ensuring that subcommands are listed
-#   consistently and in the intended sequence.
+# - Declared dynamically as a global indexed array if not explicitly pre-initialized by a custom client script layer.
+# - Preserves historical configuration declaration ordering required during manual help menu generation loops.
 if ! declare -p "SHELL_CLI_COMMAND_RESOURCE_ORDER" &>/dev/null; then
   declare -ga SHELL_CLI_COMMAND_RESOURCE_ORDER=()
 fi
@@ -111,108 +106,101 @@ fi
 
 
 
-# SHELL_CLI_RESOURCE_FLAG_FAMILY - global variable holding the canonical name prefix
-#   for the associative array that defines the command’s flags.
+# SHELL_CLI_RESOURCE_FLAG_FAMILY - Canonical variable prefix grouping all configuration schemas assigned to a resource block.
 #
-# - Built dynamically during 'shell_cli_preflight_prepare_command' using the
-#   normalized command name and command tree.
-# - Convention: the array must be declared as 'declare -A CMD_<command>_<subcommands>_FLAG'.
-# - Expected keys inside this associative array: 'cmd', 'summary', and 'description'.
-# - Used as the reference point for compiling and validating all flags of the command.
+# - Built dynamically during bootstrap passes using dynamic uppercase transformation naming strategies.
+# - Serves as the namespaces baseline anchor from which downstream compilation engines load rule restrictions.
 declare -g SHELL_CLI_RESOURCE_FLAG_FAMILY=""
 
-
-# SHELL_CLI_RESOURCE_FLAG_FAMILY_ORDER - global variable holding the canonical name
-#   of the indexed array that defines the order of flags for the command.
+# SHELL_CLI_RESOURCE_FLAG_FAMILY_ORDER - Dynamic pointer string targeting the sequence map of defined option properties.
 #
-# - Built dynamically during 'shell_cli_preflight_prepare_command' using the
-#   normalized command name and command tree.
-# - Convention: the array must be declared as 'declare -a CMD_<command>_<subcommands>_FLAG_ORDER'.
-# - Each element represents the name of a flag, which must correspond to an
-#   associative array defined under the same family prefix.
-# - Used to preserve the declaration order of flags and ensure consistent iteration.
+# - Resolves to the name of the structural array tracking properties belonging to the active flag namespace family.
+# - Used to preserve chronological rule execution orders during compilation or validation loop runs.
 declare -g SHELL_CLI_RESOURCE_FLAG_FAMILY_ORDER=""
 
-
-# SHELL_CLI_RESOURCE_FLAG_MAP_LONGNAME - global associative array mapping long flag names.
+# SHELL_CLI_RESOURCE_FLAG_MAP_LONGNAME - Runtime fast-track lookup dictionary for canonical long option parameters.
 #
-# - Keys: canonical long names of flags (e.g., "--verbose").
-# - Values: reference to the corresponding associative array definition for the flag.
-# - Populated during 'shell_cli_preflight_prepare_command' by iterating the flag family order.
-# - Used to resolve flags by their long name at runtime.
+# - Maps long flag string tokens (e.g., "--verbose") directly to their source configuration associative array names.
+# - Leveraged by input parsers to resolve and compile raw parameter payloads instantly at runtime.
 declare -gA SHELL_CLI_RESOURCE_FLAG_MAP_LONGNAME=()
 
-
-# SHELL_CLI_RESOURCE_FLAG_MAP_SHORTNAME - global associative array mapping short flag names.
+# SHELL_CLI_RESOURCE_FLAG_MAP_SHORTNAME - Runtime fast-track lookup dictionary for option parameter notation aliases.
 #
-# - Keys: canonical short names of flags (e.g., "-v").
-# - Values: the corresponding long flag name.
-# - Populated during 'shell_cli_preflight_prepare_command' alongside long names.
-# - Used to resolve flags by their short name and link them to their long form.
+# - Maps short flag identifier keys (e.g., "-v") to their fully expanded canonical long name equivalents.
+# - Utilized during lexical parsing passes to normalize user inputs before applying type or matrix schema rules.
 declare -gA SHELL_CLI_RESOURCE_FLAG_MAP_SHORTNAME=()
 
-
-# SHELL_CLI_RESOURCE_FUNCTION_ACTION - global variable holding the canonical name of the
-#   function responsible for executing the command’s main action.
+# SHELL_CLI_RESOURCE_FUNCTION_ACTION - String hook mapping the canonical name of the core target business logic routine.
 #
-# - Populated by 'shell_cli_preflight_prepare_command' using the normalized command
-#   name and command tree.
-# - Convention: must point to a function named 'cmd_<command>_<subcommands>_action'.
-# - Invoked after all validations and flag compilations succeed, representing the
-#   actual business logic of the command.
+# - Resolved using standardized dynamic layout naming conventions based on the requested resource tree pathway.
+# - Triggered as the final step of the lifecycle pipeline once framework validations and option compilations succeed.
 declare -g SHELL_CLI_RESOURCE_FUNCTION_ACTION=""
 
-
-# SHELL_CLI_RESOURCE_FUNCTION_VALIDATE - global variable holding the canonical name of the
-#   function responsible for validating the command’s execution context.
+# SHELL_CLI_RESOURCE_FUNCTION_VALIDATE - String hook mapping the name of an optional user-defined custom context guard routine.
 #
-# - Populated by 'shell_cli_preflight_prepare_command' using the normalized command
-#   name and command tree.
-# - Convention: must point to a function named 'cmd_<command>_<subcommands>_validate'.
-# - Invoked before executing the action function, ensuring that all required flags
-#   and contextual rules are satisfied.
+# - Resolved using standardized dynamic layout naming conventions based on the requested resource tree pathway.
+# - Executed as a gatekeeper hook immediately before dispatching business logic to intercept runtime domain violations.
 declare -g SHELL_CLI_RESOURCE_FUNCTION_VALIDATE=""
 
 
 
 
 
-# SHELL_CLI_TRIGGER_HELP - global flag indicating help mode.
+# SHELL_CLI_TRIGGER_HELP - Global operational intercept flag toggling the framework into structural help layout display mode.
 #
-# - "1" when the command was invoked with "help", "--help" or "-h".
-# - Used to short-circuit execution and display usage information.
+# - Flips to "1" if help route keywords or standard argument notation triggers are isolated from the input stream.
+# - Acts as a short-circuit bypass layer used to suppress business actions and route commands to documentation renderers.
 declare -g SHELL_CLI_TRIGGER_HELP="0"
 
-# SHELL_CLI_TRIGGER_INTERACTIVE - global flag indicating interactive mode.
+# SHELL_CLI_TRIGGER_INTERACTIVE - Global operational intercept flag toggling the framework into wizard configuration prompt loops.
 #
-# - "1" when the command was invoked with "interactive" or "--interactive"/"-itr".
-# - Used to trigger interactive execution flow instead of standard batch mode.
+# - Flips to "1" when explicit interactive parameter keywords are encountered during lexical streaming sweeps.
+# - Diverts the standard pipeline flow away from automated non-interactive batches toward custom shell-prompt environments.
 declare -g SHELL_CLI_TRIGGER_INTERACTIVE="0"
 
-# SHELL_CLI_INPUT_RAW_FLAG - global indexed array storing raw flags.
+
+
+
+
+# SHELL_CLI_INPUT_RAW_FLAG - Pre-normalized collection array storing raw extracted user option argument tokens.
 #
-# - Contains all flags exactly as typed by the user (e.g., "--opt=value").
-# - Populated during input parsing before normalization.
+# - Houses strings exactly as captured from the initial command-line input array block before layout validation begins.
+# - Acts as the unparsed staging area source fed into downstream parsing, aliasing, and validation pipeline cycles.
 declare -ga SHELL_CLI_INPUT_RAW_FLAG=()
 
-# SHELL_CLI_INPUT_RAW_FLAG_ASSOC - global associative array mapping flags to values.
+# SHELL_CLI_INPUT_RAW_FLAG_ASSOC - Runtime input map connecting canonical option names to their extracted raw payloads.
 #
-# - Keys: canonical long flag names.
-# - Values: raw values provided by the user (or "1" for boolean flags).
-# - Populated after validation of existence and duplication.
+# - Keys: Canonical long flag string tokens (e.g., "verbose").
+# - Values: Raw strings provided by the user, falling back to a truthy token string "1" for explicit boolean options.
+# - Populated progressively during syntax checking loops once presence and duplication constraints pass verification.
 declare -gA SHELL_CLI_INPUT_RAW_FLAG_ASSOC=()
 
-# SHELL_CLI_INPUT_RAW_FLAG_ORDER - global indexed array preserving flag order.
+# SHELL_CLI_INPUT_RAW_FLAG_ORDER - Chronological sequence matrix preserving user option input registration order.
 #
-# - Stores the sequence of flags as they were provided by the user.
-# - Ensures deterministic iteration and validation order.
+# - Captures and stores long flag identifier strings in the exact sequence they were dispatched to the terminal interface.
+# - Ensures deterministic execution loops, consistent property validation passes, and predictable log output flows.
 declare -ga SHELL_CLI_INPUT_RAW_FLAG_ORDER=()
 
 
 
 
+
+# SHELL_CLI_CMD_INPUT - Global consolidated data matrix hosting successfully processed and fully normalized arguments.
+#
+# - Serves as the primary production-ready data registry available to downstream business logic action handlers.
+# - Maps validated flag names to their final post-transformation, typed, and structured in-memory values.
 declare -gA SHELL_CLI_CMD_INPUT=()
+
+# SHELL_CLI_CMD_INPUT_ORDER - Production-ready sequence matrix tracking active business arguments.
+#
+# - Preserves the organized chronological sequence of the successfully compiled and normalized runtime parameters.
+# - Leveraged by core template generators and reporting renderers to loop over sanitized inputs consistently.
 declare -ga SHELL_CLI_CMD_INPUT_ORDER=()
+
+# SHELL_CLI_CMD_VALIDATE_ERR - Domain-level error message store for custom context validation breakdowns.
+#
+# - Captures specific procedural violation strings generated inside user-defined '_validate' hook extensions.
+# - Evaluated by the execution coordinator immediately before dispatching the main application action payload.
 declare -g SHELL_CLI_CMD_VALIDATE_ERR=""
 
 
@@ -220,22 +208,22 @@ declare -g SHELL_CLI_CMD_VALIDATE_ERR=""
 
 
 
-# shell_cli_preflight_reset - clear all global variables related to command execution.
+# shell_cli_preflight_reset - Destructively purge and reinitialize the global execution state memory.
 #
-# Arguments:
+# Arguments
 # - None.
 #
-# Behavior:
-# - Resets every global variable used to control the execution context of a command.
-# - Ensures no residual state from previous executions interferes with the next run.
-# - Clears root path, command name, command tree, flag families, flag mappings,
-#   and references to action/validation functions.
-# - Also resets the temporary registries for the main command definition and
-#   its subcommand ordering array.
+# Global outputs
+# - Resets all framework control and context variables (scalar, array, and assoc) back to their baseline fallback values.
 #
-# Returns:
-# - 0: always succeeds (globals reset to default values).
+# Notes
+# - Acts as the primary state barrier to guarantee that residual execution states do not pollute consecutive workflow runs.
+# - Clears root anchors, command tracking trees, map registries, parameter lookups, interactive triggers, and client data matrices.
+#
+# Returns
+# - 0: Success (all core environmental tracking variables have been successfully cleared).
 shell_cli_preflight_reset() {
+
   # MAIN CMD
   SHELL_CLI_MAIN_CMD_ROOT_PATH=""
   SHELL_CLI_MAIN_CMD_NAME=""
@@ -277,7 +265,20 @@ shell_cli_preflight_reset() {
   SHELL_CLI_CMD_VALIDATE_ERR=""
 }
 
+# shell_cli_context_dump - Echo a comprehensive visual diagnostic breakdown of the active environment state to stdout.
+#
+# Arguments
+# - None.
+#
+# Notes
+# - Inspects and renders structural information including root contexts, leaf subcommand routes, flag namespace families, and alias maps.
+# - Iterates sequentially through mapping collections to print precise key-value bindings and user raw option matrices.
+# - Intended strictly as a development and troubleshooting inspection tool to verify in-memory data integrity.
+#
+# Returns
+# - Always returns 0 after broadcasting the serialized layout matrix state stream to standard output.
 shell_cli_context_dump() {
+
   echo "MAIN CMD"
   echo "  ROOT PATH : $SHELL_CLI_MAIN_CMD_ROOT_PATH"
   echo "       NAME : $SHELL_CLI_MAIN_CMD_NAME"

@@ -1,19 +1,22 @@
 #!/usr/bin/env bash
 
-# shell_cli_preflight_process_lock - enforce process sandboxing.
+# shell_cli_preflight_process_lock - Enforce strict single-process sandboxing to prevent memory stack collision.
 #
-# Arguments:
+# Arguments
 # - None.
 #
-# Behavior:
-# - Checks if a process lock is already active with the same PID.
-# - If so, blocks execution and emits error messages to prevent nested inline calls.
-# - Otherwise, activates the lock by setting SHELL_CLI_PROCESS_LOCK_PID to BASHPID
-#   and SHELL_CLI_PROCESS_LOCK_ACTIVE to "1".
+# Global outputs
+# - SHELL_CLI_PROCESS_LOCK_PID: Updated with the current 'BASHPID' to anchor the active execution context.
+# - SHELL_CLI_PROCESS_LOCK_ACTIVE: Toggled to '1' to signal an active and locked pipeline state.
 #
-# Returns:
-# - 0: success (lock activated).
-# - 1: failure (nested execution detected)..
+# Notes
+# - Detects and blocks concurrent downstream calls attempting to share the same active memory stack frame.
+# - Evaluates state synchronization by cross-referencing the current 'BASHPID' against existing global locks.
+# - Emits explicit structural error logs to stderr with architectural remediation steps when a violation occurs.
+#
+# Returns
+# - 0: Success (process lock successfully acquired and registered).
+# - 1: Architecture Panic (nested inline execution detected within the same stack context).
 shell_cli_preflight_process_lock() {
   if [ "${SHELL_CLI_PROCESS_LOCK_ACTIVE}" = "1" ] && [ "${SHELL_CLI_PROCESS_LOCK_PID}" = "${BASHPID}" ]; then
     echo "[ERR] Critical Architecture Panic :: Inline nested command invocation detected!"

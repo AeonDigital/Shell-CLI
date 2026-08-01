@@ -1,38 +1,29 @@
 #!/usr/bin/env bash
 
-# shell_cli_preflight_prepare_main_cmd - validate and prepare command execution context.
+# shell_cli_preflight_prepare_main_cmd - Bootstrap, validate, and orchestrate the execution context for a main command entrypoint.
 #
-# Arguments:
-# - mainCmdRootPath: base directory where command sources are located.
-# - mainCmdName: normalized name of the main command (entrypoint).
+# Arguments
+# - mainCmdRootPath: Base directory where command sources, registries, and asset files are located.
+# - mainCmdName: Raw string representing the name of the main target executable command.
 #
-# Behavior:
-# - Resets all global variables to ensure a clean state before preparation.
-# - Confirms that the Shell-CLI core engine is initialized.
-# - Validates the existence of:
-#   · The root path directory.
-#   · The entrypoint script for the main command (<mainCmdName>.sh).
-#   · The main registry file (cmd.sh).
-# - Enforces conventions:
-#   · The client must declare an associative array named SHELL_CLI_CMD_<CMDNAME>
-#     containing 'cmd', 'summary', and 'description' keys.
-#   · The client must declare an indexed array named
-#     SHELL_CLI_CMD_<CMDNAME>_RESOURCE_ORDER listing all available subcommands.
-# - Builds the command tree from user arguments, defaulting to "_" if no subcommand
-#   is provided.
-# - Validates that the command directory exists for the assembled tree.
-# - Loads global asset scripts (from "globals") and command-specific scripts
-#   (from the resolved command directory), excluding test files.
-# - Updates global variables with the validated execution context:
-#   · SHELL_CLI_MAIN_CMD_ROOT_PATH, SHELL_CLI_MAIN_CMD_NAME, SHELL_CLI_RESOURCE_PATH,
-#     SHELL_CLI_RESOURCE_TREE.
-#   · SHELL_CLI_RESOURCE_REGISTRY and SHELL_CLI_RESOURCE_REGISTRY_FLAG_ORDER,
-#     pointing to the client-defined arrays for main command metadata and
-#     subcommand ordering.
+# Global outputs
+# - SHELL_CLI_MAIN_CMD_ROOT_PATH: Assigned with the verified root path directory string.
+# - SHELL_CLI_MAIN_CMD_NAME: Assigned with the normalized lowercase identifier of the main command.
+# - SHELL_CLI_MAIN_CMD_REGISTRY: Pointer string reference targeting the user-defined associative registry array.
+# - SHELL_CLI_MAIN_CMD_REGISTRY_ORDER: Pointer string reference targeting the user-defined indexed subcommands order array.
 #
-# Returns:
-# - 0: success (command context prepared and globals set).
-# - 1: failure (missing engine, invalid arguments, nonexistent files or arrays).
+# Notes
+# - Pre-flight Guard: Aborts execution immediately if the core engine framework state is not fully loaded ('SHELL_CLI_CORE_LOAD' != 1).
+# - Phase 1 (Sanitization & Reset): Purges previous environment state by executing 'shell_cli_preflight_reset' and normalizes inputs.
+# - Phase 2 (Disk Integrity): Verifies physical existence of the root path, entrypoint script, and core 'cmd.sh' layout structure.
+# - Phase 3 (Schema Compliance): Evaluates client-side conventions by sourcing arrays and validating metadata completeness.
+# - Phase 4 (Asset Ingestion): Automatically searches and sources global script files located in the 'globals/' subdirectory, ignoring test files.
+# - Phase 5 (Metaflag Compilation): Compiles the internal core configuration constraints by triggering 'shell_cli_compile_flag_family'.
+# - Echoes descriptive diagnostic error trace messages directly to stdout/stderr upon encountering framework configuration blocks.
+#
+# Returns
+# - 0: Success (command architecture verified, global context injected, and framework ready for execution loop).
+# - 1: Failure (missing engine core, directory/file structure faults, or invalid array convention declarations).
 shell_cli_preflight_prepare_main_cmd() {
   #
   # 1. If shell cli not initializated by 'shell_cli_preflight_load_core_engine'

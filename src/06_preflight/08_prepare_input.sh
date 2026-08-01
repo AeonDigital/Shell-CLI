@@ -1,24 +1,28 @@
 #!/usr/bin/env bash
 
-# shell_cli_preflight_prepare_input - parse and validate raw CLI input flags.
+# shell_cli_preflight_prepare_input - Parse, normalize, and validate raw command-line interface parameter flags.
 #
-# Arguments:
-# - $@: user-provided CLI arguments (flags and values).
+# Arguments
+# - $@: Variable array of raw strings containing user-provided command-line arguments.
 #
-# Behavior:
-# - Detects reserved modes ("help" and "interactive") and sets triggers accordingly.
-# - Collects raw flags into SHELL_CLI_INPUT_RAW_FLAG.
-# - Splits flags into key-value pairs, treating flags without values as booleans.
-# - Normalizes short flags into their long equivalents using
-#   SHELL_CLI_RESOURCE_FLAG_MAP_SHORTNAME.
-# - Validates that each flag exists in SHELL_CLI_RESOURCE_FLAG_MAP_LONGNAME.
-# - Prevents duplicate flags by checking against the associative input array.
-# - Populates SHELL_CLI_INPUT_RAW_FLAG_ASSOC and
-#   SHELL_CLI_INPUT_RAW_FLAG_ORDER with validated flags.
+# Global outputs
+# - SHELL_CLI_INPUT_RAW_FLAG: Indexed array holding the isolated raw flag strings discovered.
+# - SHELL_CLI_INPUT_RAW_FLAG_ORDER: Indexed array tracking the exact chronological order of parsed long flags.
+# - SHELL_CLI_INPUT_RAW_FLAG_ASSOC: Associative matrix mapping normalized long names to their evaluated final values.
+# - SHELL_CLI_TRIGGER_HELP: Intercept flag toggled to '1' if help keywords or flags are identified in the stream.
+# - SHELL_CLI_TRIGGER_INTERACTIVE: Intercept flag toggled to '1' if interactive wizards are requested by the user.
 #
-# Returns:
-# - 0: success (flags parsed and globals populated).
-# - 1: failure (syntax error, unknown flag, or duplicate flag).
+# Notes
+# - Fast-Track Fallback: Short-circuits and returns 0 immediately if 'SHELL_CLI_TRIGGER_HELP' is pre-flight active.
+# - Phase 1 (Stream Interception): Scans parameters to separate positional structures from options, intercepting reserved framework triggers.
+# - Phase 2 (Payload Expansion): Loops through discovered tokens to split key-value boundaries ('key=value'), falling back to '1' for booleans.
+# - Phase 3 (Normalization & Aliasing): Strips notation prefixes and cross-references short names against known mapping matrix aliases.
+# - Phase 4 (Constraint Checking): Rejects unknown parameters, blocks duplicated options, and pipes payloads into 'shell_cli_process_flag_value'.
+# - Diagnostic Stream: Echoes descriptive syntax, parameter, or validation error traces directly to standard output upon execution failure.
+#
+# Returns
+# - 0: Success (CLI arguments successfully parsed, normalized, and mapped into the application state matrix).
+# - 1: Failure (syntax violation, unknown parameter, duplication error, or downstream value parsing breakdown).
 shell_cli_preflight_prepare_input() {
   if [ "${SHELL_CLI_TRIGGER_HELP}" = "1" ]; then
     return 0

@@ -1,23 +1,20 @@
 #!/usr/bin/env bash
 
-# shell_cli_preflight_check_command_registry - validate existence and integrity of a command registry.
+# shell_cli_preflight_check_command_registry - Validate the structural existence and baseline integrity of a command registry schema.
 #
-# Arguments:
-# - assocCmdName: name of the associative array that defines the command registry.
+# Arguments
+# - assocCmdName: Name of the associative array representing the targeted command registry.
 #
-# Behavior:
-# - Verifies that the given array exists and is associative.
-# - If the array has already been checked (special key '__checked' set to "1"),
-#   returns success immediately to avoid redundant validation.
-# - Ensures that the required keys 'cmd' and 'summary' exist
-#   and are populated with non-empty values.
-# - The 'description' key is optional.
-# - Marks the array as validated by setting '__checked' to "1".
+# Notes
+# - Skips evaluation and returns 0 immediately if the registry has already been cached with '__checked=1'.
+# - Enforces strict presence checks for mandatory schema descriptor keys: 'cmd' and 'summary'.
+# - Treats the 'description' property as an optional metadata field.
+# - Mutates the target associative array by injecting the success token '__checked=1' upon valid verification.
 #
-# Returns:
-# - 0: success (array exists, required keys are present and populated).
-# - 1: failure (array does not exist or is not associative).
-# - 2: failure (array exists but required keys are missing or empty).
+# Returns
+# - 0: Success (registry exists, satisfies all structural compliance checks, or was previously cached).
+# - 1: Structure Fault (target variable reference does not exist or is not a valid associative array).
+# - 2: Schema Fault (target array exists but violates compliance by missing mandatory keys or values).
 shell_cli_preflight_check_command_registry() {
   local assocCmdName="${1}"
 

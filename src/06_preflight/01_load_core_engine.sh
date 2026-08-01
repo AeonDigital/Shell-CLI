@@ -1,22 +1,23 @@
 #!/usr/bin/env bash
 
-# shell_cli_preflight_load_core_engine - initialize and load the core runtime engine.
+# shell_cli_preflight_load_core_engine - Orchestrate the initialization, lifecycle provisioning, and loading of the core runtime engine.
 #
-# Arguments:
-# - $@: optional runtime arguments, used to intercept reserved maintenance/update
-#        parameters (e.g., "--mgmtpkg-update-package").
+# Arguments
+# - $@: Optional variable array of runtime arguments evaluated for framework intercept patterns.
 #
-# Behavior:
-# - Initializes SHELL_CLI_CORE_LOAD to "0".
-# - If running in local development mode (SHELL_CLI_LOCAL_LOAD_MAIN_PKG_SRC=1),
-#   sources all non-test ".sh" files from the local src directory.
-# - Otherwise, ensures the central workspace exists, handles update requests,
-#   downloads the engine if missing, and sources the verified package.sh file.
-# - Finally, sets SHELL_CLI_CORE_LOAD to "1" once the engine is successfully loaded.
+# Global outputs
+# - SHELL_CLI_CORE_LOAD: Injected with '1' upon successful framework ignition, or '0' if explicitly purged.
 #
-# Returns:
-# - 0: success (engine loaded from local src or central package).
-# - 1: failure (engine not found or download error).
+# Notes
+# - Intercepts the reserved '--mgmtpkg-update-package' flag to trigger an immediate infrastructure cache purge and forced exit.
+# - Evaluates local workspace environment directory structure state inside XDG data home paths.
+# - Deploys dynamic network fetchers ('curl' or 'wget') to download the centralized engine package if missing from disk.
+# - Terminal Breaks: Enforces immediate 'exit 0' on completed update tasks, or 'exit 1' on storage write/network download faults.
+# - Sources the verified core asset file directly into the active shell memory execution tree.
+#
+# Returns
+# - 0: Success (engine target discovered or provisioned, and successfully loaded into memory).
+# - 1+: Failure (unreachable network endpoints or storage permissions breach encountered during boot).
 shell_cli_preflight_load_core_engine() {
   local xdgDataHome="${XDG_DATA_HOME:-${HOME}/.local/share}"
   local shellCLIDir="${xdgDataHome}/shell-cli"

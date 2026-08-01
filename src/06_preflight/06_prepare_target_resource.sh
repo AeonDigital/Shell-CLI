@@ -1,39 +1,35 @@
 #!/usr/bin/env bash
 
-# shell_cli_preflight_prepare_target_resource - validate and prepare command execution context.
+# shell_cli_preflight_prepare_target_resource - Resolve, validate, and build the runtime execution context for subcommands.
 #
-# Arguments:
-# - mainCmdRootPath: base directory where command sources are located.
-# - mainCmdName: normalized name of the main command (entrypoint).
-# - $@: remaining arguments representing the command tree (subcommands).
+# Arguments
+# - $@: Variable array of terminal input arguments used to map and navigate the subcommand hierarchy tree.
 #
-# Behavior:
-# - Resets all global variables to ensure a clean state before preparation.
-# - Confirms that the Shell-CLI core engine is initialized.
-# - Validates the existence of:
-#   · The root path directory.
-#   · The entrypoint script for the main command (<mainCmdName>.sh).
-#   · The main registry file (cmd.sh).
-# - Enforces conventions:
-#   · The client must declare an associative array named SHELL_CLI_CMD_<CMDNAME>
-#     containing 'cmd', 'summary', and 'description' keys.
-#   · The client must declare an indexed array named
-#     SHELL_CLI_CMD_<CMDNAME>_RESOURCE_ORDER listing all available subcommands.
-# - Builds the command tree from user arguments, defaulting to "_" if no subcommand
-#   is provided.
-# - Validates that the command directory exists for the assembled tree.
-# - Loads global asset scripts (from "globals") and command-specific scripts
-#   (from the resolved command directory), excluding test files.
-# - Updates global variables with the validated execution context:
-#   · SHELL_CLI_MAIN_CMD_ROOT_PATH, SHELL_CLI_MAIN_CMD_NAME, SHELL_CLI_RESOURCE_PATH,
-#     SHELL_CLI_RESOURCE_TREE.
-#   · SHELL_CLI_RESOURCE_REGISTRY and SHELL_CLI_RESOURCE_REGISTRY_FLAG_ORDER,
-#     pointing to the client-defined arrays for main command metadata and
-#     subcommand ordering.
+# Global outputs
+# - SHELL_CLI_RESOURCE_PATH: Assigned with the resolved target directory path containing the resource source assets.
+# - SHELL_CLI_RESOURCE_NAME: Assigned with the normalized lowercase base identifier of the primary subcommand.
+# - SHELL_CLI_RESOURCE_TREE: Assigned with the fully assembled chronological string sequence representing the command tree path.
+# - SHELL_CLI_RESOURCE_REGISTRY: Pointer string mapping to the target resource's user-defined associative registry array.
+# - SHELL_CLI_RESOURCE_REGISTRY_ACTION_ORDER: Pointer string targeting the structural indexed array defining action order sequences.
+# - SHELL_CLI_RESOURCE_REGISTRY_FLAG_ORDER: Pointer string targeting the structural indexed array defining option processing sequences.
+# - SHELL_CLI_RESOURCE_FUNCTION_ACTION: String identifier matching the dynamic executable target function hook name.
+# - SHELL_CLI_RESOURCE_FUNCTION_VALIDATE: String identifier matching the custom operational data payload validator hook name.
+# - SHELL_CLI_RESOURCE_FLAG_FAMILY: String prefix identifying the isolated variable family containing all assigned metaflag matrix objects.
+# - SHELL_CLI_RESOURCE_FLAG_FAMILY_ORDER: Pointer string linking to the strict sequence array map of option parameters.
+# - SHELL_CLI_TRIGGER_HELP: Intercept flag toggled to '1' if a fallback help condition parameter is explicitly isolated.
+# - SHELL_CLI_TRIGGER_INTERACTIVE: Intercept flag toggled to '0' to disable workflow wizards when global help indicators fire.
 #
-# Returns:
-# - 0: success (command context prepared and globals set).
-# - 1: failure (missing engine, invalid arguments, nonexistent files or arrays).
+# Notes
+# - Fast-Track Fallbacks: Short-circuits execution with 0 immediately when inputs are empty or resolve to global framework help keywords.
+# - Phase 1 (Tree Assembly): Iterates positionals to dynamically append path nodes and symbol strings until it encounters flags or help triggers.
+# - Phase 2 (Disk Verification): Validates file placement requirements for 'cmd.sh', 'flags.sh', and 'action.sh' structures at the target path.
+# - Phase 3 (Schema Validation): Enforces data integrity checks over target command registries, sequence vectors, and flag arrays.
+# - Phase 4 (Functional Mapping): Assures explicit presence of the core execution function block, assigning validation hooks optionally.
+# - Diagnostic Stream: Emits verbose trace layouts directly to standard output upon architecture configuration breaches.
+#
+# Returns
+# - 0: Success (target resource context mapped, dynamic components sourced, and parameters ready for the core interpreter loop).
+# - 1: Failure (broken route mappings, physical file omissions, missing function hooks, or malformed schema arrays).
 shell_cli_preflight_prepare_target_resource() {
 
   #
