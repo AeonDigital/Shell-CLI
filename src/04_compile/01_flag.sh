@@ -1,36 +1,28 @@
 #!/usr/bin/env bash
 
-# shell_cli_compile_flag - compile flag definition.
+# shell_cli_compile_flag - Compile, normalize, and validate a target flag definition schema.
 #
-# Arguments:
-# - flagVarName: name of the associative array representing the flag to be checked.
+# Arguments
+# - flagVarName: Name of the associative array representing the flag structure to compile.
 #
-# Behavior:
-# - Validates that the flag definition is an associative array (declare -A).
-# - Skips processing if the flag has already been compiled (__checked=1).
-# - STEP 1: Populates missing properties with defaults from SHELL_CLI_METAFLAG_DEFAULT.
-# - STEP 2: For each property with a value:
-#   * Normalizes the raw value according to its type (shell_cli_type_normalize_*).
-#   * Validates the normalized value against its type (shell_cli_type_validate_*).
-#   * If the property is marked as array or assoc, normalizes into a dedicated object
-#     (indexed or associative array) for reference.
-# - STEP 3: Invokes the property-specific validator (shell_cli_metaflag_property_validate_*)
-#   for each property, including cross-validations (e.g., min/max, min_array/max_array).
-# - On any error, stores a descriptive message in SHELL_CLI_FLAG_COMPILE_ERR_MESSAGE
-#   and halts compilation immediately.
-# - On success, marks the flag as compiled (__checked=1) to prevent reprocessing.
+# Global outputs
+# - SHELL_CLI_FLAG_COMPILE_ERR_MESSAGE: Stores descriptive compilation or validation failure messages.
 #
-# Notes:
-# - Errors at this stage are fatal: CLI execution must stop.
-# - Boolean values may be accepted as "1"/"0" or "true"/"false" before normalization.
-# - Array/assoc values can be provided as strings; if valid, they are converted into
-#   dedicated array objects for consistent handling.
+# Notes
+# - Skips compilation and returns 0 immediately if the flag already has '__checked=1' set.
+# - Phase 1 (Hydration): Populates unassigned schema properties with framework-specified defaults.
+# - Phase 2 (Type & Collection): Runs type-specific normalization and validation; complex structural 
+#   collections ('array' or 'assoc') are cloned into dedicated persistent reference memory objects.
+# - Phase 3 (Cross-Validation): Invokes isolated and cross-reference constraint checkers for each rule.
+# - Mutations: Destructively modifies the target definition by updating keys to normalized formats, 
+#   injecting memory references, and marking execution status with '__checked=1' upon success.
+# - Context: Failures at this lifecycle stage are treated as fatal framework configuration breaks.
 #
-# Returns:
-# - 0: compilation success (flag normalized and validated).
-# - 1+: compilation failure (invalid type, normalization error, or property rule violation).
-#       In this case, an error message will be stored in SHELL_CLI_FLAG_COMPILE_ERR_MESSAGE.
+# Returns
+# - 0: Success (flag successfully compiled, cached, and validated).
+# - 1+: Failure (invalid base structure, normalization type breach, or metaflag property rule violation).
 shell_cli_compile_flag() {
+
   local flagVarName="${1}"
   local errPrefix="[ERR][ ${flagVarName} ]"
   SHELL_CLI_FLAG_COMPILE_ERR_MESSAGE=""

@@ -1,33 +1,26 @@
 #!/usr/bin/env bash
 
-# shell_cli_compile_flag_family - compile all flags in a family.
+# shell_cli_compile_flag_family - Compile and validate a collection of flag definitions belonging to a specific family.
 #
-# Arguments:
-# - flagFamily: prefix name of the flag definitions to be checked.
-# - flagOrderArray: name of the indexed array that defines the validation order 
-#   for this family.
+# Arguments
+# - flagFamily: Prefix name defining the target flag family group.
+# - flagOrderArray: Name of the indexed array specifying the execution sequence for validation.
 #
-# Behavior:
-# - Skips processing if the family has already been compiled 
-#   (SHELL_CLI_FLAG_COMPILED_FAMILY[family]=1).
-# - Validates inputs:
-#   * flagFamily must not be empty.
-#   * flagOrderArray must not be empty and must be an indexed array (declare -a).
-# - Builds the full names of each flag in the family (family_property) and 
-#   ensures each is a valid associative array (declare -A).
-# - Iterates through all flags in the specified order:
-#   * Calls shell_cli_compile_flag for each flag.
-#   * Stops immediately if any flag fails compilation, storing the error in 
-#     SHELL_CLI_FLAG_COMPILE_ERR_MESSAGE.
-# - On success, marks the family as compiled to prevent reprocessing.
+# Global outputs
+# - SHELL_CLI_FLAG_COMPILE_ERR_MESSAGE: Stores descriptive compilation, missing reference, or structure error messages.
+# - SHELL_CLI_FLAG_COMPILED_FAMILY: Associative tracking matrix updated with a success flag ('1') upon family completion.
 #
-# Returns:
-# - 0: compilation success (all flags in the family normalized and validated).
-# - 1+: compilation failure (invalid order array, missing flag definition, or 
-#       flag compilation error).
-#       In this case, an error message will be stored in 
-#       SHELL_CLI_FLAG_COMPILE_ERR_MESSAGE.
+# Notes
+# - Skips execution and returns 0 if the target family is already marked as compiled in 'SHELL_CLI_FLAG_COMPILED_FAMILY'.
+# - Enforces strict pre-flight validation on arguments (non-empty family, existing and populated indexed order array).
+# - Resolves dynamic symbols by mapping family prefixes to explicit flag associative arrays, verifying their existence.
+# - Processes compilation sequentially; any single flag compilation failure breaks the loop and halts the family lifecycle.
+#
+# Returns
+# - 0: Success (all flags in the family compiled, cached, and validated).
+# - 1+: Failure (invalid parameters, empty sequencing, missing sub-flag definition, or downstream compilation error).
 shell_cli_compile_flag_family() {
+
   local flagFamily="${1}"
   local flagOrderArray="${2}"
   SHELL_CLI_FLAG_COMPILE_ERR_MESSAGE=""
