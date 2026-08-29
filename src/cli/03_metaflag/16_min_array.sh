@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+
+# 
+# METAFLAG 'min_array'  
+# Canonical definition scheme for this flag.
+declare -gA METAFLAG_min_array=()
+METAFLAG_min_array["long"]="min_array"
+METAFLAG_min_array["short"]=""
+METAFLAG_min_array["type"]="int"
+METAFLAG_min_array["accept_values"]=""
+
+METAFLAG_min_array["description"]="Minimum allowable element count within a validated array collection."
+METAFLAG_min_array["tipinput"]=""
+
+METAFLAG_min_array["default"]=""
+METAFLAG_min_array["required"]=false
+
+METAFLAG_min_array["normalize"]=""
+METAFLAG_min_array["min"]=""
+METAFLAG_min_array["max"]=""
+METAFLAG_min_array["regex"]=""
+METAFLAG_min_array["validate"]=""
+METAFLAG_min_array["transform"]=""
+
+METAFLAG_min_array["is_array"]=false
+METAFLAG_min_array["min_array"]=""
+METAFLAG_min_array["max_array"]=""
+
+METAFLAG_min_array["is_assoc"]=false
+METAFLAG_min_array["required_keys"]=""
+
+
+
+
+
+# shell_cli_metaflag_property_validate_min_array — validate structural integrity
+# of this metaflag.
+# 
+# Arguments
+# - fval: value (normalized and validated by type).
+# - fassoc: Name of the associative array with flag definition.
+# 
+# Returns
+# - 0: Success.
+# - 1: Failure.
+shell_cli_metaflag_property_validate_min_array() {
+  local fval="${1}"
+  local fassoc="${2}"
+  SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE=""
+
+  local -n __assoc="${fassoc}"
+  local _array="${__assoc["is_array"]}"
+
+  if [ "${_array}" = "0" ] &&  [ "${fval}" != "" ]; then
+    SHELL_CLI_METAFLAG_PROPERTY_VALIDATE_ERR_MESSAGE="cannot define 'min_array' for a 'is_array=false' flag."
+    return 1
+  fi
+
+  if ! shell_cli_metaflag_property_cross_validate_min_array_max_array "${fval}" "${fassoc}"; then
+    return 1
+  fi
+
+  return 0
+}
+
+
+
+# shell_cli_metaflag_check_input_min_array — runtime input check placeholder for
+# this metaflag.
+# 
+# Arguments
+# - inputVal: value provided by user input.
+# - typeVal: type of value.
+# - ruleVal: current value of this property (boolean indicator).
+# 
+# Returns
+# - 0: Success.
+# - 1: Failure.
+shell_cli_metaflag_check_input_min_array() {
+  local inputVal="${1}"
+  local typeVal="${2}"
+  local ruleVal="${3}"
+  SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE=""
+  SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE=""
+
+
+  if [ "${inputVal}" = "" ] || [ "${ruleVal}" = "" ] || [ "${ruleVal}" = "0" ]; then
+    SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE="${inputVal}"
+    return 0
+  fi
+
+  local -n inputArrayValues="${inputVal}"
+  if [ "${#inputArrayValues[@]}" -lt "${ruleVal}" ]; then
+    SHELL_CLI_METAFLAG_CHECK_INPUT_ERR_MESSAGE="collection violates minimum item count; ( min_array: '${ruleVal}' )"
+    return 1
+  fi
+
+  SHELL_CLI_METAFLAG_CHECK_INPUT_NEW_VALUE="${inputVal}"
+  return 0
+}

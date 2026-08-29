@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+# DESCRIPTION: Centralized destination repository for global flags.
+# ==============================================================================
+
+# Note: shared flags and global validation rules should be declared directly inside
+# this architecture layer to enable cross-command reuse.

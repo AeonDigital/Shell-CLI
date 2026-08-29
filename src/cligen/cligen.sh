@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+# SHELL_CLI_CMD_ROOT_PATH
+# 
+# Full path to this script's directory.
+declare -g SHELL_CLI_CMD_ROOT_PATH="$(cd "$(dirname "${BASH_SOURCE}")" && pwd)"
+
+
+
+# 
+# Checks for the presence of boot functions.
+if ! declare -f "shell_cli_engine_boot" >/dev/null; then
+  if [ ! -f "${SHELL_CLI_CMD_ROOT_PATH}/boot.sh" ]; then
+    echo "[FATAL] :: Shell CLI boot functions were not found."; exit 1
+  fi
+  . "${SHELL_CLI_CMD_ROOT_PATH}/boot.sh"
+  shell_cli_engine_preboot
+fi
+
+# 
+# Execute the main command
+if [ "${SHELL_CLI_CORE_LOADED}" = "1" ]; then
+  if [ "${SHELL_CLI_DEBUG}" = "1" ]; then
+    SHELL_CLI_CORE_LOADED="0"
+    shell_cli_engine_boot
+  fi
+  SHELL_CLI_CORE_LOAD="1"
+
+  shell_cli "${SHELL_CLI_CMD_ROOT_PATH}" "$@"
+fi

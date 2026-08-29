@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+#
+# SHELL_CLI_CMD_{{PKG_FN_UPPER}} — Main registry of the {{PKG_FN_UPPER}} package.
+declare -gA SHELL_CLI_CMD_{{PKG_FN_UPPER}}=()
+SHELL_CLI_CMD_{{PKG_FN_UPPER}}["cmd"]="{{PKG_FN_LOWER}}"
+SHELL_CLI_CMD_{{PKG_FN_UPPER}}["summary"]="{{SUMMARY}}"
+SHELL_CLI_CMD_{{PKG_FN_UPPER}}["description"]="{{DESCRIPTION}}"
+
+
+
+#
+# SHELL_CLI_CMD_{{PKG_FN_UPPER}}_RESOURCE_ORDER  
+# Listing and ordering of available flags.
+declare -ga SHELL_CLI_CMD_{{PKG_FN_UPPER}}_RESOURCE_ORDER=()
